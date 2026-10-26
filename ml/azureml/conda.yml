@@ -1,0 +1,13 @@
+name: saathi-radar
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - pip
+  - pip:
+      - azureml-inference-server-http
+      - scikit-learn==1.9.1
+      - pandas==3.1.0
+      - numpy==2.5.4
+      - joblib==1.6.0
+      - pandera[pandas]==0.35.0

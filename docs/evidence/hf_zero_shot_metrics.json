@@ -1,0 +1,110 @@
+{
+  "model": "hf_zero_shot",
+  "seed": 42,
+  "dataset": "synthetic template-family holdout",
+  "test_sha256": "e41f6f681878d4fc01d0b842abfcfa17490b73d061e9b11cc0842eff3b72a1a4",
+  "n": 150,
+  "macro_f1": 0.30193367481503075,
+  "classification_report": {
+    "compare_products": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 30.0
+    },
+    "coverage_question": {
+      "precision": 1.0,
+      "recall": 0.9666666666666667,
+      "f1-score": 0.9830508474576272,
+      "support": 30.0
+    },
+    "renewal_draft": {
+      "precision": 0.6666666666666666,
+      "recall": 0.06666666666666667,
+      "f1-score": 0.12121212121212122,
+      "support": 30.0
+    },
+    "customer_lookup": {
+      "precision": 0.2542372881355932,
+      "recall": 1.0,
+      "f1-score": 0.40540540540540543,
+      "support": 30.0
+    },
+    "out_of_scope": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 30.0
+    },
+    "accuracy": 0.4066666666666667,
+    "macro avg": {
+      "precision": 0.38418079096045193,
+      "recall": 0.4066666666666666,
+      "f1-score": 0.30193367481503075,
+      "support": 150.0
+    },
+    "weighted avg": {
+      "precision": 0.38418079096045193,
+      "recall": 0.4066666666666667,
+      "f1-score": 0.3019336748150308,
+      "support": 150.0
+    }
+  },
+  "confusion_matrix": [
+    [
+      0,
+      0,
+      0,
+      30,
+      0
+    ],
+    [
+      0,
+      29,
+      1,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      2,
+      28,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      30,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      30,
+      0
+    ]
+  ],
+  "label_order": [
+    "compare_products",
+    "coverage_question",
+    "renewal_draft",
+    "customer_lookup",
+    "out_of_scope"
+  ],
+  "metadata": {
+    "model_id": "typeform/distilbert-base-uncased-mnli",
+    "revision": "cfa538a0fddbbd978fefe8966c1aeff7ad409c90",
+    "label_descriptions": {
+      "compare_products": "compare insurance products",
+      "coverage_question": "ask about insurance coverage or exclusions",
+      "renewal_draft": "draft an insurance renewal reminder",
+      "customer_lookup": "look up customer information",
+      "out_of_scope": "request help unrelated to insurance"
+    },
+    "hypothesis_template": "The user wants to {}.",
+    "fine_tuned_on_saathi": false
+  }
+}

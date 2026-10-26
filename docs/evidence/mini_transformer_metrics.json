@@ -1,0 +1,103 @@
+{
+  "model": "mini_transformer",
+  "seed": 42,
+  "dataset": "synthetic template-family holdout",
+  "test_sha256": "e41f6f681878d4fc01d0b842abfcfa17490b73d061e9b11cc0842eff3b72a1a4",
+  "n": 150,
+  "macro_f1": 0.43698191986568846,
+  "classification_report": {
+    "compare_products": {
+      "precision": 1.0,
+      "recall": 0.2,
+      "f1-score": 0.3333333333333333,
+      "support": 30.0
+    },
+    "coverage_question": {
+      "precision": 0.28846153846153844,
+      "recall": 0.5,
+      "f1-score": 0.36585365853658536,
+      "support": 30.0
+    },
+    "renewal_draft": {
+      "precision": 1.0,
+      "recall": 0.13333333333333333,
+      "f1-score": 0.23529411764705882,
+      "support": 30.0
+    },
+    "customer_lookup": {
+      "precision": 0.5862068965517241,
+      "recall": 0.5666666666666667,
+      "f1-score": 0.576271186440678,
+      "support": 30.0
+    },
+    "out_of_scope": {
+      "precision": 0.5084745762711864,
+      "recall": 1.0,
+      "f1-score": 0.6741573033707865,
+      "support": 30.0
+    },
+    "accuracy": 0.48,
+    "macro avg": {
+      "precision": 0.6766286022568898,
+      "recall": 0.48,
+      "f1-score": 0.43698191986568846,
+      "support": 150.0
+    },
+    "weighted avg": {
+      "precision": 0.6766286022568897,
+      "recall": 0.48,
+      "f1-score": 0.43698191986568846,
+      "support": 150.0
+    }
+  },
+  "confusion_matrix": [
+    [
+      6,
+      24,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      15,
+      0,
+      0,
+      15
+    ],
+    [
+      0,
+      0,
+      4,
+      12,
+      14
+    ],
+    [
+      0,
+      13,
+      0,
+      17,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      30
+    ]
+  ],
+  "label_order": [
+    "compare_products",
+    "coverage_question",
+    "renewal_draft",
+    "customer_lookup",
+    "out_of_scope"
+  ],
+  "metadata": {
+    "epochs": 30,
+    "selection": "best dev macro F1",
+    "best_dev_macro_f1": 0.697041049717106,
+    "parameters": 38917
+  }
+}

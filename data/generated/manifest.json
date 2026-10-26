@@ -1,0 +1,25 @@
+{
+  "seed": 42,
+  "provenance": "Generated synthetic ML fixtures; no real customers or policy facts.",
+  "intent_labels": [
+    "compare_products",
+    "coverage_question",
+    "renewal_draft",
+    "customer_lookup",
+    "out_of_scope"
+  ],
+  "split_sizes": {
+    "train": 1000,
+    "dev": 200,
+    "test": 150
+  },
+  "split_strategy": "disjoint authored template families before expansion; no normalized text overlap",
+  "protected_attributes": "Synthetic evaluation-only metadata, independent of text; not representative demographics",
+  "radar_target": "Simulated nonrenewal drawn from a noisy logistic rule; not business ground truth",
+  "files": {
+    "intent_dev.csv": "9cddb71d915cc22bbf90a9c76af33300cc87836fa23756670ee608d0a1278831",
+    "intent_test.csv": "e41f6f681878d4fc01d0b842abfcfa17490b73d061e9b11cc0842eff3b72a1a4",
+    "intent_train.csv": "7f61d5fa43ed179605d5fd8b62a0e87a06d24ef78f024d4894089fdf277f3e16",
+    "radar.csv": "b6880b956cb1ba2fc02302406675e95ceaf696777bf20b53a3850879b93132cb"
+  }
+}
