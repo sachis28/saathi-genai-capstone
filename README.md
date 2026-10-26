@@ -1,1 +1,1 @@
-# saathi-genai-capstone
+# saachi-genai-capstone
