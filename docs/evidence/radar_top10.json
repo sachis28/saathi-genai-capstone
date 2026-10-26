@@ -1,0 +1,72 @@
+[
+  {
+    "customer_id": "C-2120",
+    "risk_score": 0.8695561194159932,
+    "main_risk_factor": "days_to_renewal",
+    "explanation_type": "largest standardized logistic feature contribution; not causal",
+    "synthetic": true
+  },
+  {
+    "customer_id": "C-2098",
+    "risk_score": 0.8572240568879452,
+    "main_risk_factor": "days_to_renewal",
+    "explanation_type": "largest standardized logistic feature contribution; not causal",
+    "synthetic": true
+  },
+  {
+    "customer_id": "C-1725",
+    "risk_score": 0.8484763718383996,
+    "main_risk_factor": "sentiment_score",
+    "explanation_type": "largest standardized logistic feature contribution; not causal",
+    "synthetic": true
+  },
+  {
+    "customer_id": "C-1837",
+    "risk_score": 0.840510528905069,
+    "main_risk_factor": "sentiment_score",
+    "explanation_type": "largest standardized logistic feature contribution; not causal",
+    "synthetic": true
+  },
+  {
+    "customer_id": "C-2121",
+    "risk_score": 0.8294548946030298,
+    "main_risk_factor": "days_to_renewal",
+    "explanation_type": "largest standardized logistic feature contribution; not causal",
+    "synthetic": true
+  },
+  {
+    "customer_id": "C-1807",
+    "risk_score": 0.8217972084192369,
+    "main_risk_factor": "days_to_renewal",
+    "explanation_type": "largest standardized logistic feature contribution; not causal",
+    "synthetic": true
+  },
+  {
+    "customer_id": "C-1232",
+    "risk_score": 0.8207221316821328,
+    "main_risk_factor": "days_to_renewal",
+    "explanation_type": "largest standardized logistic feature contribution; not causal",
+    "synthetic": true
+  },
+  {
+    "customer_id": "C-1580",
+    "risk_score": 0.8027974794002523,
+    "main_risk_factor": "days_to_renewal",
+    "explanation_type": "largest standardized logistic feature contribution; not causal",
+    "synthetic": true
+  },
+  {
+    "customer_id": "C-1582",
+    "risk_score": 0.7994248886516307,
+    "main_risk_factor": "days_to_renewal",
+    "explanation_type": "largest standardized logistic feature contribution; not causal",
+    "synthetic": true
+  },
+  {
+    "customer_id": "C-1389",
+    "risk_score": 0.7926086001837092,
+    "main_risk_factor": "days_to_renewal",
+    "explanation_type": "largest standardized logistic feature contribution; not causal",
+    "synthetic": true
+  }
+]

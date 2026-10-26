@@ -1,0 +1,16 @@
+# Finish the Azure and live-model evidence
+
+The code is prepared, but no Azure resources or paid accounts were created. A deployed endpoint and screenshot cannot exist until a subscription, permissions and workspace are available. Keep resources until after the final team demo.
+
+1. Obtain access to the team's Azure subscription, resource group, Azure ML workspace, and a CPU compute cluster. Ask the workspace owner for the required deployment permissions and VM quota. Use the same workspace as Sachi.
+2. Install the optional deployment dependencies: `python -m pip install azure-ai-ml azure-identity`. Sign in through the Azure CLI (`az login`) or another supported DefaultAzureCredential identity. Never put account credentials in source files.
+3. Set AZURE_SUBSCRIPTION_ID, AZURE_RESOURCE_GROUP, AZURE_ML_WORKSPACE, AZURE_ML_ENDPOINT_NAME and AZURE_ML_COMPUTE in the terminal. `.env.example` lists configuration names but is not automatically loaded.
+4. Run `python -m ml.azureml.deploy --train-in-azure` to check configuration. Run `python -m ml.azureml.deploy --execute --train-in-azure` to submit a training job to the existing compute, register its output and deploy the managed endpoint. This creates billable Azure compute usage. The script uploads only explicitly staged ML source files plus the synthetic Radar CSV; it does not upload the full repository or secrets. Without `--train-in-azure`, it registers the locally trained model instead, which does not prove Azure training.
+5. Inspect the training job, registered model, environment build and blue deployment in Azure ML Studio. The first cloud execution remains unverified until performed; adjust instance type to the team's quota if needed. The deployment's dependency versions match the local measured model environment.
+6. Set ML_PROVIDER=azure, AZURE_ML_ENDPOINT to the scoring HTTPS URL, and AZURE_ML_KEY using the endpoint's credentials. Run `python -m ml.azureml.smoke_test`. Save the real receipt and take a screenshot showing the successful call and endpoint page. Do not include keys in screenshots. Test `/worklist` through FastAPI too.
+7. Ask Shreya for an Azure GPT chat deployment and configure AZURE_OPENAI_ENDPOINT, AZURE_OPENAI_DEPLOYMENT, AZURE_OPENAI_API_KEY and an API version supported by that deployment. Install Ollama separately and download a compatible Llama/Phi model; set OLLAMA_MODEL to its actual installed name. Run `python -m ml.prompt_experiment --execute`. This makes 150 model requests; Azure requests incur usage charges. Review raw responses under artifacts/prompt_runs/ and fill in the human grading worksheet.
+8. Present evidence with Sachi and Shreya. After the final demo, coordinate resource removal with Rohan and record costs. No automatic teardown is included.
+
+Provider errors are retained as errors and never converted to successful mock runs. Azure HTTP integration tests use fake responses only to check validation logic; they do not prove a working cloud endpoint.
+
+References: [Azure managed endpoint deployment](https://learn.microsoft.com/en-us/azure/machine-learning/how-to-deploy-online-endpoints?view=azureml-api-2&tabs=python), [Ollama chat API](https://docs.ollama.com/api/chat).

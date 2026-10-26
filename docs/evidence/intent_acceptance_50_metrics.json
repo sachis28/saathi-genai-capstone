@@ -1,0 +1,99 @@
+{
+  "model": "intent_acceptance_50",
+  "seed": 42,
+  "dataset": "separately authored synthetic 50-query intent smoke evaluation",
+  "n": 50,
+  "macro_f1": 0.9185688005179188,
+  "classification_report": {
+    "compare_products": {
+      "precision": 1.0,
+      "recall": 0.9,
+      "f1-score": 0.9473684210526315,
+      "support": 10.0
+    },
+    "coverage_question": {
+      "precision": 0.7692307692307693,
+      "recall": 1.0,
+      "f1-score": 0.8695652173913043,
+      "support": 10.0
+    },
+    "renewal_draft": {
+      "precision": 0.9090909090909091,
+      "recall": 1.0,
+      "f1-score": 0.9523809523809523,
+      "support": 10.0
+    },
+    "customer_lookup": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 10.0
+    },
+    "out_of_scope": {
+      "precision": 1.0,
+      "recall": 0.7,
+      "f1-score": 0.8235294117647058,
+      "support": 10.0
+    },
+    "accuracy": 0.92,
+    "macro avg": {
+      "precision": 0.9356643356643357,
+      "recall": 0.9199999999999999,
+      "f1-score": 0.9185688005179188,
+      "support": 50.0
+    },
+    "weighted avg": {
+      "precision": 0.9356643356643357,
+      "recall": 0.92,
+      "f1-score": 0.9185688005179188,
+      "support": 50.0
+    }
+  },
+  "confusion_matrix": [
+    [
+      9,
+      1,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      10,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      10,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      10,
+      0
+    ],
+    [
+      0,
+      2,
+      1,
+      0,
+      7
+    ]
+  ],
+  "label_order": [
+    "compare_products",
+    "coverage_question",
+    "renewal_draft",
+    "customer_lookup",
+    "out_of_scope"
+  ],
+  "metadata": {
+    "scope": "intent-only; not RAG, authorization, citations, UI, or cloud acceptance"
+  }
+}

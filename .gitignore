@@ -1,7 +1,11 @@
-.env
-__pycache__/
-*.pyc
 .venv/
+__pycache__/
+.pytest_cache/
+.env
+artifacts/
+*.egg-info/
+.ipynb_checkpoints/
+*.pyc
 node_modules/
 bin/
 obj/

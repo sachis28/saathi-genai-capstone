@@ -1,0 +1,23 @@
+{
+  "data": "synthetic noisy renewal outcomes",
+  "seed": 42,
+  "train_n": 900,
+  "test_n": 300,
+  "roc_auc": 0.8158503898635479,
+  "average_precision": 0.5730185547386988,
+  "brier_score": 0.13808988827340915,
+  "positive_prevalence": 0.24,
+  "features": [
+    "days_to_renewal",
+    "interaction_count_90d",
+    "sentiment_score",
+    "premium"
+  ],
+  "excluded_features": [
+    "customer_id",
+    "age_band",
+    "consent",
+    "nonrenewed"
+  ],
+  "limitations": "No real-world validation, no causal explanations, no eligibility or pricing decisions"
+}

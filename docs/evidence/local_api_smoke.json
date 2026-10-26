@@ -1,0 +1,10 @@
+{
+  "status": "passed",
+  "transport": "real loopback HTTP",
+  "intent_provider": "distilbert",
+  "radar_provider": "local",
+  "chat_intent": "renewal_draft",
+  "worklist_count": 10,
+  "synthetic": true,
+  "scope": "ML integration only; chat answer/citations remain placeholders; not full-product acceptance"
+}

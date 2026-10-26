@@ -1,0 +1,19 @@
+{
+  "criterion": "dev macro F1 only",
+  "selected_C": 0.5,
+  "dev_macro_f1": 0.6447171610241617,
+  "candidates": [
+    {
+      "C": 0.5,
+      "dev_macro_f1": 0.6447171610241617
+    },
+    {
+      "C": 2.0,
+      "dev_macro_f1": 0.6385341233267501
+    },
+    {
+      "C": 8.0,
+      "dev_macro_f1": 0.6385341233267501
+    }
+  ]
+}

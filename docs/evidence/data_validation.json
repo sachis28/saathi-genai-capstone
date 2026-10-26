@@ -1,0 +1,12 @@
+{
+  "status": "passed",
+  "rows": {
+    "train": 1000,
+    "dev": 200,
+    "test": 150
+  },
+  "radar_rows": 1200,
+  "normalized_text_overlap": 0,
+  "template_family_overlap": 0,
+  "scope": "ML fixtures only; CRM/API schemas await Sachi and Shreya's contracts"
+}
