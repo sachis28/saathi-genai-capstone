@@ -9,6 +9,14 @@ from app.services.retriever import get_retriever
 from app.services.answer import generate_answer
 from app.services import memory
 
+from app.services.safety import is_injection, safe_log
+import logging
+
+logging.basicConfig(level=logging.INFO)
+
+BLOCKED_MSG = "BLOCKED: this request looks like a prompt-injection attempt and was not processed."
+
+
 app = FastAPI(title="Saathi API", version="0.4")
 
 DUMMY_CUSTOMERS = {
@@ -59,11 +67,18 @@ async def chat(req: ChatRequest):
     customer = get_customer_or_404(req.customer_id)
     session_id = req.session_id or str(uuid.uuid4())
 
+    # Safety: block prompt injection before retrieval or LLM
+    if is_injection(req.question):
+        safe_log("prompt_injection_blocked", customer_id=customer.customer_id, question=req.question)
+        return ChatResponse(answer=BLOCKED_MSG, intent="prompt_injection", citations=[],
+                            session_id=session_id, resolved_question=req.question)
+
     resolved = memory.resolve_question(session_id, req.question)
     hits = get_retriever().search(resolved, k=3, product=customer.product)
     answer, citations = generate_answer(resolved, hits)
 
     memory.add_turn(session_id, req.question, resolved, answer)
+    safe_log("chat", customer_id=customer.customer_id, question=req.question, citations=len(citations))
 
     return ChatResponse(
         answer=answer,
@@ -72,7 +87,6 @@ async def chat(req: ChatRequest):
         session_id=session_id,
         resolved_question=resolved,
     )
-
 
 @app.get("/sessions/{session_id}", response_model=List[Turn])
 async def get_session(session_id: str):
