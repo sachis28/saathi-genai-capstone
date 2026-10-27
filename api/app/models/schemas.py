@@ -19,6 +19,7 @@ class ChatResponse(BaseModel):
     intent: str
     citations: List[Citation] = []
     session_id: str
+    resolved_question: Optional[str] = None
 
 
 class Customer(BaseModel):
@@ -26,6 +27,7 @@ class Customer(BaseModel):
     name: str
     product: str
     tier: str
+    consent: bool = True
 
 
 class SearchRequest(BaseModel):
@@ -43,3 +45,21 @@ class SearchHit(BaseModel):
     tier: str
     text: str
     score: float
+
+
+class DraftRequest(BaseModel):
+    customer_id: str
+
+
+class Draft(BaseModel):
+    draft_id: str
+    customer_id: str
+    message: str
+    status: str
+    citations: List[Citation] = []
+
+
+class Turn(BaseModel):
+    question: str
+    resolved_question: str
+    answer: str
