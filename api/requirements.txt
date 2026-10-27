@@ -3,3 +3,6 @@ uvicorn[standard]
 pydantic
 pytest
 httpx
+rank_bm25
+faiss-cpu
+sentence-transformers
