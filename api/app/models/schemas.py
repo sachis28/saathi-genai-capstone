@@ -43,3 +43,15 @@ class SearchHit(BaseModel):
     tier: str
     text: str
     score: float
+
+
+class DraftRequest(BaseModel):
+    customer_id: str
+
+
+class Draft(BaseModel):
+    draft_id: str
+    customer_id: str
+    message: str
+    status: str
+    citations: List[Citation] = []
