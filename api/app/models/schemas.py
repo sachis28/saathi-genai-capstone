@@ -26,3 +26,20 @@ class Customer(BaseModel):
     name: str
     product: str
     tier: str
+
+
+class SearchRequest(BaseModel):
+    query: str
+    k: int = 5
+    product: Optional[str] = None
+    tier: Optional[str] = None
+
+
+class SearchHit(BaseModel):
+    source_id: str
+    clause_id: str
+    version: str
+    product: str
+    tier: str
+    text: str
+    score: float
