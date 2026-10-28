@@ -78,3 +78,35 @@ records copied from the generated files.
   product, tier, and consent.
 - The existing missing-customer test uses C-999. That test needs an
   absent ID when the API is integrated with this dataset.
+
+## Renewal Radar features
+
+Generated file: data/radar_features.json.
+One row per customer. These are model inputs, not predictions or risk scores.
+
+| Field | JSON type | Meaning |
+|---|---|---|
+| customer_id | string | Customer identifier linking to customers.json. |
+| as_of_date | string, YYYY-MM-DD | Explicit reference date for feature calculations. |
+| days_to_renewal | integer | Renewal date minus reference date; negative means overdue. |
+| interaction_count | integer | Number of interactions on or before the reference date. |
+| days_since_last_interaction | integer or null | Days since the latest eligible interaction; null if none exists. |
+
+### Generate features
+
+From the repository root:
+
+```bash
+python3 ml/radar_features.py --as-of 2026-10-28
+```
+
+Future-dated interactions are excluded.
+Premium, claims, and sentiment features are not implemented yet.
+
+### Checks performed
+
+- Six feature rows with expected renewal offsets.
+- Three eligible interactions per demo customer.
+- Customers without history return count zero and recency null.
+- Future interactions are excluded.
+- Renewal on the reference date gives zero days to renewal.

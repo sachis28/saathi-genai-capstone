@@ -1,0 +1,44 @@
+[
+  {
+    "customer_id": "C-204",
+    "as_of_date": "2026-10-28",
+    "days_to_renewal": 15,
+    "interaction_count": 3,
+    "days_since_last_interaction": 1
+  },
+  {
+    "customer_id": "C-311",
+    "as_of_date": "2026-10-28",
+    "days_to_renewal": 7,
+    "interaction_count": 3,
+    "days_since_last_interaction": 5
+  },
+  {
+    "customer_id": "C-118",
+    "as_of_date": "2026-10-28",
+    "days_to_renewal": 60,
+    "interaction_count": 3,
+    "days_since_last_interaction": 3
+  },
+  {
+    "customer_id": "C-450",
+    "as_of_date": "2026-10-28",
+    "days_to_renewal": -5,
+    "interaction_count": 3,
+    "days_since_last_interaction": 1
+  },
+  {
+    "customer_id": "C-205",
+    "as_of_date": "2026-10-28",
+    "days_to_renewal": 20,
+    "interaction_count": 3,
+    "days_since_last_interaction": 1
+  },
+  {
+    "customer_id": "C-999",
+    "as_of_date": "2026-10-28",
+    "days_to_renewal": 90,
+    "interaction_count": 3,
+    "days_since_last_interaction": 8
+  }
+]
