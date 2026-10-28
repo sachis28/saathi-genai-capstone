@@ -1,0 +1,68 @@
+[
+  {
+    "customer_id": "C-204",
+    "name": "Synthetic Customer 01",
+    "product": "Health",
+    "tier": "Silver",
+    "city": "Pune",
+    "segment": "Retail",
+    "consent": true,
+    "agent_id": "A-001",
+    "renewal_date": "2026-11-12"
+  },
+  {
+    "customer_id": "C-311",
+    "name": "Synthetic Customer 02",
+    "product": "Health",
+    "tier": "Gold",
+    "city": "Mumbai",
+    "segment": "Retail",
+    "consent": true,
+    "agent_id": "A-002",
+    "renewal_date": "2026-11-04"
+  },
+  {
+    "customer_id": "C-118",
+    "name": "Synthetic Customer 03",
+    "product": "Health",
+    "tier": "Silver",
+    "city": "Nagpur",
+    "segment": "Retail",
+    "consent": true,
+    "agent_id": "A-003",
+    "renewal_date": "2026-12-27"
+  },
+  {
+    "customer_id": "C-450",
+    "name": "Synthetic Customer 04",
+    "product": "Health",
+    "tier": "Gold",
+    "city": "Nashik",
+    "segment": "Retail",
+    "consent": true,
+    "agent_id": "A-001",
+    "renewal_date": "2026-10-23"
+  },
+  {
+    "customer_id": "C-205",
+    "name": "Synthetic Customer 05",
+    "product": "Health",
+    "tier": "Gold",
+    "city": "Pune",
+    "segment": "Retail",
+    "consent": false,
+    "agent_id": "A-002",
+    "renewal_date": "2026-11-17"
+  },
+  {
+    "customer_id": "C-999",
+    "name": "Synthetic Customer 06",
+    "product": "Health",
+    "tier": "Silver",
+    "city": "Mumbai",
+    "segment": "Retail",
+    "consent": true,
+    "agent_id": "A-003",
+    "renewal_date": "2027-01-26"
+  }
+]
