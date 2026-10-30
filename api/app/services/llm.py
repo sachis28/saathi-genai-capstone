@@ -2,14 +2,20 @@ import os
 import re
 from abc import ABC, abstractmethod
 from functools import lru_cache
+from pathlib import Path
 
 import httpx
+from dotenv import load_dotenv
+
+# Reads the .env file in the repo root. Real environment variables win,
+# so "LLM_PROVIDER=mock pytest" still overrides the .env value.
+load_dotenv(Path(__file__).resolve().parents[3] / ".env")
 
 CONTEXT_LINE = re.compile(r"^(\[[^\]]+\])\s*\([^)]*\)\s*(.+)$", re.MULTILINE)
 
 
 class LLMAdapter(ABC):
-    """Plugin interface: Mock now, Ollama or Azure by changing LLM_PROVIDER."""
+    """Plugin interface: Mock, Ollama or Azure (Foundry) by changing LLM_PROVIDER."""
 
     @abstractmethod
     def complete(self, system: str, user: str) -> str:
@@ -46,14 +52,21 @@ class OllamaLLM(LLMAdapter):
 
 
 class AzureOpenAILLM(LLMAdapter):
+    """Model deployed in Microsoft Foundry, called through the OpenAI v1 endpoint."""
+
     def __init__(self):
-        from openai import AzureOpenAI
-        self.client = AzureOpenAI(
-            azure_endpoint=os.environ["AZURE_OPENAI_ENDPOINT"],
-            api_key=os.environ["AZURE_OPENAI_API_KEY"],
-            api_version=os.getenv("AZURE_OPENAI_API_VERSION", "2024-10-21"),
+        from openai import OpenAI
+
+        endpoint = os.environ["AZURE_OPENAI_ENDPOINT"].strip().rstrip("/")
+        # Accept the endpoint with or without the /openai/v1 suffix
+        if endpoint.endswith("/openai/v1"):
+            endpoint = endpoint[: -len("/openai/v1")]
+
+        self.client = OpenAI(
+            base_url=f"{endpoint}/openai/v1/",
+            api_key=os.environ["AZURE_OPENAI_API_KEY"].strip(),
         )
-        self.deployment = os.environ["AZURE_OPENAI_DEPLOYMENT"]
+        self.deployment = os.environ["AZURE_OPENAI_DEPLOYMENT"].strip()
 
     def complete(self, system: str, user: str) -> str:
         r = self.client.chat.completions.create(
