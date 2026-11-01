@@ -1,26 +1,41 @@
-from sentence_transformers import SentenceTransformer
+import os
+from openai import OpenAI
 
-# Load the pretrained embedding model
-model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+# 1. Read Azure Foundry credentials
+endpoint = os.environ["AZURE_OPENAI_ENDPOINT"].strip().rstrip("/")
+api_key = os.environ["AZURE_OPENAI_API_KEY"].strip()
+deployment = os.environ["AZURE_OPENAI_EMBED_DEPLOYMENT"].strip()
 
-# Sample insurance sentences
-sentences = [
-    "Does my insurance cover hospital admission?",
-    "Gold plan covers inpatient hospitalization up to INR 10 lakh."
-]
+# 2. Normalize endpoint
+if endpoint.endswith("/openai/v1"):
+    endpoint = endpoint[:-len("/openai/v1")]
 
-# Generate embeddings
-embeddings = model.encode(sentences)
-
-# Display results
-print("Number of sentences:", len(sentences))
-print("Embedding shape:", embeddings.shape)
-print("Dimensions per sentence:", len(embeddings[0]))
-
-# Compare the two sentence embeddings
-similarity = model.similarity(
-    embeddings[0:1],
-    embeddings[1:2]
+# 3. Connect to Azure OpenAI
+client = OpenAI(
+    base_url=f"{endpoint}/openai/v1/",
+    api_key=api_key,
 )
 
-print("Semantic similarity:", similarity.item())
+# 4. Sample insurance text
+text = (
+    "Pre-existing diseases are covered after "
+    "24 months of continuous coverage under Health Gold."
+)
+
+print("Connecting to Azure embedding deployment...")
+
+# 5. Generate embedding
+response = client.embeddings.create(
+    model=deployment,
+    input=text,
+)
+
+# 6. Extract vector
+embedding = response.data[0].embedding
+
+# 7. Display results
+print("\nAzure embedding test successful!")
+print("Deployment:", deployment)
+print("Input text:", text)
+print("Embedding dimensions:", len(embedding))
+print("First 5 vector values:", embedding[:5])
