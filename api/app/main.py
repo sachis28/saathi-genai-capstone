@@ -1,4 +1,5 @@
 from typing import Dict, List
+import logging
 import uuid
 
 from fastapi import FastAPI, HTTPException
@@ -8,16 +9,14 @@ from app.models.schemas import (ChatRequest, ChatResponse, Customer, Citation,
 from app.services.retriever import get_retriever
 from app.services.answer import generate_answer
 from app.services import memory
-
+from app.services import audit
 from app.services.safety import is_injection, safe_log
-import logging
 
 logging.basicConfig(level=logging.INFO)
 
 BLOCKED_MSG = "BLOCKED: this request looks like a prompt-injection attempt and was not processed."
 
-
-app = FastAPI(title="Saathi API", version="0.4")
+app = FastAPI(title="Saathi API", version="0.5")
 
 DUMMY_CUSTOMERS = {
     "C-204": Customer(customer_id="C-204", name="Demo Customer", product="Health", tier="Silver", consent=True),
@@ -70,6 +69,7 @@ async def chat(req: ChatRequest):
     # Safety: block prompt injection before retrieval or LLM
     if is_injection(req.question):
         safe_log("prompt_injection_blocked", customer_id=customer.customer_id, question=req.question)
+        audit.log_event("prompt_injection_blocked", customer_id=customer.customer_id)
         return ChatResponse(answer=BLOCKED_MSG, intent="prompt_injection", citations=[],
                             session_id=session_id, resolved_question=req.question)
 
@@ -79,6 +79,8 @@ async def chat(req: ChatRequest):
 
     memory.add_turn(session_id, req.question, resolved, answer)
     safe_log("chat", customer_id=customer.customer_id, question=req.question, citations=len(citations))
+    audit.log_event("chat", customer_id=customer.customer_id, intent="policy_question",
+                    citations=len(citations))
 
     return ChatResponse(
         answer=answer,
@@ -87,6 +89,7 @@ async def chat(req: ChatRequest):
         session_id=session_id,
         resolved_question=resolved,
     )
+
 
 @app.get("/sessions/{session_id}", response_model=List[Turn])
 async def get_session(session_id: str):
@@ -106,6 +109,7 @@ async def create_draft(req: DraftRequest):
         citations=[Citation(source_id=h.source_id, clause_id=h.clause_id, version=h.version) for h in hits],
     )
     DRAFTS[draft.draft_id] = draft
+    audit.log_event("draft_created", draft_id=draft.draft_id, customer_id=draft.customer_id)
     return draft
 
 
@@ -115,6 +119,7 @@ async def approve_draft(draft_id: str):
     if draft.status != "PENDING_APPROVAL":
         raise HTTPException(status_code=409, detail=f"Cannot approve a draft in status {draft.status}")
     draft.status = "APPROVED"
+    audit.log_event("draft_approved", draft_id=draft.draft_id)
     return draft
 
 
@@ -124,13 +129,27 @@ async def send_draft(draft_id: str):
 
     # Rule 1: never send without human approval
     if draft.status != "APPROVED":
+        audit.log_event("send_blocked_not_approved", draft_id=draft.draft_id)
         raise HTTPException(status_code=409, detail="BLOCKED: draft must be approved by the agent before sending")
 
     # Rule 2: re-check consent at send time, not only at draft time
     customer = get_customer_or_404(draft.customer_id)
     if not customer.consent:
         draft.status = "BLOCKED_NO_CONSENT"
+        audit.log_event("send_blocked_no_consent", draft_id=draft.draft_id, customer_id=draft.customer_id)
         raise HTTPException(status_code=403, detail="BLOCKED: customer has not given consent")
 
     draft.status = "SIMULATED_SENT"  # nothing real is ever sent
+    audit.log_event("draft_sent_simulated", draft_id=draft.draft_id, customer_id=draft.customer_id)
     return draft
+
+
+@app.get("/audit")
+async def get_audit():
+    return audit.read_events()
+
+
+@app.get("/audit/verify")
+async def verify_audit():
+    valid, broken_at, total = audit.verify_chain()
+    return {"valid": valid, "broken_at_seq": broken_at, "total_events": total}
