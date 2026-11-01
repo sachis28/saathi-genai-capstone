@@ -1,5 +1,5 @@
-import json
 import os
+import json
 from pathlib import Path
 
 from openai import OpenAI
@@ -8,168 +8,267 @@ from azure.core.credentials import AzureKeyCredential
 from azure.search.documents import SearchClient
 
 
-# --------------------------------------------------
-# 1. Read Azure AI Search configuration
-# --------------------------------------------------
+# ==================================================
+# CONFIGURATION
+# ==================================================
 
-search_endpoint = os.environ["AZURE_SEARCH_ENDPOINT"]
-admin_key = os.environ["AZURE_SEARCH_ADMIN_KEY"]
-index_name = os.environ["AZURE_SEARCH_INDEX_NAME"]
+BASE_DIR = Path(__file__).resolve().parent.parent
 
+CORPUS_FILE = BASE_DIR / "corpus" / "insurance_chunks.jsonl"
 
-# --------------------------------------------------
-# 2. Read Azure Foundry configuration
-# --------------------------------------------------
+SEARCH_ENDPOINT = os.environ["AZURE_SEARCH_ENDPOINT"]
+SEARCH_KEY = os.environ["AZURE_SEARCH_ADMIN_KEY"]
+INDEX_NAME = os.environ["AZURE_SEARCH_INDEX_NAME"]
 
-foundry_endpoint = (
-    os.environ["AZURE_OPENAI_ENDPOINT"].strip().rstrip("/")
-)
+OPENAI_ENDPOINT = os.environ["AZURE_OPENAI_ENDPOINT"].rstrip("/")
+OPENAI_KEY = os.environ["AZURE_OPENAI_API_KEY"]
+EMBEDDING_DEPLOYMENT = os.environ["AZURE_OPENAI_EMBED_DEPLOYMENT"]
 
-api_key = os.environ["AZURE_OPENAI_API_KEY"].strip()
-
-embedding_deployment = (
-    os.environ["AZURE_OPENAI_EMBED_DEPLOYMENT"].strip()
-)
-
-# Normalize endpoint
-if foundry_endpoint.endswith("/openai/v1"):
-    foundry_endpoint = foundry_endpoint[:-len("/openai/v1")]
+BATCH_SIZE = 16
 
 
-# --------------------------------------------------
-# 3. Connect to Azure OpenAI
-# --------------------------------------------------
+# ==================================================
+# AZURE OPENAI CLIENT
+# ==================================================
 
-embedding_client = OpenAI(
-    base_url=f"{foundry_endpoint}/openai/v1/",
-    api_key=api_key,
+# Remove /openai/v1 if it is already present.
+OPENAI_ENDPOINT = OPENAI_ENDPOINT.replace("/openai/v1", "")
+
+openai_client = OpenAI(
+    base_url=f"{OPENAI_ENDPOINT}/openai/v1/",
+    api_key=OPENAI_KEY
 )
 
 
-# --------------------------------------------------
-# 4. Connect to Azure AI Search
-# --------------------------------------------------
+# ==================================================
+# AZURE AI SEARCH CLIENT
+# ==================================================
 
 search_client = SearchClient(
-    endpoint=search_endpoint,
-    index_name=index_name,
-    credential=AzureKeyCredential(admin_key),
+    endpoint=SEARCH_ENDPOINT,
+    index_name=INDEX_NAME,
+    credential=AzureKeyCredential(SEARCH_KEY)
 )
 
 
-# --------------------------------------------------
-# 5. Locate the insurance corpus
-# --------------------------------------------------
+# ==================================================
+# LOAD CHUNKED CORPUS
+# ==================================================
 
-project_root = Path(__file__).resolve().parents[2]
+def load_chunks():
 
-corpus_path = (
-    project_root / "rag" / "corpus" / "sample_docs.jsonl"
-)
+    if not CORPUS_FILE.exists():
+        raise FileNotFoundError(
+            f"Corpus file not found: {CORPUS_FILE}"
+        )
 
+    documents = []
 
-# --------------------------------------------------
-# 6. Read insurance documents
-# --------------------------------------------------
+    with open(CORPUS_FILE, "r", encoding="utf-8") as file:
 
-records = []
+        for line in file:
 
-with corpus_path.open("r", encoding="utf-8") as file:
+            if line.strip():
 
-    for line_number, line in enumerate(file, start=1):
+                documents.append(json.loads(line))
 
-        if not line.strip():
-            continue
-
-        record = json.loads(line)
-
-        records.append(record)
+    return documents
 
 
-print("Total insurance clauses found:", len(records))
+# ==================================================
+# GENERATE EMBEDDINGS
+# ==================================================
 
+def generate_embeddings(texts):
 
-# --------------------------------------------------
-# 7. Generate embeddings
-# --------------------------------------------------
-
-texts = [record["text"] for record in records]
-
-print("\nGenerating Azure embeddings...")
-
-response = embedding_client.embeddings.create(
-    model=embedding_deployment,
-    input=texts,
-)
-
-embeddings = [item.embedding for item in response.data]
-
-print("Embeddings generated:", len(embeddings))
-print("Dimensions per embedding:", len(embeddings[0]))
-
-
-# --------------------------------------------------
-# 8. Prepare documents with embeddings
-# --------------------------------------------------
-
-documents = []
-
-for record, embedding in zip(records, embeddings):
-
-    document_id = (
-        f"{record['source_id']}-"
-        f"{record['clause_id']}-"
-        f"{record['version']}"
+    response = openai_client.embeddings.create(
+        model=EMBEDDING_DEPLOYMENT,
+        input=texts
     )
 
-    document = {
-        "id": document_id,
-        "source_id": record["source_id"],
-        "clause_id": record["clause_id"],
-        "product": record["product"],
-        "tier": record["tier"],
-        "version": record["version"],
-        "text": record["text"],
-        "embedding": embedding,
-    }
+    embeddings = [
+        item.embedding
+        for item in response.data
+    ]
 
-    documents.append(document)
+    return embeddings
 
 
-# --------------------------------------------------
-# 9. Upload documents to Azure AI Search
-# --------------------------------------------------
+# ==================================================
+# CLEAR OLD INDEX DOCUMENTS
+# ==================================================
 
-if documents:
+def clear_existing_documents():
+
+    print("\nRemoving previously indexed documents...")
+
+    results = search_client.search(
+        search_text="*",
+        select=["id"],
+        top=1000
+    )
+
+    old_documents = [
+        {"id": result["id"]}
+        for result in results
+    ]
+
+    if old_documents:
+
+        delete_result = search_client.delete_documents(
+            documents=old_documents
+        )
+
+        failed = [
+            item for item in delete_result
+            if not item.succeeded
+        ]
+
+        if failed:
+            raise RuntimeError(
+                f"Failed to delete {len(failed)} old documents."
+            )
+
+    print(f"Old documents removed: {len(old_documents)}")
+
+
+# ==================================================
+# PREPARE SEARCH DOCUMENTS
+# ==================================================
+
+def prepare_search_documents(chunks):
+
+    search_documents = []
+
+    print("\nGenerating embeddings...")
+
+    for start in range(0, len(chunks), BATCH_SIZE):
+
+        batch = chunks[start:start + BATCH_SIZE]
+
+        texts = [
+            document["text"]
+            for document in batch
+        ]
+
+        embeddings = generate_embeddings(texts)
+
+        for document, embedding in zip(batch, embeddings):
+
+            if len(embedding) != 1536:
+                raise ValueError(
+                    f"Unexpected embedding dimensions: {len(embedding)}"
+                )
+
+            search_documents.append({
+
+                "id": document["id"],
+
+                "source_id": document["source_id"],
+
+                "clause_id": document["clause_id"],
+
+                "product": document["product"],
+
+                "tier": document["tier"],
+
+                "version": document["version"],
+
+                "text": document["text"],
+
+                "embedding": embedding
+
+            })
+
+        print(
+            f"Embedded {min(start + BATCH_SIZE, len(chunks))}"
+            f"/{len(chunks)} documents"
+        )
+
+    return search_documents
+
+
+# ==================================================
+# UPLOAD DOCUMENTS TO AZURE AI SEARCH
+# ==================================================
+
+def upload_documents(documents):
 
     print("\nUploading documents to Azure AI Search...")
 
-    results = search_client.upload_documents(
-        documents=documents
-    )
+    for start in range(0, len(documents), BATCH_SIZE):
 
-    successful = sum(
-        1 for result in results if result.succeeded
-    )
+        batch = documents[start:start + BATCH_SIZE]
 
-    failed = len(results) - successful
+        results = search_client.upload_documents(
+            documents=batch
+        )
 
-    print("\n========== INGESTION SUMMARY ==========")
-    print("Total documents:", len(documents))
-    print("Successfully uploaded:", successful)
-    print("Failed uploads:", failed)
+        failed = [
+            item for item in results
+            if not item.succeeded
+        ]
 
-    for result in results:
+        if failed:
 
-        if not result.succeeded:
+            for item in failed:
+                print(
+                    f"Upload failed: {item.key} - {item.error_message}"
+                )
 
-            print(
-                f"Failed document: {result.key}"
-                f" | Error: {result.error_message}"
+            raise RuntimeError(
+                f"{len(failed)} documents failed to upload."
             )
 
-    print("======================================")
+    print(f"Successfully uploaded: {len(documents)}")
 
-else:
 
-    print("No documents found in the corpus.")
+# ==================================================
+# VERIFY INDEX DOCUMENT COUNT
+# ==================================================
+
+def verify_index():
+
+    results = search_client.search(
+        search_text="*",
+        include_total_count=True,
+        top=1
+    )
+
+    print("\nVerifying Azure AI Search index...")
+
+    print(f"Indexed document count: {results.get_count()}")
+
+
+# ==================================================
+# MAIN
+# ==================================================
+
+def main():
+
+    print("SAATHI INSURANCE CORPUS INGESTION")
+    print("=================================")
+
+    chunks = load_chunks()
+
+    print(f"Total chunks loaded: {len(chunks)}")
+
+    if len(chunks) != 48:
+        raise ValueError(
+            f"Expected 48 chunks, found {len(chunks)}"
+        )
+
+    clear_existing_documents()
+
+    documents = prepare_search_documents(chunks)
+
+    upload_documents(documents)
+
+    verify_index()
+
+    print("\nCORPUS INGESTION COMPLETED SUCCESSFULLY!")
+
+
+if __name__ == "__main__":
+
+    main()

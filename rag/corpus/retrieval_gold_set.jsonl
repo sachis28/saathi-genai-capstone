@@ -1,0 +1,30 @@
+{"query": "What is the hospitalization coverage limit under Health Silver?", "product": "Health", "tier": "Silver", "expected_clause_ids": ["CL-COV-01"]}
+{"query": "How much room rent can I claim under Health Silver?", "product": "Health", "tier": "Silver", "expected_clause_ids": ["CL-ROOM-06", "CL-COV-01"]}
+{"query": "What is the waiting period for pre-existing diseases in Health Silver?", "product": "Health", "tier": "Silver", "expected_clause_ids": ["CL-WAIT-02"]}
+{"query": "Which documents are required for Health Silver reimbursement claims?", "product": "Health", "tier": "Silver", "expected_clause_ids": ["CL-CLAIM-03"]}
+{"query": "Does Health Silver cover cosmetic procedures?", "product": "Health", "tier": "Silver", "expected_clause_ids": ["CL-EXC-04"]}
+{"query": "What is the emergency ambulance limit under Health Silver?", "product": "Health", "tier": "Silver", "expected_clause_ids": ["CL-AMB-07"]}
+{"query": "How many days of pre and post hospitalization expenses are covered under Silver?", "product": "Health", "tier": "Silver", "expected_clause_ids": ["CL-PRE-08"]}
+{"query": "How does the no claim bonus work under Health Silver?", "product": "Health", "tier": "Silver", "expected_clause_ids": ["CL-NCB-09"]}
+{"query": "What is the annual renewal condition for Health Silver?", "product": "Health", "tier": "Silver", "expected_clause_ids": ["CL-RENEW-10"]}
+{"query": "What is the waiting period for pre-existing diseases under Health Gold?", "product": "Health", "tier": "Gold", "expected_clause_ids": ["CL-WAIT-02"]}
+{"query": "What is the hospitalization coverage limit under Health Gold?", "product": "Health", "tier": "Gold", "expected_clause_ids": ["CL-COV-01"]}
+{"query": "Does Health Gold have a room rent limit?", "product": "Health", "tier": "Gold", "expected_clause_ids": ["CL-COV-01"]}
+{"query": "What documents are needed for Health Gold reimbursement claims?", "product": "Health", "tier": "Gold", "expected_clause_ids": ["CL-CLAIM-03"]}
+{"query": "What is the ambulance coverage limit under Health Gold?", "product": "Health", "tier": "Gold", "expected_clause_ids": ["CL-AMB-04"]}
+{"query": "How long are pre hospitalization expenses covered under Gold?", "product": "Health", "tier": "Gold", "expected_clause_ids": ["CL-PRE-05"]}
+{"query": "How long are post hospitalization expenses covered under Gold?", "product": "Health", "tier": "Gold", "expected_clause_ids": ["CL-POST-06"]}
+{"query": "Are experimental treatments covered under Health Gold?", "product": "Health", "tier": "Gold", "expected_clause_ids": ["CL-EXC-08"]}
+{"query": "Are day-care procedures covered under Health Gold?", "product": "Health", "tier": "Gold", "expected_clause_ids": ["CL-DAY-09", "CL-COV-01"]}
+{"query": "What is the no claim bonus under Health Gold?", "product": "Health", "tier": "Gold", "expected_clause_ids": ["CL-NCB-10"]}
+{"query": "What is the maternity coverage condition under Health Gold?", "product": "Health", "tier": "Gold", "expected_clause_ids": ["CL-MAT-12"]}
+{"query": "What is the hospitalization limit under Health Platinum?", "product": "Health", "tier": "Platinum", "expected_clause_ids": ["CL-COV-01"]}
+{"query": "What is the ambulance expense limit under Platinum?", "product": "Health", "tier": "Platinum", "expected_clause_ids": ["CL-AMB-03"]}
+{"query": "How long are pre hospitalization expenses covered under Platinum?", "product": "Health", "tier": "Platinum", "expected_clause_ids": ["CL-PRE-04"]}
+{"query": "Does Platinum provide international second medical opinions?", "product": "Health", "tier": "Platinum", "expected_clause_ids": ["CL-INT-10", "CL-COV-01"]}
+{"query": "What is the no claim bonus under Platinum?", "product": "Health", "tier": "Platinum", "expected_clause_ids": ["CL-NCB-08"]}
+{"query": "Does Motor Gold include zero depreciation?", "product": "Motor", "tier": "Gold", "expected_clause_ids": ["CL-COV-01"]}
+{"query": "What documents are required for a motor accident claim?", "product": "Motor", "tier": "Gold", "expected_clause_ids": ["CL-CLAIM-02"]}
+{"query": "Is roadside assistance available under Motor Gold?", "product": "Motor", "tier": "Gold", "expected_clause_ids": ["CL-ROADSIDE-03", "CL-COV-01"]}
+{"query": "What happens if a driver is under the influence of alcohol?", "product": "Motor", "tier": "Gold", "expected_clause_ids": ["CL-EXC-04"]}
+{"query": "What is the policy renewal grace period?", "product": "All", "tier": "All", "expected_clause_ids": ["CL-REN-01"]}
