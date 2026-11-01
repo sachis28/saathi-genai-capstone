@@ -7,3 +7,5 @@ bin/
 obj/
 *.faiss
 .env
+data/audit_log.jsonl
+data/audit_log.jsonl
