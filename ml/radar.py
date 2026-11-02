@@ -12,10 +12,12 @@ from sklearn.preprocessing import StandardScaler
 from data.validate import radar_schema, validate_radar_inference
 from ml.common import ARTIFACTS, DATA, SEED, write_json
 
-FEATURES = ["days_to_renewal", "interaction_count_90d", "sentiment_score", "premium"]
+FEATURES = ["days_to_renewal", "interaction_count_90d", "sentiment_score", "annual_premium_inr"]
 
 
 def score_rows(model, frame):
+    if list(getattr(model, "feature_names_in_", [])) != FEATURES:
+        raise ValueError("Incompatible Radar model contract; retrain with annual_premium_inr and signed days")
     # Consent is a business filter, not a predictive feature. It never authorizes a send.
     valid = validate_radar_inference(frame.copy())
     eligible = valid[valid.consent].copy()
@@ -41,7 +43,8 @@ def train():
     metrics = {"data":"synthetic noisy renewal outcomes", "seed":SEED,"train_n":len(train),"test_n":len(test),
         "roc_auc":float(roc_auc_score(test.nonrenewed,p)),"average_precision":float(average_precision_score(test.nonrenewed,p)),
         "brier_score":float(brier_score_loss(test.nonrenewed,p)),"positive_prevalence":float(test.nonrenewed.mean()),
-        "features":FEATURES,"excluded_features":["customer_id","age_band","consent","nonrenewed"],
+        "features":FEATURES,"contract":"radar-v2-annual-inr-signed-days",
+        "train_overdue_n":int((train.days_to_renewal < 0).sum()), "test_overdue_n":int((test.days_to_renewal < 0).sum()),"excluded_features":["customer_id","age_band","consent","nonrenewed"],
         "limitations":"No real-world validation, no causal explanations, no eligibility or pricing decisions"}
     out = ARTIFACTS / "radar"
     out.mkdir(parents=True,exist_ok=True)
