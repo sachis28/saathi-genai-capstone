@@ -1,4 +1,5 @@
 import json
+import numpy as np
 
 import pandas as pd
 import pandera.pandas as pa
@@ -17,10 +18,10 @@ intent_schema = pa.DataFrameSchema({
 
 radar_schema = pa.DataFrameSchema({
     "customer_id": pa.Column(str, unique=True),
-    "days_to_renewal": pa.Column(int, pa.Check.in_range(0, 365)),
+    "days_to_renewal": pa.Column(int),
     "interaction_count_90d": pa.Column(int, pa.Check.in_range(0, 10000)),
     "sentiment_score": pa.Column(float, pa.Check.in_range(-1, 1)),
-    "premium": pa.Column(float, pa.Check.gt(0)),
+    "annual_premium_inr": pa.Column(float, [pa.Check.gt(0), pa.Check(np.isfinite)], coerce=True),
     "consent": pa.Column(bool),
     "age_band": pa.Column(str, pa.Check.isin(["18-39", "40-59", "60+"])),
     "nonrenewed": pa.Column(int, pa.Check.isin([0, 1])),
