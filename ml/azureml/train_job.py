@@ -24,7 +24,7 @@ def main(data,output):
     output.mkdir(parents=True,exist_ok=True)
     joblib.dump(model,output / "model.joblib")
     write_json(output / "training_metrics.json",{"roc_auc":float(roc_auc_score(test.nonrenewed,model.predict_proba(test[FEATURES])[:,1])),
-        "seed":SEED,"synthetic":True,"data_sha256":sha256(data),"train_n":len(train),"test_n":len(test)})
+        "seed":SEED,"synthetic":True,"features":FEATURES,"contract":"radar-v2-annual-inr-signed-days","data_sha256":sha256(data),"train_n":len(train),"test_n":len(test)})
 
 
 if __name__ == "__main__":
