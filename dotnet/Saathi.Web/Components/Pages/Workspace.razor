@@ -1,0 +1,230 @@
+@page "/"
+@rendermode InteractiveServer
+@using Saathi.Client
+@inject ICopilotClient Client
+@inject ChatSession Session
+
+<PageTitle>Saathi - Agent Workspace</PageTitle>
+
+<div class="ws">
+    <header class="ws-head">
+        <div>
+            <h1>Saathi</h1>
+            <span class="sub">Insurance Agent Copilot</span>
+        </div>
+        <span class="pill @(apiOk == true ? "ok" : apiOk == false ? "bad" : "wait")">
+            API: @(apiOk == true ? "connected" : apiOk == false ? "unreachable" : "checking...")
+        </span>
+    </header>
+
+    @if (error is not null)
+    {
+        <div class="banner err" role="alert">@error</div>
+    }
+    @if (info is not null)
+    {
+        <div class="banner okmsg">@info</div>
+    }
+
+    <section class="card">
+        <h2>1. Customer</h2>
+        <div class="row">
+            <input @bind="customerId" placeholder="Customer ID, e.g. C-204" aria-label="Customer ID" />
+            <button type="button" @onclick="LoadCustomerAsync" disabled="@busy">Load customer</button>
+        </div>
+        @if (customer is not null)
+        {
+            <p class="cust">
+                <strong>@customer.Name</strong> &middot; @customer.Product &middot; @customer.Tier
+                <span class="muted">(@customer.CustomerId)</span>
+            </p>
+        }
+    </section>
+
+    <section class="card">
+        <h2>2. Ask Saathi</h2>
+        <div class="chat">
+            @if (messages.Count == 0)
+            {
+                <p class="muted">Load a customer, then ask a policy question. Follow-up questions like "and what about Platinum?" work too.</p>
+            }
+            @foreach (var m in messages)
+            {
+                <div class="msg @m.Role">
+                    <div class="who">@(m.Role == "agent" ? "You" : "Saathi")</div>
+                    <div>@m.Text</div>
+                    @if (m.Citations.Count > 0)
+                    {
+                        <div class="chips">
+                            @foreach (var c in m.Citations)
+                            {
+                                <span class="chip" title="Version @c.Version">@($"{c.SourceId}#{c.ClauseId}")</span>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+        <div class="row">
+            <input @bind="question" @bind:event="oninput" @onkeydown="OnKeyAsync"
+                   placeholder="Ask about this customer's policy..." aria-label="Question"
+                   disabled="@(customer is null)" />
+            <button type="button" @onclick="AskAsync" disabled="@(busy || customer is null)">Ask</button>
+        </div>
+    </section>
+
+    <section class="card">
+        <h2>3. Renewal draft</h2>
+        <div class="row">
+            <button type="button" @onclick="CreateDraftAsync" disabled="@(busy || customer is null)">Create renewal draft</button>
+        </div>
+        @if (draft is not null)
+        {
+            <div class="draft">
+                <div class="status @StatusClass(draft.Status)">@draft.Status</div>
+                <p>@draft.Message</p>
+                <div class="chips">
+                    @foreach (var c in draft.Citations)
+                    {
+                        <span class="chip">@($"{c.SourceId}#{c.ClauseId}")</span>
+                    }
+                </div>
+                <div class="row">
+                    <button type="button" class="approve" @onclick="ApproveAsync" disabled="@busy">Approve</button>
+                    <button type="button" class="send" @onclick="SendAsync" disabled="@busy">Send</button>
+                </div>
+                <p class="muted">The Send button stays clickable on purpose. The server decides whether sending is allowed.</p>
+            </div>
+        }
+    </section>
+
+    <section class="card">
+        <h2>4. Audit trail</h2>
+        <div class="row">
+            <button type="button" @onclick="VerifyAuditAsync" disabled="@busy">Verify audit chain</button>
+        </div>
+        @if (audit is not null)
+        {
+            @if (audit.Valid)
+            {
+                <p class="okmsg-text">Chain is valid. @audit.TotalEvents events, none changed.</p>
+            }
+            else
+            {
+                <p class="err-text">Chain is BROKEN at event #@audit.BrokenAtSeq of @audit.TotalEvents.</p>
+            }
+        }
+    </section>
+</div>
+
+@code {
+    private record Message(string Role, string Text, List<Citation> Citations);
+
+    private string customerId = "C-204";
+    private string question = "";
+    private Customer? customer;
+    private readonly List<Message> messages = new();
+    private Draft? draft;
+    private AuditStatus? audit;
+    private string? error;
+    private string? info;
+    private bool busy;
+    private bool? apiOk;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            apiOk = await Client.HealthAsync();
+            StateHasChanged();
+        }
+    }
+
+    private async Task Run(Func<Task> work)
+    {
+        busy = true;
+        error = null;
+        info = null;
+        try
+        {
+            await work();
+        }
+        finally
+        {
+            busy = false;
+        }
+    }
+
+    private async Task LoadCustomerAsync() => await Run(async () =>
+    {
+        var r = await Client.GetCustomerAsync(customerId.Trim());
+        if (r.Success)
+        {
+            customer = r.Data;
+            draft = null;
+            messages.Clear();
+        }
+        else
+        {
+            customer = null;
+            error = r.Error;
+        }
+    });
+
+    private async Task OnKeyAsync(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !busy)
+            await AskAsync();
+    }
+
+    private async Task AskAsync()
+    {
+        if (customer is null || string.IsNullOrWhiteSpace(question))
+            return;
+
+        var q = question.Trim();
+        question = "";
+        messages.Add(new Message("agent", q, new List<Citation>()));
+
+        await Run(async () =>
+        {
+            var r = await Client.ChatAsync(new ChatRequest(customer.CustomerId, q, Session.SessionId));
+            if (r.Success)
+                messages.Add(new Message("saathi", r.Data!.Answer, r.Data.Citations));
+            else
+                error = r.Error;
+        });
+    }
+
+    private async Task CreateDraftAsync() => await Run(async () =>
+    {
+        var r = await Client.CreateDraftAsync(customer!.CustomerId);
+        if (r.Success) draft = r.Data; else error = r.Error;
+    });
+
+    private async Task ApproveAsync() => await Run(async () =>
+    {
+        var r = await Client.ApproveDraftAsync(draft!.DraftId);
+        if (r.Success) { draft = r.Data; info = "Draft approved by the agent."; } else error = r.Error;
+    });
+
+    private async Task SendAsync() => await Run(async () =>
+    {
+        var r = await Client.SendDraftAsync(draft!.DraftId);
+        if (r.Success) { draft = r.Data; info = "Message sent (simulated). Nothing real is ever sent."; } else error = r.Error;
+    });
+
+    private async Task VerifyAuditAsync() => await Run(async () =>
+    {
+        var r = await Client.VerifyAuditAsync();
+        if (r.Success) audit = r.Data; else error = r.Error;
+    });
+
+    private static string StatusClass(string status) => status switch
+    {
+        "PENDING_APPROVAL" => "pending",
+        "APPROVED" => "approved",
+        "SIMULATED_SENT" => "sent",
+        _ => "blocked"
+    };
+}

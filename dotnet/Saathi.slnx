@@ -2,4 +2,5 @@
   <Project Path="Saathi.Client/Saathi.Client.csproj" />
   <Project Path="Saathi.Console/Saathi.Console.csproj" />
   <Project Path="Saathi.Tests/Saathi.Tests.csproj" />
+  <Project Path="Saathi.Web/Saathi.Web.csproj" />
 </Solution>

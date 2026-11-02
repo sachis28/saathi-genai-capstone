@@ -74,7 +74,7 @@ async def chat(req: ChatRequest):
                             session_id=session_id, resolved_question=req.question)
 
     resolved = memory.resolve_question(session_id, req.question)
-    hits = get_retriever().search(resolved, k=3, product=customer.product)
+    hits = get_retriever().search(resolved, k=5, product=customer.product)
     answer, citations = generate_answer(resolved, hits)
 
     memory.add_turn(session_id, req.question, resolved, answer)
