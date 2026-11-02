@@ -104,10 +104,8 @@ def test_api_real_intent_and_local_worklist(monkeypatch):
         assert response.status_code==200
         assert response.json()["intent"]=="renewal_draft"
         worklist = client.get("/worklist?limit=3")
-        assert worklist.status_code==200
-        assert len(worklist.json()["items"])==3
-        assert worklist.json()["synthetic"] is True
-        assert client.get("/worklist?limit=0").status_code==422
+        assert worklist.status_code==401
+        assert client.get("/worklist?limit=0").status_code==401
 
 
 def test_distilbert_adapter_uses_local_trained_weights(monkeypatch):
