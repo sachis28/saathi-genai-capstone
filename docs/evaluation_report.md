@@ -29,3 +29,8 @@ Remaining dependencies: Sachi's approved data/features; Shreya's orchestration, 
 ## Radar contract update 2 November 2026
 
 Radar v2 now supports annual_premium_inr and signed renewal days. Seventeen new contract tests passed; Sachi's pinned six-row export produced five consent-filtered scores, including overdue C-450 and excluding C-205. See [radar_contract_v2.md](radar_contract_v2.md) for commands, provenance, and limitations. This supersedes old Radar input-contract descriptions; previous metrics remain historical. Azure deployment, application eligibility/authorization integration, and representative-data validation remain pending.
+
+
+## Worklist access update 2 November 2026
+
+Added a fail-closed /worklist gate for authenticated agent identity, current CRM consent, customer ownership, allowed products, explicit policy status and renewal eligibility. CRM features replace the API training-fixture fallback. 67 focused tests passed locally across authorization, endpoint integration, summaries, audit and Radar contract checks; see worklist_access.md for commands and limitations. ML/retrieval and Azure HTTP dependencies were mocked in the endpoint tests. Team-confirmed CRM metadata, deployed identity-provider integration, authorization of other endpoints, full real-model/retrieval acceptance, and Azure deployment remain pending. No statuses were assigned to the existing six customer fixtures.

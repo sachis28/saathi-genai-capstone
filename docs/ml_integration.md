@@ -26,3 +26,8 @@ Authorization must filter the candidate frame before calling Radar. Current `/wo
 
 
 See [Radar v2 contract and reproduction](radar_contract_v2.md) for the verified Sachi export integration, artifact rebuild, and outstanding eligibility requirements.
+
+
+## Protected worklist boundary
+
+The API worklist now filters CRM-linked inputs using a verified agent principal and explicit CRM access/eligibility metadata before scoring. The standalone scoring commands remain synthetic compatibility tools. See [worklist_access.md](worklist_access.md) for exact fields, configuration, and pending team metadata/identity integration. Missing metadata is not silently treated as eligible.
