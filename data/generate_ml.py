@@ -56,31 +56,46 @@ def intent_frame(split, family_index, n_per_label):
     return pd.DataFrame(rows).sample(frac=1, random_state=SEED).reset_index(drop=True)
 
 
-def generate(force=False):
-    DATA.mkdir(parents=True, exist_ok=True)
-    if (DATA / "manifest.json").exists() and not force:
-        raise FileExistsError("Dataset already locked; use --force only to intentionally version a new dataset")
-    for name, family, size in [("train", 0, 200), ("dev", 1, 40), ("test", 2, 30)]:
-        intent_frame(name, family, size).to_csv(DATA / f"intent_{name}.csv", index=False)
+def generate_radar():
+    """Version Radar fixtures without regenerating any locked intent split."""
     rng = np.random.default_rng(SEED)
     n = 1200
-    days = rng.integers(1, 120, n)
+    days = rng.integers(-90, 366, n)
     interactions = rng.integers(0, 12, n)
     sentiment = rng.uniform(-1, 1, n)
     premium = rng.uniform(1000, 50000, n).round(2)
     risk = 1 / (1 + np.exp(-(-0.5 + 0.028 * (45-days) - 1.1*sentiment - 0.12*interactions)))
     radar = pd.DataFrame({"customer_id": [f"C-{i+1000}" for i in range(n)], "days_to_renewal": days,
                           "interaction_count_90d": interactions, "sentiment_score": sentiment,
-                          "premium": premium, "consent": rng.random(n) > 0.15,
+                          "annual_premium_inr": premium, "consent": rng.random(n) > 0.15,
                           "age_band": np.resize(["18-39", "40-59", "60+"], n),
                           "nonrenewed": (rng.random(n) < risk).astype(int)})
     radar.to_csv(DATA / "radar.csv", index=False)
+    manifest_path = DATA / "manifest.json"
+    if manifest_path.exists():
+        import json
+        manifest = json.loads(manifest_path.read_text())
+        manifest["files"]["radar.csv"] = sha256(DATA / "radar.csv")
+        manifest["radar_contract"] = "radar-v2-annual-inr-signed-days"
+        manifest["radar_days_range"] = [-90, 365]
+        write_json(manifest_path, manifest)
+
+
+def generate(force=False):
+    DATA.mkdir(parents=True, exist_ok=True)
+    if (DATA / "manifest.json").exists() and not force:
+        raise FileExistsError("Dataset already locked; use --force only to intentionally version a new dataset")
+    for name, family, size in [("train", 0, 200), ("dev", 1, 40), ("test", 2, 30)]:
+        intent_frame(name, family, size).to_csv(DATA / f"intent_{name}.csv", index=False)
+    generate_radar()
     write_json(DATA / "manifest.json", {
         "seed": SEED, "provenance": "Generated synthetic ML fixtures; no real customers or policy facts.",
         "intent_labels": LABELS, "split_sizes": {"train": 1000, "dev": 200, "test": 150},
         "split_strategy": "disjoint authored template families before expansion; no normalized text overlap",
         "protected_attributes": "Synthetic evaluation-only metadata, independent of text; not representative demographics",
         "radar_target": "Simulated nonrenewal drawn from a noisy logistic rule; not business ground truth",
+        "radar_contract": "radar-v2-annual-inr-signed-days",
+        "radar_days_range": [-90, 365],
         "files": {p.name: sha256(p) for p in sorted(DATA.glob("*.csv"))},
     })
     print("Generated and hash-locked synthetic data")
@@ -89,4 +104,9 @@ def generate(force=False):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--force", action="store_true")
-    generate(parser.parse_args().force)
+    parser.add_argument("--radar-only", action="store_true")
+    args = parser.parse_args()
+    if args.radar_only:
+        generate_radar()
+    else:
+        generate(args.force)
