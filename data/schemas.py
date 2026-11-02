@@ -2,7 +2,7 @@
 
 from datetime import date as Date
 
-from pydantic import BaseModel, StrictBool
+from pydantic import BaseModel, StrictBool, Field
 
 
 class CustomerRecord(BaseModel):
@@ -15,6 +15,7 @@ class CustomerRecord(BaseModel):
     consent: StrictBool
     agent_id: str
     renewal_date: Date
+    annual_premium_inr: float = Field(gt=0, allow_inf_nan=False)
 
 
 class InteractionRecord(BaseModel):
