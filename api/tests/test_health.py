@@ -17,7 +17,7 @@ def test_customer_found():
 
 
 def test_customer_not_found():
-    r = client.get("/customers/C-999")
+    r = client.get("/customers/C-000")
     assert r.status_code == 404
 
 
