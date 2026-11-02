@@ -24,6 +24,8 @@ def write_json(filename, records):
 
 def main():
     rng = random.Random(SEED)
+    # Independent RNG preserves existing interaction generation.
+    premium_rng = random.Random(SEED)
 
     # Proposed demo scenarios. All customer names and messages are synthetic.
     scenarios = [
@@ -97,6 +99,8 @@ def main():
             consent=scenario["consent"],
             agent_id=f"A-{((number - 1) % 3) + 1:03d}",
             renewal_date=REFERENCE_DATE + timedelta(days=scenario["days"]),
+            # Synthetic annual base premium in INR, excluding taxes/fees.
+            annual_premium_inr=round(premium_rng.uniform(1000, 50000), 2),
         )
         customers.append(customer)
 
