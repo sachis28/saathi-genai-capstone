@@ -1,0 +1,218 @@
+[
+  {
+    "interaction_id": "I-0001",
+    "customer_id": "C-204",
+    "date": "2026-10-07",
+    "sentiment": "neutral",
+    "confidence_scores": {
+      "positive": 0.0,
+      "neutral": 1.0,
+      "negative": 0.0
+    },
+    "provider": "azure-ai-language"
+  },
+  {
+    "interaction_id": "I-0002",
+    "customer_id": "C-204",
+    "date": "2026-10-24",
+    "sentiment": "neutral",
+    "confidence_scores": {
+      "positive": 0.01,
+      "neutral": 0.99,
+      "negative": 0.0
+    },
+    "provider": "azure-ai-language"
+  },
+  {
+    "interaction_id": "I-0003",
+    "customer_id": "C-204",
+    "date": "2026-10-27",
+    "sentiment": "neutral",
+    "confidence_scores": {
+      "positive": 0.22,
+      "neutral": 0.71,
+      "negative": 0.07
+    },
+    "provider": "azure-ai-language"
+  },
+  {
+    "interaction_id": "I-0004",
+    "customer_id": "C-311",
+    "date": "2026-10-04",
+    "sentiment": "neutral",
+    "confidence_scores": {
+      "positive": 0.01,
+      "neutral": 0.99,
+      "negative": 0.01
+    },
+    "provider": "azure-ai-language"
+  },
+  {
+    "interaction_id": "I-0005",
+    "customer_id": "C-311",
+    "date": "2026-10-20",
+    "sentiment": "neutral",
+    "confidence_scores": {
+      "positive": 0.0,
+      "neutral": 1.0,
+      "negative": 0.0
+    },
+    "provider": "azure-ai-language"
+  },
+  {
+    "interaction_id": "I-0006",
+    "customer_id": "C-311",
+    "date": "2026-10-23",
+    "sentiment": "negative",
+    "confidence_scores": {
+      "positive": 0.0,
+      "neutral": 0.03,
+      "negative": 0.97
+    },
+    "provider": "azure-ai-language"
+  },
+  {
+    "interaction_id": "I-0007",
+    "customer_id": "C-118",
+    "date": "2026-09-29",
+    "sentiment": "neutral",
+    "confidence_scores": {
+      "positive": 0.0,
+      "neutral": 1.0,
+      "negative": 0.0
+    },
+    "provider": "azure-ai-language"
+  },
+  {
+    "interaction_id": "I-0008",
+    "customer_id": "C-118",
+    "date": "2026-10-10",
+    "sentiment": "neutral",
+    "confidence_scores": {
+      "positive": 0.11,
+      "neutral": 0.84,
+      "negative": 0.05
+    },
+    "provider": "azure-ai-language"
+  },
+  {
+    "interaction_id": "I-0009",
+    "customer_id": "C-118",
+    "date": "2026-10-25",
+    "sentiment": "positive",
+    "confidence_scores": {
+      "positive": 0.96,
+      "neutral": 0.04,
+      "negative": 0.0
+    },
+    "provider": "azure-ai-language"
+  },
+  {
+    "interaction_id": "I-0010",
+    "customer_id": "C-450",
+    "date": "2026-10-21",
+    "sentiment": "negative",
+    "confidence_scores": {
+      "positive": 0.0,
+      "neutral": 0.07,
+      "negative": 0.93
+    },
+    "provider": "azure-ai-language"
+  },
+  {
+    "interaction_id": "I-0011",
+    "customer_id": "C-450",
+    "date": "2026-10-25",
+    "sentiment": "neutral",
+    "confidence_scores": {
+      "positive": 0.02,
+      "neutral": 0.97,
+      "negative": 0.01
+    },
+    "provider": "azure-ai-language"
+  },
+  {
+    "interaction_id": "I-0012",
+    "customer_id": "C-450",
+    "date": "2026-10-27",
+    "sentiment": "neutral",
+    "confidence_scores": {
+      "positive": 0.05,
+      "neutral": 0.95,
+      "negative": 0.0
+    },
+    "provider": "azure-ai-language"
+  },
+  {
+    "interaction_id": "I-0013",
+    "customer_id": "C-205",
+    "date": "2026-10-10",
+    "sentiment": "neutral",
+    "confidence_scores": {
+      "positive": 0.0,
+      "neutral": 1.0,
+      "negative": 0.0
+    },
+    "provider": "azure-ai-language"
+  },
+  {
+    "interaction_id": "I-0014",
+    "customer_id": "C-205",
+    "date": "2026-10-21",
+    "sentiment": "negative",
+    "confidence_scores": {
+      "positive": 0.0,
+      "neutral": 0.14,
+      "negative": 0.86
+    },
+    "provider": "azure-ai-language"
+  },
+  {
+    "interaction_id": "I-0015",
+    "customer_id": "C-205",
+    "date": "2026-10-27",
+    "sentiment": "neutral",
+    "confidence_scores": {
+      "positive": 0.02,
+      "neutral": 0.98,
+      "negative": 0.0
+    },
+    "provider": "azure-ai-language"
+  },
+  {
+    "interaction_id": "I-0016",
+    "customer_id": "C-999",
+    "date": "2026-10-10",
+    "sentiment": "neutral",
+    "confidence_scores": {
+      "positive": 0.11,
+      "neutral": 0.88,
+      "negative": 0.01
+    },
+    "provider": "azure-ai-language"
+  },
+  {
+    "interaction_id": "I-0017",
+    "customer_id": "C-999",
+    "date": "2026-10-14",
+    "sentiment": "neutral",
+    "confidence_scores": {
+      "positive": 0.01,
+      "neutral": 0.99,
+      "negative": 0.0
+    },
+    "provider": "azure-ai-language"
+  },
+  {
+    "interaction_id": "I-0018",
+    "customer_id": "C-999",
+    "date": "2026-10-20",
+    "sentiment": "positive",
+    "confidence_scores": {
+      "positive": 0.98,
+      "neutral": 0.02,
+      "negative": 0.0
+    },
+    "provider": "azure-ai-language"
+  }
+]
