@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace Saathi.Client;
 
@@ -26,46 +27,64 @@ public class CopilotHttpClient : ICopilotClient
         }
     }
 
-    public async Task<ApiResult<Customer>> GetCustomerAsync(string customerId)
-    {
-        try
-        {
-            var r = await _http.GetAsync($"/customers/{customerId}");
-            if (!r.IsSuccessStatusCode)
-                throw new SaathiApiException($"Customer {customerId} not found", (int)r.StatusCode);
-
-            var customer = await r.Content.ReadFromJsonAsync<Customer>();
-            return ApiResult<Customer>.Ok(customer!);
-        }
-        catch (SaathiApiException ex)
-        {
-            return ApiResult<Customer>.Fail($"{ex.StatusCode}: {ex.Message}");
-        }
-        catch (HttpRequestException ex)
-        {
-            return ApiResult<Customer>.Fail("API unreachable: " + ex.Message);
-        }
-    }
+    public Task<ApiResult<Customer>> GetCustomerAsync(string customerId) =>
+        CallAsync<Customer>(() => _http.GetAsync($"/customers/{Uri.EscapeDataString(customerId)}"));
 
     public async Task<ApiResult<ChatResponse>> ChatAsync(ChatRequest request)
     {
+        var result = await CallAsync<ChatResponse>(() => _http.PostAsJsonAsync("/chat", request));
+        if (result.Success)
+            AnswerReceived?.Invoke(this, result.Data!);
+        return result;
+    }
+
+    public Task<ApiResult<Draft>> CreateDraftAsync(string customerId) =>
+        CallAsync<Draft>(() => _http.PostAsJsonAsync("/drafts", new { customer_id = customerId }));
+
+    public Task<ApiResult<Draft>> ApproveDraftAsync(string draftId) =>
+        CallAsync<Draft>(() => _http.PostAsync($"/drafts/{Uri.EscapeDataString(draftId)}/approve", null));
+
+    public Task<ApiResult<Draft>> SendDraftAsync(string draftId) =>
+        CallAsync<Draft>(() => _http.PostAsync($"/drafts/{Uri.EscapeDataString(draftId)}/send", null));
+
+    public Task<ApiResult<AuditStatus>> VerifyAuditAsync() =>
+        CallAsync<AuditStatus>(() => _http.GetAsync("/audit/verify"));
+
+    // One place for calling the API, reading errors and wrapping the result.
+    private static async Task<ApiResult<T>> CallAsync<T>(Func<Task<HttpResponseMessage>> call)
+    {
         try
         {
-            var r = await _http.PostAsJsonAsync("/chat", request);
+            var r = await call();
             if (!r.IsSuccessStatusCode)
-                throw new SaathiApiException("Chat failed", (int)r.StatusCode);
+                throw new SaathiApiException(await ReadDetailAsync(r), (int)r.StatusCode);
 
-            var resp = await r.Content.ReadFromJsonAsync<ChatResponse>();
-            AnswerReceived?.Invoke(this, resp!);
-            return ApiResult<ChatResponse>.Ok(resp!);
+            var data = await r.Content.ReadFromJsonAsync<T>();
+            return ApiResult<T>.Ok(data!);
         }
         catch (SaathiApiException ex)
         {
-            return ApiResult<ChatResponse>.Fail($"{ex.StatusCode}: {ex.Message}");
+            return ApiResult<T>.Fail($"{ex.StatusCode}: {ex.Message}");
         }
         catch (HttpRequestException ex)
         {
-            return ApiResult<ChatResponse>.Fail("API unreachable: " + ex.Message);
+            return ApiResult<T>.Fail("API unreachable: " + ex.Message);
         }
+    }
+
+    // FastAPI errors look like {"detail": "BLOCKED: ..."}
+    private static async Task<string> ReadDetailAsync(HttpResponseMessage r)
+    {
+        try
+        {
+            var body = await r.Content.ReadAsStringAsync();
+            using var doc = JsonDocument.Parse(body);
+            if (doc.RootElement.TryGetProperty("detail", out var d) && d.ValueKind == JsonValueKind.String)
+                return d.GetString()!;
+        }
+        catch (JsonException)
+        {
+        }
+        return $"HTTP {(int)r.StatusCode}";
     }
 }

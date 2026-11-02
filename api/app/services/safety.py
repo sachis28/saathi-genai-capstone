@@ -40,6 +40,23 @@ TAG_SEGMENT = re.compile(r"(.*?)\[([A-Za-z0-9-]+)#([A-Za-z0-9-]+)\]", re.DOTALL)
 
 THRESHOLD = 0.6
 
+# Sentences where the model honestly says the documents lack something.
+# They make no factual claim about insurance, so they need no citation.
+DISCLAIMER = re.compile(
+    r"(context|documents?|clauses?|policy documents?|information provided)\s+"
+    r"(does|do|did)\s+not\s+(specify|mention|contain|include|provide|say|cover)"
+    r"|not\s+(specified|mentioned|stated|available|provided)\s+in\s+the\s+(context|documents?|clauses?)"
+    r"|i could not find",
+    re.IGNORECASE,
+)
+
+
+def strip_disclaimers(answer: str) -> str:
+    """Remove 'the context does not specify...' sentences. Cited facts are kept."""
+    sentences = re.split(r"(?<=[.!?\]])\s+", answer.strip())
+    kept = [s for s in sentences if not DISCLAIMER.search(s)]
+    return " ".join(kept).strip()
+
 
 def content_words(text: str) -> set:
     words = re.findall(r"[a-z0-9]+", text.lower())
