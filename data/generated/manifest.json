@@ -20,6 +20,11 @@
     "intent_dev.csv": "9cddb71d915cc22bbf90a9c76af33300cc87836fa23756670ee608d0a1278831",
     "intent_test.csv": "e41f6f681878d4fc01d0b842abfcfa17490b73d061e9b11cc0842eff3b72a1a4",
     "intent_train.csv": "7f61d5fa43ed179605d5fd8b62a0e87a06d24ef78f024d4894089fdf277f3e16",
-    "radar.csv": "b6880b956cb1ba2fc02302406675e95ceaf696777bf20b53a3850879b93132cb"
-  }
+    "radar.csv": "baa6c21b7a8beba5cf300c86af35baf0d7a0c6bffe80df2e5ddf2b806758f72e"
+  },
+  "radar_contract": "radar-v2-annual-inr-signed-days",
+  "radar_days_range": [
+    -90,
+    365
+  ]
 }
