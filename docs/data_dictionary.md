@@ -138,15 +138,19 @@ service and preserves the original interaction and customer identifiers.
 - Observed labels: 13 neutral, 3 negative, 2 positive.
 - These checks verify consistency, not sentiment accuracy.
 
-### Proposed Radar mapping: pending team approval
+### Agreed Radar sentiment mapping
 
 Interaction numeric score = positive confidence minus negative confidence.
 
-Proposed customer sentiment_score = mean interaction numeric score
+Customer sentiment_score = mean interaction numeric score
 within the same 90-day window used for interaction counts.
 
 This is a project-defined mapping, not an Azure-provided numeric score.
-No-history handling must be agreed explicitly; missing sentiment must
-not silently become neutral.
+No eligible history returns null, not neutral zero.
 
-Numeric mapping and customer aggregation are not implemented yet.
+Numeric mapping and customer aggregation are implemented in ml/radar_contract.py.
+Export with: python3 -m ml.sentiment_features --as-of 2026-10-28
+Output: data/customer_sentiment.json.
+The mapping and aggregation were agreed with Sairaj, as confirmed by Sachi.
+The window includes the reference date and previous 89 days.
+This output is a sentiment feature export, not the complete Radar inference payload.

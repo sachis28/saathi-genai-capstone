@@ -28,3 +28,42 @@ def interaction_counts_90d(customers, interactions, as_of):
             counts[customer_id] += 1
 
     return counts
+
+
+def customer_sentiment_90d(customers, sentiment_records, as_of):
+    """Agreed mean of positive-minus-negative scores over 90 days."""
+    import math
+
+    # Reuse customer-ID, duplicate-ID and date validation.
+    interaction_counts_90d(customers, sentiment_records, as_of)
+
+    values = {row["customer_id"]: [] for row in customers}
+    start = as_of - timedelta(days=89)
+
+    for row in sentiment_records:
+        scores = row["confidence_scores"]
+        if set(scores) != {"positive", "neutral", "negative"}:
+            raise ValueError("Invalid confidence fields")
+
+        for value in scores.values():
+            if (
+                isinstance(value, bool)
+                or not isinstance(value, (int, float))
+                or not math.isfinite(value)
+                or not 0 <= value <= 1
+            ):
+                raise ValueError("Invalid confidence score")
+
+        if abs(sum(scores.values()) - 1) >= 0.02:
+            raise ValueError("Confidence scores must sum approximately to one")
+
+        occurred = date.fromisoformat(row["date"])
+        if start <= occurred <= as_of:
+            values[row["customer_id"]].append(
+                scores["positive"] - scores["negative"]
+            )
+
+    return {
+        customer_id: sum(scores) / len(scores) if scores else None
+        for customer_id, scores in values.items()
+    }
