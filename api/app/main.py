@@ -6,8 +6,10 @@ from fastapi import FastAPI, HTTPException
 
 from app.models.schemas import (ChatRequest, ChatResponse, Customer, Citation,
                                 SearchRequest, SearchHit, DraftRequest, Draft, Turn)
+from app.routers.summary import router as summary_router
 from app.services.retriever import get_retriever
 from app.services.answer import generate_answer
+from app.services.customers import load_customers
 from app.services import memory
 from app.services import audit
 from app.services.safety import is_injection, safe_log
@@ -16,12 +18,8 @@ logging.basicConfig(level=logging.INFO)
 
 BLOCKED_MSG = "BLOCKED: this request looks like a prompt-injection attempt and was not processed."
 
-app = FastAPI(title="Saathi API", version="0.5")
-
-DUMMY_CUSTOMERS = {
-    "C-204": Customer(customer_id="C-204", name="Demo Customer", product="Health", tier="Silver", consent=True),
-    "C-205": Customer(customer_id="C-205", name="No Consent Customer", product="Health", tier="Gold", consent=False),
-}
+app = FastAPI(title="Saathi API", version="0.6")
+app.include_router(summary_router)
 
 DRAFTS: Dict[str, Draft] = {}
 
@@ -33,7 +31,7 @@ RENEWAL_TEMPLATE = (
 
 
 def get_customer_or_404(customer_id: str) -> Customer:
-    customer = DUMMY_CUSTOMERS.get(customer_id)
+    customer = load_customers().get(customer_id)
     if customer is None:
         raise HTTPException(status_code=404, detail="Customer not found")
     return customer
@@ -49,6 +47,11 @@ def get_draft_or_404(draft_id: str) -> Draft:
 @app.get("/health")
 async def health():
     return {"status": "ok"}
+
+
+@app.get("/customers", response_model=List[Customer])
+async def list_customers():
+    return list(load_customers().values())
 
 
 @app.get("/customers/{customer_id}", response_model=Customer)
