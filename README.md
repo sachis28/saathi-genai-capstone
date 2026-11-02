@@ -41,7 +41,7 @@ Run these with the installed virtual environment interpreter or activate that en
 python -m uvicorn app.main:app --app-dir api
 ```
 
-Run from the repository root so `ml` and `data` are importable. `/chat` now uses trained DistilBERT by default for its intent field; its answer and citations now come from main's retrieval and grounded-answer pipeline. Set `INTENT_PROVIDER=tfidf_lr` to use the lightweight baseline instead. Inference loads local weights only and never downloads a model automatically. A missing trained model returns 503. `GET /worklist?limit=10` scores the synthetic Radar fixtures, filters rows without consent, and returns descending risk scores with the largest standardized logistic feature contribution. The customer IDs in those fixtures are synthetic ML demo IDs, separate from the CRM data used by chat.
+Run from the repository root so `ml` and `data` are importable. `/chat` now uses trained DistilBERT by default for its intent field; its answer and citations now come from main's retrieval and grounded-answer pipeline. Set `INTENT_PROVIDER=tfidf_lr` to use the lightweight baseline instead. Inference loads local weights only and never downloads a model automatically. A missing trained model returns 503. `GET /worklist?limit=10` requires Bearer authentication and scores only CRM-linked rows that pass consent, ownership, product and explicit policy eligibility checks. See docs/worklist_access.md for configuration; the API does not fall back to training fixtures.
 
 Set `ML_PROVIDER=azure` plus AZURE_ML_ENDPOINT and AZURE_ML_KEY to use the managed endpoint through the same worklist service. Consent filtering happens before cloud inference; outcome labels and demographic metadata are removed. The adapter validates returned customer IDs, duplicates, row counts, finite scores, and HTTPS. These controls do not replace the team's customer authorization or messaging policy engine.
 
@@ -66,7 +66,7 @@ The 50-query intent smoke set is not the required end-to-end RAG evaluation. No 
 
 ## Integrated chat and Radar
 
-Chat resolves conversation context, runs the trained intent classifier after the injection check, and preserves retrieved citations, conversation history and audit events. The predicted intent is recorded in both the response and audit log. Missing trained intent artifacts return HTTP 503. The worklist remains a consent-filtered synthetic ML demonstration; policy eligibility and customer/product authorization are not yet verified.
+Chat resolves conversation context, runs the trained intent classifier after the injection check, and preserves retrieved citations, conversation history and audit events. The predicted intent is recorded in both the response and audit log. Missing trained intent artifacts return HTTP 503. The worklist remains a synthetic ML demonstration, now gated by explicit CRM eligibility and authenticated customer/product access. Team-approved metadata and deployment identity integration remain pending.
 
 Install both ML and API dependencies from the repository root:
 
@@ -220,3 +220,8 @@ evaluation remain pending.
 Never commit API keys, tokens or passwords.
 The current .gitignore excludes .env and .venv/.
 The mock summary tests do not require cloud credentials.
+
+
+## Protected CRM Radar worklist
+
+`GET /worklist` now requires a Bearer-authenticated agent and filters CRM-linked features by current consent, customer ownership, product access, explicit policy status and renewal eligibility before local or Azure scoring. It no longer scores the generated training fixture through the API. Missing credentials return 401; absent CRM-linked input returns 503; missing eligibility metadata withholds the customer. No policy statuses have been invented for the six CRM demo customers. See [worklist access contract and setup](docs/worklist_access.md). Other application endpoints still need their own authorization integration.
