@@ -24,3 +24,8 @@ Local ML work is implemented. Azure and full-product acceptance are incomplete. 
 Reports are generated from actual JSON metrics. Model weights are local under artifacts/ and ignored by Git; recreate them with the documented commands. Small evidence files are included in docs/evidence/ for review.
 
 Remaining dependencies: Sachi's approved data/features; Shreya's orchestration, authorization, and policy contracts; Azure subscription/workspace and deployed GPT model; installed Ollama model; Rohan's retrieval gold set; Soham's acceptance workflow.
+
+
+## Radar contract update 2 November 2026
+
+Radar v2 now supports annual_premium_inr and signed renewal days. Seventeen new contract tests passed; Sachi's pinned six-row export produced five consent-filtered scores, including overdue C-450 and excluding C-205. See [radar_contract_v2.md](radar_contract_v2.md) for commands, provenance, and limitations. This supersedes old Radar input-contract descriptions; previous metrics remain historical. Azure deployment, application eligibility/authorization integration, and representative-data validation remain pending.
