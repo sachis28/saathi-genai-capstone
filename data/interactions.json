@@ -1,0 +1,128 @@
+[
+  {
+    "interaction_id": "I-0001",
+    "customer_id": "C-204",
+    "date": "2026-10-07",
+    "channel": "chat",
+    "text": "Please explain the coverage under my Silver policy."
+  },
+  {
+    "interaction_id": "I-0002",
+    "customer_id": "C-204",
+    "date": "2026-10-24",
+    "channel": "email",
+    "text": "Please share the documents needed for renewal."
+  },
+  {
+    "interaction_id": "I-0003",
+    "customer_id": "C-204",
+    "date": "2026-10-27",
+    "channel": "phone",
+    "text": "I would like help renewing my policy."
+  },
+  {
+    "interaction_id": "I-0004",
+    "customer_id": "C-311",
+    "date": "2026-10-04",
+    "channel": "phone",
+    "text": "My policy renewal is approaching."
+  },
+  {
+    "interaction_id": "I-0005",
+    "customer_id": "C-311",
+    "date": "2026-10-20",
+    "channel": "chat",
+    "text": "Please explain the renewal process."
+  },
+  {
+    "interaction_id": "I-0006",
+    "customer_id": "C-311",
+    "date": "2026-10-23",
+    "channel": "chat",
+    "text": "I have not received the renewal details yet."
+  },
+  {
+    "interaction_id": "I-0007",
+    "customer_id": "C-118",
+    "date": "2026-09-29",
+    "channel": "chat",
+    "text": "Please explain the available policy tiers."
+  },
+  {
+    "interaction_id": "I-0008",
+    "customer_id": "C-118",
+    "date": "2026-10-10",
+    "channel": "email",
+    "text": "I would like to understand upgrade options."
+  },
+  {
+    "interaction_id": "I-0009",
+    "customer_id": "C-118",
+    "date": "2026-10-25",
+    "channel": "phone",
+    "text": "Thank you for explaining the options."
+  },
+  {
+    "interaction_id": "I-0010",
+    "customer_id": "C-450",
+    "date": "2026-10-21",
+    "channel": "phone",
+    "text": "I missed my renewal date."
+  },
+  {
+    "interaction_id": "I-0011",
+    "customer_id": "C-450",
+    "date": "2026-10-25",
+    "channel": "chat",
+    "text": "Please explain what I should do next."
+  },
+  {
+    "interaction_id": "I-0012",
+    "customer_id": "C-450",
+    "date": "2026-10-27",
+    "channel": "chat",
+    "text": "Please arrange a follow-up with my agent."
+  },
+  {
+    "interaction_id": "I-0013",
+    "customer_id": "C-205",
+    "date": "2026-10-10",
+    "channel": "chat",
+    "text": "Please explain my current policy."
+  },
+  {
+    "interaction_id": "I-0014",
+    "customer_id": "C-205",
+    "date": "2026-10-21",
+    "channel": "chat",
+    "text": "I do not consent to outbound messages."
+  },
+  {
+    "interaction_id": "I-0015",
+    "customer_id": "C-205",
+    "date": "2026-10-27",
+    "channel": "chat",
+    "text": "Please keep my communication preference unchanged."
+  },
+  {
+    "interaction_id": "I-0016",
+    "customer_id": "C-999",
+    "date": "2026-10-10",
+    "channel": "email",
+    "text": "I would like an overview of my policy."
+  },
+  {
+    "interaction_id": "I-0017",
+    "customer_id": "C-999",
+    "date": "2026-10-14",
+    "channel": "chat",
+    "text": "Please explain how to contact my agent."
+  },
+  {
+    "interaction_id": "I-0018",
+    "customer_id": "C-999",
+    "date": "2026-10-20",
+    "channel": "email",
+    "text": "Thank you for the information."
+  }
+]
