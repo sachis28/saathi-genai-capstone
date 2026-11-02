@@ -110,3 +110,43 @@ Premium, claims, and sentiment features are not implemented yet.
 - Customers without history return count zero and recency null.
 - Future interactions are excluded.
 - Renewal on the reference date gives zero days to renewal.
+
+## Interaction sentiment
+
+Generated file: data/interaction_sentiment.json.
+Script: ml/sentiment.py.
+
+The script sends synthetic interaction text to the configured sentiment
+service and preserves the original interaction and customer identifiers.
+
+| Field | Type | Meaning |
+|---|---|---|
+| interaction_id | string | Links to the original interaction. |
+| customer_id | string | Original CRM customer identifier. |
+| date | string, YYYY-MM-DD | Original interaction date. |
+| sentiment | string | Returned sentiment label. |
+| confidence_scores.positive | float | Positive confidence score. |
+| confidence_scores.neutral | float | Neutral confidence score. |
+| confidence_scores.negative | float | Negative confidence score. |
+| provider | string | Provider identifier recorded by the script. |
+
+### Verified output
+
+- 18 sentiment records matching all 18 source interactions.
+- Customer IDs and dates preserved.
+- Labels and confidence-score ranges validated.
+- Observed labels: 13 neutral, 3 negative, 2 positive.
+- These checks verify consistency, not sentiment accuracy.
+
+### Proposed Radar mapping: pending team approval
+
+Interaction numeric score = positive confidence minus negative confidence.
+
+Proposed customer sentiment_score = mean interaction numeric score
+within the same 90-day window used for interaction counts.
+
+This is a project-defined mapping, not an Azure-provided numeric score.
+No-history handling must be agreed explicitly; missing sentiment must
+not silently become neutral.
+
+Numeric mapping and customer aggregation are not implemented yet.
