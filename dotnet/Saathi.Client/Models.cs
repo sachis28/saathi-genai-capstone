@@ -23,3 +23,15 @@ public record Customer(
     [property: JsonPropertyName("name")] string Name,
     [property: JsonPropertyName("product")] string Product,
     [property: JsonPropertyName("tier")] string Tier);
+
+public record Draft(
+    [property: JsonPropertyName("draft_id")] string DraftId,
+    [property: JsonPropertyName("customer_id")] string CustomerId,
+    [property: JsonPropertyName("message")] string Message,
+    [property: JsonPropertyName("status")] string Status,
+    [property: JsonPropertyName("citations")] List<Citation> Citations);
+
+public record AuditStatus(
+    [property: JsonPropertyName("valid")] bool Valid,
+    [property: JsonPropertyName("broken_at_seq")] int? BrokenAtSeq,
+    [property: JsonPropertyName("total_events")] int TotalEvents);

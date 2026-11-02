@@ -10,3 +10,7 @@ node_modules/
 bin/
 obj/
 *.faiss
+.env
+data/audit_log.jsonl
+data/audit_log.jsonl
+data/customers_bulk.json
