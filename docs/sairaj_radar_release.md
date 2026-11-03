@@ -73,3 +73,16 @@ This mounts the protected summary router without overrides, verifies real agent 
 Browser sign-in/MFA succeeded. The Saathi_rg inventory contains four resources: Foundry Saathii, Foundry project Saathi_foundry, saathi-ai-search and saathistorage. Azure Machine Learning inventory in the accessible Azure subscription 1, with resource group/location/type filters set to all, returned "No workspaces to display" (0 of 0). This is limited to resources visible to the signed-in account; it does not establish the absence of inaccessible resources.
 
 Prepared workspace: saathi-radar-ml, existing Saathi_rg, Central US. Azure Review + create validation passed. Proposed dependencies are new dedicated storage, Key Vault and Application Insights; container registry is None at workspace creation. Identity is system-assigned; encryption uses Microsoft-managed keys. No compute or endpoint has been created. Supporting resource usage may incur charges. The final Create action is pending confirmation because it provisions the service identity and associated resource access. Actual Radar training/registration/deployment and live endpoint invocation still follow workspace creation and quota/configuration verification.
+
+
+## Workspace creation and registration completed — 2026-11-03
+
+After explicit approval, Azure created saathi-radar-ml in Saathi_rg, Central US. The workspace overview reports Provisioning State Succeeded and ML Studio access works. Attached dedicated resources: storage saathiradarml2632017274, Key Vault saathiradarml4708996853 and Application Insights saathiradarml7130385652, with system-assigned workspace identity.
+
+Registered saathi-renewal-radar:1 as CUSTOM using the tested local model.joblib (1809 bytes), SHA256 3c1969fffc0e348faceecb4fd090936d4f4f97b02aeff6980cc1e393d777f13b. ML Studio reported registration success and displays version 1 plus its checksum tag. This is registration of the locally trained 1200-row synthetic model, not cloud training. The six CRM records were not used for training.
+
+No VM, training cluster, serving instance or endpoint was provisioned. The endpoint wizard was inspected and cancelled before deployment. A deployment needs the verified scoring bundle and matching custom environment, not an arbitrary curated environment.
+
+Central US dedicated quota shows 20 total cores available, but Standard DSv2 Family has 0 available cores. The runner's historical Standard_DS3_v2 default is therefore blocked by the observed family quota. Some alternative CPU families show 4 cores, but supported managed-endpoint SKU/capacity/reservation and compute cost still need review before choosing a replacement. No quota request or subscription upgrade was submitted.
+
+The resource-group/workspace names are now populated in .env.example; subscription identity, endpoint name/URI, keys, compute and approved application-agent credentials are still supplied securely at runtime. Evidence: docs/evidence/radar_azure_workspace.json. Existing local test evidence remains 113 passed; no tests were rerun for this documentation/configuration-only update. This section supersedes the earlier pending-workspace-creation status above. Actual Azure endpoint invocation and /worklist cloud acceptance remain pending.
