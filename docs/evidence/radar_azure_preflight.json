@@ -1,0 +1,76 @@
+{
+  "status": "passed",
+  "scope": "offline staged Azure scoring entry point, not deployed Azure",
+  "model_sha256": "3c1969fffc0e348faceecb4fd090936d4f4f97b02aeff6980cc1e393d777f13b",
+  "training_data_sha256": "baa6c21b7a8beba5cf300c86af35baf0d7a0c6bffe80df2e5ddf2b806758f72e",
+  "runtime_versions": {
+    "scikit-learn": "1.8.0",
+    "pandas": "2.2.3",
+    "numpy": "2.3.5",
+    "joblib": "1.5.3",
+    "pandera": "0.35.0"
+  },
+  "source_files": [
+    "ml/__init__.py",
+    "ml/common.py",
+    "ml/radar.py",
+    "ml/azureml/__init__.py",
+    "ml/azureml/score.py",
+    "ml/azureml/train_job.py",
+    "data/__init__.py",
+    "data/validate.py"
+  ],
+  "inference_n": 6,
+  "scores": [
+    {
+      "customer_id": "C-118",
+      "risk_score": 0.7505202339454421,
+      "main_risk_factor": "days_to_renewal",
+      "explanation_type": "largest standardized logistic feature contribution; not causal",
+      "synthetic": true
+    },
+    {
+      "customer_id": "C-450",
+      "risk_score": 0.7177242351185431,
+      "main_risk_factor": "days_to_renewal",
+      "explanation_type": "largest standardized logistic feature contribution; not causal",
+      "synthetic": true
+    },
+    {
+      "customer_id": "C-311",
+      "risk_score": 0.6765719909027277,
+      "main_risk_factor": "days_to_renewal",
+      "explanation_type": "largest standardized logistic feature contribution; not causal",
+      "synthetic": true
+    },
+    {
+      "customer_id": "C-205",
+      "risk_score": 0.4881732656263523,
+      "main_risk_factor": "days_to_renewal",
+      "explanation_type": "largest standardized logistic feature contribution; not causal",
+      "synthetic": true
+    },
+    {
+      "customer_id": "C-204",
+      "risk_score": 0.46706545389510457,
+      "main_risk_factor": "days_to_renewal",
+      "explanation_type": "largest standardized logistic feature contribution; not causal",
+      "synthetic": true
+    },
+    {
+      "customer_id": "C-999",
+      "risk_score": 0.07721049024686644,
+      "main_risk_factor": "days_to_renewal",
+      "explanation_type": "largest standardized logistic feature contribution; not causal",
+      "synthetic": true
+    }
+  ],
+  "negative_days_ids": [
+    "C-118",
+    "C-450"
+  ],
+  "no_consent_ids": [
+    "C-205"
+  ],
+  "note": "Endpoint scoring is technical only. Authenticated CRM ownership/product/eligibility gate runs before cloud submission."
+}
