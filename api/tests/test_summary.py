@@ -9,6 +9,8 @@ def make_client(monkeypatch):
     summary.get_llm.cache_clear()
     app = FastAPI()
     app.include_router(summary.router)
+    from app.services.worklist_access import authenticate_agent, AgentPrincipal
+    app.dependency_overrides[authenticate_agent] = lambda: AgentPrincipal(agent_id='A-001', allowed_products=('Health',))
     return TestClient(app)
 
 
@@ -43,15 +45,9 @@ def test_unknown_customer(monkeypatch):
 
 def test_no_interaction_history(monkeypatch):
     with make_client(monkeypatch) as client:
-        monkeypatch.setattr(
-            summary,
-            "load_records",
-            lambda filename: (
-                [{"customer_id": "TEST-1"}]
-                if filename == "customers.json"
-                else []
-            ),
-        )
+        from app.models.schemas import Customer
+        monkeypatch.setattr(summary, 'authorize_customer', lambda cid, aid: Customer(customer_id=cid,name='test',product='Health',tier='Gold',agent_id=aid))
+        monkeypatch.setattr(summary, 'load_records', lambda filename: [])
         response = client.get("/customers/TEST-1/summary")
 
     assert response.status_code == 200
