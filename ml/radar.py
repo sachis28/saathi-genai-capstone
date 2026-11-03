@@ -18,9 +18,9 @@ FEATURES = ["days_to_renewal", "interaction_count_90d", "sentiment_score", "annu
 def score_rows(model, frame):
     if list(getattr(model, "feature_names_in_", [])) != FEATURES:
         raise ValueError("Incompatible Radar model contract; retrain with annual_premium_inr and signed days")
-    # Consent is a business filter, not a predictive feature. It never authorizes a send.
+    # Consent is not a scoring/visibility filter or predictive feature. Check it before send.
     valid = validate_radar_inference(frame.copy())
-    eligible = valid[valid.consent].copy()
+    eligible = valid.copy()
     if eligible.empty:
         return []
     probabilities = model.predict_proba(eligible[FEATURES])[:,1]

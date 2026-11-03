@@ -25,9 +25,9 @@ def main():
         'as_of_date': args.as_of.isoformat(), 'input_sha256': sha256(args.input),
         'model_sha256': sha256(model_path), 'features': FEATURES,
         'input_n': len(frame), 'scored_n': len(result),
-        'consent_excluded_ids': frame.loc[~frame.consent, 'customer_id'].tolist(),
+        'no_consent_ids': frame.loc[~frame.consent, 'customer_id'].tolist(),
         'results': result,
-        'limitations': 'Consent filter only. Policy eligibility and customer/product authorization are not verified; this output is not an approved application worklist. Synthetic model outcomes are not real-world risk probabilities.',
+        'limitations': 'Technical scoring only. Consent does not filter visibility. Policy eligibility and customer/product authorization are not verified; this output is not an approved application worklist. Synthetic model outcomes are not real-world risk probabilities.',
     })
     print(f'Scored {len(result)} of {len(frame)} synthetic CRM rows; evidence: {args.output}')
 
