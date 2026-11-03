@@ -133,18 +133,19 @@ def gated_worklist(setup, tmp_path, monkeypatch):
     import hashlib
     import json
     main, client, _, _ = setup
+    monkeypatch.setenv('SAATHI_AS_OF_DATE','2026-10-28')
     token = 'synthetic-integration-token-not-a-real-credential'
     metadata = [
         {'customer_id':'T-OVERDUE','agent_id':'A-001','product':'Health','consent':True,
-         'policy_status':'expired','renewal_eligible':True},
+         'renewal_date':'2026-10-23'},
         {'customer_id':'T-NOCONSENT','agent_id':'A-001','product':'Health','consent':False,
-         'policy_status':'active','renewal_eligible':True},
+         'renewal_date':'2026-11-12'},
         {'customer_id':'T-OTHERAGENT','agent_id':'A-002','product':'Health','consent':True,
-         'policy_status':'active','renewal_eligible':True},
+         'renewal_date':'2026-11-12'},
         {'customer_id':'T-OTHERPRODUCT','agent_id':'A-001','product':'Motor','consent':True,
-         'policy_status':'active','renewal_eligible':True},
+         'renewal_date':'2026-11-12'},
         {'customer_id':'T-CANCELLED','agent_id':'A-001','product':'Health','consent':True,
-         'policy_status':'cancelled','renewal_eligible':True},
+         'renewal_date':'2026-11-12','cancelled':True},
         {'customer_id':'T-MISSING','agent_id':'A-001','product':'Health','consent':True},
     ]
     rows = [{'customer_id':c['customer_id'],'days_to_renewal':-5 if i==0 else 15,
@@ -185,7 +186,7 @@ def test_worklist_filters_before_local_inference(gated_worklist, monkeypatch):
     monkeypatch.setattr(main,'renewal_worklist',score)
     r = client.get('/worklist?agent_id=A-002',headers={**headers,'X-Agent-ID':'A-002'})
     assert r.status_code == 200
-    assert [r['customer_id'] for r in r.json()['items']] == ['T-OVERDUE']
+    assert [r['customer_id'] for r in r.json()['items']] == ['T-OVERDUE','T-NOCONSENT']
     assert calls[0].iloc[0].days_to_renewal == -5
     assert set(calls[0].columns) == {'customer_id','days_to_renewal','interaction_count_90d',
                                     'sentiment_score','annual_premium_inr','consent'}
@@ -194,7 +195,8 @@ def test_worklist_filters_before_local_inference(gated_worklist, monkeypatch):
 def test_worklist_empty_eligibility_does_not_invoke_model(gated_worklist, monkeypatch):
     import json
     main, client, headers, records, path = gated_worklist
-    records[0]['renewal_eligible'] = False
+    records[0]['cancelled'] = True
+    records[1]['cancelled'] = True
     path.write_text(json.dumps(records))
     score = Mock(side_effect=AssertionError('must not score empty candidates'))
     monkeypatch.setattr(main,'renewal_worklist',score)
@@ -217,12 +219,12 @@ def test_worklist_filters_before_azure_payload(gated_worklist, monkeypatch):
             sent.append(json)
             class Response:
                 def raise_for_status(self): pass
-                def json(self): return [{'customer_id':'T-OVERDUE','risk_score':0.5}]
+                def json(self): return [{'customer_id':'T-OVERDUE','risk_score':0.5},{'customer_id':'T-NOCONSENT','risk_score':0.4}]
             return Response()
     monkeypatch.setattr(ml_service.httpx,'AsyncClient',AzureClient)
     r = client.get('/worklist',headers=headers)
     assert r.status_code == 200
-    assert len(sent) == 1 and len(sent[0]['data']) == 1
+    assert len(sent) == 1 and len(sent[0]['data']) == 2
     assert sent[0]['data'][0]['customer_id'] == 'T-OVERDUE'
     assert sent[0]['data'][0]['days_to_renewal'] == -5
     assert 'agent_id' not in sent[0]['data'][0]

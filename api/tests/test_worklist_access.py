@@ -12,6 +12,11 @@ from app.services.worklist_access import (
     AgentPrincipal, authenticate_agent, filter_radar_rows, load_authorized_radar_frame,
 )
 
+@pytest.fixture(autouse=True)
+def fixed_date(monkeypatch):
+    monkeypatch.setenv('SAATHI_AS_OF_DATE','2026-10-28')
+
+
 TEST_TOKEN = 'synthetic-test-token-not-a-real-credential'
 
 
@@ -34,9 +39,9 @@ def frame():
 def customers():
     return [
         {'customer_id':'DEMO-OVERDUE','agent_id':'A-001','product':'Health','consent':True,
-         'policy_status':'expired','renewal_eligible':True},
+         'renewal_date':'2026-10-23'},
         {'customer_id':'DEMO-ACTIVE','agent_id':'A-001','product':'Health','consent':True,
-         'policy_status':'active','renewal_eligible':True},
+         'renewal_date':'2026-11-12'},
     ]
 
 
@@ -47,38 +52,29 @@ def test_authorized_expired_policy_keeps_signed_days(frame, customers, principal
 
 
 @pytest.mark.parametrize('change', [
-    {'policy_status':'cancelled'}, {'policy_status':'terminated'},
-    {'renewal_eligible':False}, {'renewal_eligible':None}, {'policy_status':None},
+    {'cancelled':True}, {'renewal_date':'2026-09-27'}, {'renewal_date':None},
     {'agent_id':'OTHER-AGENT'}, {'agent_id':None}, {'product':'Motor'}, {'product':None},
-    {'consent':False}, {'consent':None},
 ])
 def test_exclude_without_all_access_conditions(frame, customers, principal, change):
     customers[0].update(change)
-    result = filter_radar_rows(frame, customers, principal)
-    assert result.customer_id.tolist() == ['DEMO-ACTIVE']
+    assert filter_radar_rows(frame, customers, principal).customer_id.tolist() == ['DEMO-ACTIVE']
 
 
-def test_absent_customer_and_missing_policy_fields_are_not_inferred(frame, customers, principal):
-    assert filter_radar_rows(frame, [], principal).empty
-    for customer in customers:
-        del customer['renewal_eligible']
-        del customer['policy_status']
-    assert filter_radar_rows(frame, customers, principal).empty
-
-
-def test_both_crm_and_feature_consent_required(frame, customers, principal):
+def test_no_consent_stays_visible(frame,customers,principal):
     frame.loc[0,'consent'] = False
-    customers[1]['consent'] = False
-    assert filter_radar_rows(frame, customers, principal).empty
+    customers[0]['consent'] = False
+    assert len(filter_radar_rows(frame,customers,principal)) == 2
 
 
-@pytest.mark.parametrize('change', [
-    {'renewal_eligible':'true'}, {'consent':'false'}, {'policy_status':'unknown'},
-    {'policy_status':'Active'}, {'renewal_eligible':1},
-])
-def test_malformed_access_metadata_rejected(frame, customers, principal, change):
+def test_date_mismatch_rejected(frame,customers,principal):
+    frame.loc[0,'days_to_renewal'] = -4
+    with pytest.raises(ValueError,match='reference-date'): filter_radar_rows(frame,customers,principal)
+
+
+@pytest.mark.parametrize('change', [{'cancelled':'true'},{'policy_status':'unknown'},{'consent':'false'}])
+def test_malformed_access_metadata_rejected(frame,customers,principal,change):
     customers[0].update(change)
-    with pytest.raises(ValueError): filter_radar_rows(frame, customers, principal)
+    with pytest.raises(ValueError): filter_radar_rows(frame,customers,principal)
 
 
 def test_duplicate_crm_and_bad_features_rejected(frame, customers, principal):
