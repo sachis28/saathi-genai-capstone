@@ -15,8 +15,12 @@ from ml.common import SEED, sha256, write_json
 from ml.radar import FEATURES
 
 
-def main(data,output):
+def main(data,output,expected_sha256):
+    if sha256(data) != expected_sha256:
+        raise ValueError("Radar training dataset hash mismatch")
     frame = radar_schema.validate(pd.read_csv(data))
+    if len(frame) != 1200:
+        raise ValueError("Use the locked 1200-row training dataset, never six CRM inference fixtures")
     train,test = train_test_split(frame,test_size=0.25,stratify=frame.nonrenewed,random_state=SEED)
     model = make_pipeline(StandardScaler(),LogisticRegression(max_iter=1000,random_state=SEED))
     model.fit(train[FEATURES],train.nonrenewed)
@@ -31,5 +35,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--data",required=True)
     parser.add_argument("--output",required=True)
+    parser.add_argument("--expected-sha256",required=True)
     args = parser.parse_args()
-    main(args.data,args.output)
+    main(args.data,args.output,args.expected_sha256)
