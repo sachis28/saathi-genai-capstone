@@ -58,10 +58,11 @@ async def renewal_worklist(frame=None):
         return score_rows(joblib.load(ARTIFACTS / "radar" / "model.joblib"),data)
     if provider != "azure":
         raise ValueError("ML_PROVIDER must be local or azure")
-    url = os.environ["AZURE_ML_ENDPOINT"]
+    url = os.getenv("RADAR_ENDPOINT_URL") or os.environ["AZURE_ML_ENDPOINT"]
     if not url.startswith("https://"):
         raise ValueError("Azure ML endpoint must use HTTPS")
-    headers = {"Authorization":f"Bearer {os.environ['AZURE_ML_KEY']}"}
+    key = os.getenv("RADAR_ENDPOINT_KEY") or os.environ["AZURE_ML_KEY"]
+    headers = {"Authorization":f"Bearer {key}"}
     async with httpx.AsyncClient(timeout=45) as client:
         response = await client.post(url,headers=headers,json={"data":data.to_dict(orient="records")})
         response.raise_for_status()
