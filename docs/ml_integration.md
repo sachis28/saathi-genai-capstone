@@ -16,7 +16,7 @@ The current renewal label is a noisy synthetic function. Real Radar evaluation n
 
 The five intent labels are provisional and are listed in README.md. The old API's `policy_question` was a dummy value; agree on whether to map it to `coverage_question`. Model confidence is not calibrated. Choose a threshold and ambiguity behavior on new representative development data before a production route is enabled. The API defaults to locally trained DistilBERT; INTENT_PROVIDER=tfidf_lr selects the lightweight baseline, with its measured quality limitation disclosed. Inference never downloads remote weights.
 
-Authorization must filter the candidate frame before calling Radar. Current `/worklist` is explicitly synthetic, uses generated IDs outside the placeholder CRM, and has no product authorization layer. Consent merely filters demo ranking rows and never permits a send. `/chat` continues to return the upstream placeholder answer and citations; RAG, policy and customer checks remain yours.
+Authorization filters the CRM candidate frame before Radar. The worklist now checks authenticated ownership, approved product scope and central renewal eligibility; consent does not filter scoring or worklist visibility and is enforced before outbound send. Chat uses the integrated answer/citation pipeline. See worklist_access.md and sachi_followup_handover.md for current contracts and evidence.
 
 ## Rohan and Soham
 
