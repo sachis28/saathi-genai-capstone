@@ -41,9 +41,9 @@ Run these with the installed virtual environment interpreter or activate that en
 python -m uvicorn app.main:app --app-dir api
 ```
 
-Run from the repository root so `ml` and `data` are importable. `/chat` now uses trained DistilBERT by default for its intent field; its answer and citations now come from main's retrieval and grounded-answer pipeline. Set `INTENT_PROVIDER=tfidf_lr` to use the lightweight baseline instead. Inference loads local weights only and never downloads a model automatically. A missing trained model returns 503. `GET /worklist?limit=10` requires Bearer authentication and scores only CRM-linked rows that pass consent, ownership, product and explicit policy eligibility checks. See docs/worklist_access.md for configuration; the API does not fall back to training fixtures.
+Run from the repository root so `ml` and `data` are importable. `/chat` now uses trained DistilBERT by default for its intent field; its answer and citations now come from main's retrieval and grounded-answer pipeline. Set `INTENT_PROVIDER=tfidf_lr` to use the lightweight baseline instead. Inference loads local weights only and never downloads a model automatically. A missing trained model returns 503. `GET /worklist?limit=10` requires Bearer authentication and scores only CRM-linked rows that pass ownership, approved product access and centrally calculated renewal eligibility checks. See docs/worklist_access.md for configuration; the API does not fall back to training fixtures.
 
-Set `ML_PROVIDER=azure` plus AZURE_ML_ENDPOINT and AZURE_ML_KEY to use the managed endpoint through the same worklist service. Consent filtering happens before cloud inference; outcome labels and demographic metadata are removed. The adapter validates returned customer IDs, duplicates, row counts, finite scores, and HTTPS. These controls do not replace the team's customer authorization or messaging policy engine.
+Set `ML_PROVIDER=azure` plus AZURE_ML_ENDPOINT and AZURE_ML_KEY to use the managed endpoint through the same worklist service. Consent does not filter scoring/worklist visibility; it is checked before outbound send. outcome labels and demographic metadata are removed. The adapter validates returned customer IDs, duplicates, row counts, finite scores, and HTTPS. These controls do not replace the team's customer authorization or messaging policy engine.
 
 Proposed intent labels: `compare_products`, `coverage_question`, `renewal_draft`, `customer_lookup`, `out_of_scope`. The old API used a dummy `policy_question` string. Agree on the final mapping with Shreya before orchestrator integration. TF-IDF confidence is uncalibrated; no low-confidence abstention or production release approval is claimed.
 
@@ -66,7 +66,7 @@ The 50-query intent smoke set is not the required end-to-end RAG evaluation. No 
 
 ## Integrated chat and Radar
 
-Chat resolves conversation context, runs the trained intent classifier after the injection check, and preserves retrieved citations, conversation history and audit events. The predicted intent is recorded in both the response and audit log. Missing trained intent artifacts return HTTP 503. The worklist remains a synthetic ML demonstration, now gated by explicit CRM eligibility and authenticated customer/product access. Team-approved metadata and deployment identity integration remain pending.
+Chat resolves conversation context, runs the trained intent classifier after the injection check, and preserves retrieved citations, conversation history and audit events. The predicted intent is recorded in both the response and audit log. Missing trained intent artifacts return HTTP 503. The worklist remains a synthetic ML demonstration, now gated by explicit CRM eligibility and authenticated customer/product access. Central metadata now follows the agreed grace-period rules. Approved product grants and deployed identity integration remain pending.
 
 Install both ML and API dependencies from the repository root:
 
@@ -86,7 +86,7 @@ An insurance-agent assistant project.
 This README documents the synthetic data, initial Renewal Radar features
 and standalone customer-summary tests implemented on feat/sachi-data.
 
-Full-application integration and cloud setup instructions remain pending.
+Local integration is documented in docs/sachi_followup_handover.md; cloud verification remains pending credentials.
 This is not a production-ready release.
 
 ## Requirements
@@ -182,12 +182,7 @@ The router defines GET /customers/{customer_id}/summary.
 Tests mount the router on a separate test application.
 The router is registered in the main application; the standalone tests still mount it separately.
 
-The existing mock returns the first two matching interaction lines.
-It does not perform full-history AI summarization.
-
-Valid citation IDs do not prove factual grounding.
-Customer authorization, stronger safety checks and real-provider
-evaluation remain pending.
+The summary now processes the full interaction history in batches of two, checks customer ownership/product access, and validates exact interaction text with customer-specific citations. This is conservative extractive grounding, not a general semantic entailment claim. Live Azure validation remains pending credentials.
 
 ## Project files for these components
 
@@ -206,9 +201,7 @@ evaluation remain pending.
 ## Integration notes
 
 - The main API loads the generated CRM customer data through load_customers().
-- The existing missing-customer test uses C-999.
-  When the generated dataset is integrated, use a genuinely absent ID
-  for that test.
+- C-999 is a real demo ID (the cancellation case); unknown-customer tests use absent IDs.
 - Agree on the final Radar feature contract, training dataset size
   and outcome-label rules before extending the dataset.
 - Saved sentiment extraction and aggregation are documented in the Radar handover; representative-data model validation remains pending.
@@ -224,4 +217,18 @@ The mock summary tests do not require cloud credentials.
 
 ## Protected CRM Radar worklist
 
-`GET /worklist` now requires a Bearer-authenticated agent and filters CRM-linked features by current consent, customer ownership, product access, explicit policy status and renewal eligibility before local or Azure scoring. It no longer scores the generated training fixture through the API. Missing credentials return 401; absent CRM-linked input returns 503; missing eligibility metadata withholds the customer. No policy statuses have been invented for the six CRM demo customers. See [worklist access contract and setup](docs/worklist_access.md). Other application endpoints still need their own authorization integration.
+`GET /worklist` now requires a Bearer-authenticated agent and filters CRM-linked features by customer ownership, product access and centrally calculated renewal eligibility before local or Azure scoring. It no longer scores the generated training fixture through the API. Missing credentials return 401; absent CRM-linked input returns 503; missing renewal-date metadata withholds the customer. Derived statuses follow the agreed 30-day-grace rule; the two explicit synthetic fixture changes are documented in docs/data_dictionary.md. See [worklist access contract and setup](docs/worklist_access.md). Other application endpoints still need their own authorization integration.
+
+
+## Agreed Sachi follow-up integration
+
+Central statuses now use ACTIVE, IN_GRACE, LAPSED and CANCELLED. No-consent customers remain visible in renewal risk/worklists; approval plus send-time consent still gate simulated sending. See [the current handover](docs/sachi_followup_handover.md) and [data dictionary](docs/data_dictionary.md). The following commands reproduce the existing completed export pipeline and measured technical Radar evidence without training on the six customers:
+
+```bash
+python -m data.validate
+python -m ml.radar
+PYTHONPATH=.:api python -m ml.verify_sachi --as-of 2026-10-28
+SAATHI_AS_OF_DATE=2026-10-28 PYTHONPATH=.:api python -m pytest api/tests/test_sachi_followup.py api/tests/test_worklist_access.py api/tests/test_chat_ml_integration.py api/tests/test_summary.py api/tests/test_Audit.py tests/test_radar_contract_v2.py tests/test_data_radar.py tests/test_radar_contract.py -q
+```
+
+The real protected deployment still requires Shreya's approved product mapping and credentials. Automated endpoint tests use explicit test-only scoped identities. No live Azure result is claimed.
