@@ -8,6 +8,23 @@ from pathlib import Path
 from ml.common import ARTIFACTS, ROOT, write_json
 
 
+SOURCE_FILES = (
+    'ml/__init__.py', 'ml/common.py', 'ml/radar.py',
+    'ml/azureml/__init__.py', 'ml/azureml/score.py', 'ml/azureml/train_job.py',
+    'data/__init__.py', 'data/validate.py',
+)
+
+
+def stage_source(destination):
+    """The exact deployment/training source bundle; excludes secrets and CRM data."""
+    destination = Path(destination)
+    for relative in SOURCE_FILES:
+        target = destination / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(ROOT / relative, target)
+    return destination
+
+
 def main(execute=False, train_in_azure=False):
     required = ["AZURE_SUBSCRIPTION_ID","AZURE_RESOURCE_GROUP","AZURE_ML_WORKSPACE","AZURE_ML_ENDPOINT_NAME"]
     if train_in_azure:
@@ -19,6 +36,8 @@ def main(execute=False, train_in_azure=False):
     if not execute:
         print("Configuration present. Use --execute to register and deploy to the existing workspace.")
         return 0
+    from ml.azureml.preflight import check
+    preflight = check()
     from azure.ai.ml import MLClient
     from azure.ai.ml.entities import CodeConfiguration, Environment, ManagedOnlineDeployment, ManagedOnlineEndpoint, Model
     from azure.identity import DefaultAzureCredential
@@ -29,11 +48,7 @@ def main(execute=False, train_in_azure=False):
     endpoint_name = os.environ[required[3]]
     # Stage an explicit allowlist of source files: never upload .env, .git, local data or unrelated project files.
     with tempfile.TemporaryDirectory(prefix="saathi-azure-") as folder:
-        stage = Path(folder)
-        for relative in ["ml/__init__.py","ml/common.py","ml/radar.py","ml/azureml/__init__.py","ml/azureml/score.py","ml/azureml/train_job.py","data/__init__.py","data/validate.py"]:
-            target = stage / relative
-            target.parent.mkdir(parents=True,exist_ok=True)
-            shutil.copy2(ROOT / relative,target)
+        stage_source(folder)
         environment = Environment(name="saathi-radar-env",image="mcr.microsoft.com/azureml/openmpi4.1.0-ubuntu22.04:latest",
             conda_file=str(ROOT / "ml/azureml/conda.yml"))
         model_uri = str(model_path)
@@ -41,7 +56,7 @@ def main(execute=False, train_in_azure=False):
         if train_in_azure:
             from azure.ai.ml import command, Input, Output
             job = command(code=folder,
-                command="python -m ml.azureml.train_job --data ${{inputs.data}} --output ${{outputs.model}}",
+                command="python -m ml.azureml.train_job --data ${{inputs.data}} --output ${{outputs.model}} --expected-sha256 " + preflight["training_data_sha256"],
                 inputs={"data":Input(type="uri_file",path=str(ROOT / "data/generated/radar.csv"))},
                 outputs={"model":Output(type="uri_folder")},environment=environment,
                 compute=os.environ["AZURE_ML_COMPUTE"],experiment_name="saathi-renewal-radar")

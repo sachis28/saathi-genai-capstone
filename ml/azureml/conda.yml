@@ -6,8 +6,8 @@ dependencies:
   - pip
   - pip:
       - azureml-inference-server-http
-      - scikit-learn==1.9.1
-      - pandas==3.1.0
-      - numpy==2.5.4
-      - joblib==1.6.0
+      - scikit-learn==1.8.0
+      - pandas==2.2.3
+      - numpy==2.3.5
+      - joblib==1.5.3
       - pandera[pandas]==0.35.0
