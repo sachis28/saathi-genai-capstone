@@ -18,6 +18,8 @@ from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr, Valida
 
 from data.validate import validate_radar_inference
 from ml.common import ROOT
+from app.services.customers import policy_metadata, reference_date
+from datetime import date
 
 
 class AgentPrincipal(BaseModel):
@@ -37,7 +39,9 @@ class CustomerAccess(BaseModel):
     agent_id: StrictStr | None = None
     product: StrictStr | None = None
     consent: StrictBool | None = None
-    policy_status: Literal['active', 'expired', 'cancelled', 'terminated'] | None = None
+    renewal_date: date | None = None
+    cancelled: StrictBool = False
+    policy_status: Literal['ACTIVE', 'IN_GRACE', 'LAPSED', 'CANCELLED'] | None = None
     renewal_eligible: StrictBool | None = None
 
 
@@ -95,7 +99,7 @@ def filter_radar_rows(frame: pd.DataFrame, customers: list, principal: AgentPrin
         raise ValueError('Invalid Radar feature contract') from error
     if not isinstance(customers, list):
         raise ValueError('Expected CRM customer records')
-    records = [CustomerAccess.model_validate(row) for row in customers]
+    records = [CustomerAccess.model_validate({**row, **policy_metadata(row)}) for row in customers]
     by_id = {c.customer_id: c for c in records}
     if len(by_id) != len(records):
         raise ValueError('Duplicate CRM customer ID')
@@ -103,12 +107,17 @@ def filter_radar_rows(frame: pd.DataFrame, customers: list, principal: AgentPrin
         c.customer_id for c in records
         if c.agent_id == principal.agent_id
         and c.product in principal.allowed_products
-        and c.consent is True
         and c.renewal_eligible is True
-        and c.policy_status in ('active', 'expired')
+        and c.policy_status in ('ACTIVE', 'IN_GRACE')
     }
-    # Require both feature consent and current authoritative CRM consent.
-    return valid.loc[valid.customer_id.isin(permitted) & valid.consent].copy()
+    # Visibility is independent of consent; consent is enforced before outbound send.
+    # Check the pinned feature snapshot against the central renewal-date calculation.
+    selected = valid.loc[valid.customer_id.isin(permitted)].copy()
+    for row in selected.itertuples():
+        customer = by_id[row.customer_id]
+        if row.days_to_renewal != (customer.renewal_date - reference_date()).days:
+            raise ValueError("Radar/CRM reference-date mismatch")
+    return selected
 
 
 def load_authorized_radar_frame(principal: AgentPrincipal) -> pd.DataFrame:
