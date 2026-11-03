@@ -149,3 +149,24 @@ def test_provider_error_does_not_leak_details(monkeypatch):
         response = client.get('/customers/C-204/summary')
         assert response.status_code == 502
         assert 'private' not in response.text
+
+
+@pytest.mark.parametrize('customer', ['C-204','C-311','C-118','C-450','C-205','C-999'])
+def test_recorded_azure_responses_through_router(monkeypatch, customer):
+    """Replay saved live output offline; this never invokes Azure or spends credits."""
+    import json
+    from pathlib import Path
+    evidence = json.loads((Path(__file__).resolve().parents[2] / 'docs/evidence/sachi_summary_azure_playground.json').read_text())
+    batches = [b for b in evidence['batches'] if b['customer_id'] == customer]
+    outputs = iter(batches)
+    class RecordedAzure:
+        def complete(self, system, user):
+            batch = next(outputs)
+            assert system == evidence['system_prompt']
+            assert user == batch['prompt']
+            return batch['output']
+    with make_client(monkeypatch) as client:
+        monkeypatch.setattr(summary, 'get_llm', lambda: RecordedAzure())
+        response = client.get(f'/customers/{customer}/summary')
+        assert response.status_code == 200
+        assert response.json()['interaction_ids'] == [i for b in batches for i in b['interaction_ids']]
