@@ -10,7 +10,7 @@ The previous live response used leading citations and date/channel metadata; thi
 LLM_PROVIDER=mock PYTHONPATH=.:api python -m pytest api/tests/test_summary.py tests -q
 ```
 
-33 passed, one TestClient deprecation warning. Includes six demo customers with all 18 interactions, the third interaction after the first two-record batch, wrong IDs, wrong citation placement, unsupported content, uncited tails, missing citations, injection and provider failure. Existing data/premium/sentiment exports remain byte-identical to the base. C-450 remains -5 in the Radar export. No model is trained on these six rows.
+39 passed, one TestClient deprecation warning. Includes six demo customers with all 18 interactions, the third interaction after the first two-record batch, wrong IDs, wrong citation placement, unsupported content, uncited tails, missing citations, injection and provider failure. Existing data/premium/sentiment exports remain byte-identical to the base. C-450 remains -5 in the Radar export. No model is trained on these six rows.
 
 A broader attempt including test_safety.py and test_llm.py failed collection because faiss is unavailable in this environment. No full-app test success is claimed.
 
@@ -23,7 +23,9 @@ Please explain the coverage under my Silver policy. [I-0001]
 Please share the documents needed for renewal. [I-0002]
 ```
 
-This proves the two-interaction playground case, not the actual API adapter, deployed authentication or all-customer live acceptance. A third-record response in unit tests is a controlled test response, not a claimed Azure observation. Browser access does not provision runtime API configuration.
+This proves the two-interaction playground case, not the actual API adapter, deployed authentication or all-customer live acceptance. The earlier third-record test is controlled; see the new all-history live evidence below for actual Azure observations. Browser access does not provision runtime API configuration.
+
+Fresh live verification on 2026-11-03: all 12 two-record/one-record batches across six customers and 18 interactions returned correctly placed citations. Temperature was 0 and playground tools were empty. The exact system prompt, per-batch inputs and raw model text are saved in docs/evidence/sachi_summary_azure_playground.json. All responses passed app.services.summary_grounding.validate_summary. Six additional offline tests replay those recorded live outputs through the actual standalone summary router and assert matching system/user prompts and complete interaction IDs. This replay is not a new paid call or a direct live adapter invocation.
 
 An opt-in paid live check exercises the actual Azure adapter and standalone summary router using synthetic C-204 (two provider calls for all three interactions):
 
