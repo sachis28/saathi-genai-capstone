@@ -1,5 +1,6 @@
-from pydantic import BaseModel
-from typing import List, Optional
+from pydantic import BaseModel, StrictBool, Field
+from typing import List, Optional, Literal
+from datetime import date
 
 
 class ChatRequest(BaseModel):
@@ -27,7 +28,14 @@ class Customer(BaseModel):
     name: str
     product: str
     tier: str
-    consent: bool = True
+    consent: StrictBool = True
+    agent_id: Optional[str] = None
+    renewal_date: Optional[date] = None
+    annual_premium_inr: Optional[float] = Field(default=None, gt=0, allow_inf_nan=False)
+    cancelled: StrictBool = False
+    policy_status: Optional[Literal["ACTIVE", "IN_GRACE", "LAPSED", "CANCELLED"]] = None
+    renewal_eligible: StrictBool = False
+    eligibility_reason: Optional[str] = None
 
 
 class SearchRequest(BaseModel):
