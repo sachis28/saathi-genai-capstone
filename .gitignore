@@ -17,3 +17,6 @@ data/customers_bulk.json
 
 # Local worklist identity configuration
 agent_credentials.json
+
+# Generated allowlisted Azure CLI scoring package.
+radar/deploy/code/
