@@ -1,0 +1,77 @@
+{
+  "as_of_date": "2026-10-28",
+  "synthetic": true,
+  "model_sha256": "3c1969fffc0e348faceecb4fd090936d4f4f97b02aeff6980cc1e393d777f13b",
+  "input_sha256": "51fc9e89af6a79fb11b1e78d1ec9e87fa4baa77bbd42b909f8bd256186ebd40d",
+  "scoring": "real trained local model",
+  "approved_product_access_verified": false,
+  "limitations": "Technical eligibility/scoring evidence only. Protected endpoint uses test-only scoped identities in automated tests. Approved deployment credentials/product mapping and live Azure remain pending.",
+  "customers": [
+    {
+      "customer_id": "C-204",
+      "agent_id": "A-001",
+      "product": "Health",
+      "days_to_renewal": 15,
+      "policy_status": "ACTIVE",
+      "renewal_eligible": true,
+      "eligibility_reason": null,
+      "consent": true,
+      "risk_score": 0.46706545389510457
+    },
+    {
+      "customer_id": "C-311",
+      "agent_id": "A-002",
+      "product": "Health",
+      "days_to_renewal": 7,
+      "policy_status": "ACTIVE",
+      "renewal_eligible": true,
+      "eligibility_reason": null,
+      "consent": true,
+      "risk_score": 0.6765719909027277
+    },
+    {
+      "customer_id": "C-118",
+      "agent_id": "A-003",
+      "product": "Health",
+      "days_to_renewal": -31,
+      "policy_status": "LAPSED",
+      "renewal_eligible": false,
+      "eligibility_reason": "LAPSED_BEYOND_GRACE",
+      "consent": true,
+      "risk_score": null
+    },
+    {
+      "customer_id": "C-450",
+      "agent_id": "A-001",
+      "product": "Health",
+      "days_to_renewal": -5,
+      "policy_status": "IN_GRACE",
+      "renewal_eligible": true,
+      "eligibility_reason": null,
+      "consent": true,
+      "risk_score": 0.7177242351185431
+    },
+    {
+      "customer_id": "C-205",
+      "agent_id": "A-002",
+      "product": "Health",
+      "days_to_renewal": 20,
+      "policy_status": "ACTIVE",
+      "renewal_eligible": true,
+      "eligibility_reason": null,
+      "consent": false,
+      "risk_score": 0.4881732656263521
+    },
+    {
+      "customer_id": "C-999",
+      "agent_id": "A-003",
+      "product": "Health",
+      "days_to_renewal": 90,
+      "policy_status": "CANCELLED",
+      "renewal_eligible": false,
+      "eligibility_reason": "CANCELLED",
+      "consent": true,
+      "risk_score": null
+    }
+  ]
+}
