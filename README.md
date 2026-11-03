@@ -232,3 +232,5 @@ SAATHI_AS_OF_DATE=2026-10-28 PYTHONPATH=.:api python -m pytest api/tests/test_sa
 ```
 
 The real protected deployment still requires Shreya's approved product mapping and credentials. Automated endpoint tests use explicit test-only scoped identities. No live Azure result is claimed.
+
+Current Sairaj integration/deployment checkpoint: [Radar release handover](docs/sairaj_radar_release.md). It records 113 passing offline tests, PR #11 summary precedence with authorization preserved, the exact staged scoring-bundle test, and separate real Azure deployment/smoke commands. Live Azure ML deployment remains pending verified workspace configuration and approved runtime access.
