@@ -78,7 +78,7 @@ def main(execute=False, train_in_azure=False):
             client.online_endpoints.begin_create_or_update(ManagedOnlineEndpoint(name=endpoint_name,auth_mode="key")).result()
         deployment = ManagedOnlineDeployment(name="blue",endpoint_name=endpoint_name,model=registered,environment=environment,
             code_configuration=CodeConfiguration(code=folder,scoring_script="ml/azureml/score.py"),
-            instance_type=os.getenv("AZURE_ML_INSTANCE_TYPE","Standard_DS3_v2"),instance_count=1)
+            instance_type=os.getenv("AZURE_ML_INSTANCE_TYPE","Standard_D2a_v4"),instance_count=1)
         client.online_deployments.begin_create_or_update(deployment).result()
     endpoint = client.online_endpoints.get(endpoint_name)
     endpoint.traffic = {"blue":100}
