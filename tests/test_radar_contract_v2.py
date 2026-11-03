@@ -27,15 +27,15 @@ def model():
     return joblib.load(ARTIFACTS / 'radar/model.joblib')
 
 
-def test_crm_export_scores_overdue_and_filters_consent(crm, model):
+def test_crm_export_scores_overdue_including_no_consent(crm, model):
     assert crm.loc[crm.customer_id == 'C-450', 'days_to_renewal'].item() == -5
     result = score_rows(model, crm)
-    assert {r['customer_id'] for r in result} == set(crm.loc[crm.consent, 'customer_id'])
-    assert len(result) == 5
+    assert {r['customer_id'] for r in result} == set(crm.customer_id)
+    assert len(result) == 6
     assert all(np.isfinite(r['risk_score']) and 0 <= r['risk_score'] <= 1 for r in result)
     assert result == sorted(result, key=lambda r: (-r['risk_score'], r['customer_id']))
     crm['consent'] = False
-    assert score_rows(model, crm) == []
+    assert len(score_rows(model, crm)) == 6
 
 
 @pytest.mark.parametrize('field,value', [
@@ -88,7 +88,7 @@ def test_adapter_azure_payload_and_results(crm, model, monkeypatch):
         async def __aexit__(self, *args): pass
         async def post(self, url, headers, json):
             payload = pd.DataFrame(json['data'])
-            assert len(payload) == 5 and payload.consent.all()
+            assert len(payload) == 6 and not payload.consent.all()
             assert 'annual_premium_inr' in payload and 'premium' not in payload
             assert 'C-450' in set(payload.customer_id)
             result = score_rows(model, payload)

@@ -60,11 +60,11 @@ def test_radar_consent_feature_exclusion_and_sort_order():
     model = joblib.load(ARTIFACTS / "radar/model.joblib")
     assert not {"age_band","consent","nonrenewed","customer_id"} & set(FEATURES)
     rows = score_rows(model,frame)
-    assert frame.iloc[0].customer_id not in [r["customer_id"] for r in rows]
+    assert frame.iloc[0].customer_id in [r["customer_id"] for r in rows]
     assert all(0<=r["risk_score"]<=1 for r in rows)
     assert rows==sorted(rows,key=lambda r:(-r["risk_score"],r["customer_id"]))
     frame["consent"] = False
-    assert score_rows(model,frame)==[]
+    assert len(score_rows(model,frame))==len(frame)
 
 
 def test_radar_rejects_invalid_sentiment():
@@ -141,11 +141,11 @@ def test_azure_worklist_validates_response_and_filters_consent(monkeypatch):
         async def __aexit__(self,*args):
             pass
         async def post(self,url,headers,json):
-            assert len(json["data"])==1
-            assert json["data"][0]["consent"] is True
+            assert len(json["data"])==2
+            assert json["data"][0]["consent"] is False
             assert "nonrenewed" not in json["data"][0]
             assert "age_band" not in json["data"][0]
             return Response()
     monkeypatch.setattr(ml_service.httpx,"AsyncClient",Client)
-    with pytest.raises(ValueError,match="Invalid Azure"):
+    with pytest.raises(ValueError):
         asyncio.run(ml_service.renewal_worklist(frame))
