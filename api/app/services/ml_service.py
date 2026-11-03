@@ -51,7 +51,6 @@ def classify_intent(text):
 
 async def renewal_worklist(frame=None):
     data = validate_radar_inference(pd.read_csv(DATA / "radar.csv") if frame is None else frame.copy())
-    data = data[data.consent].copy()
     if data.empty:
         return []
     provider = os.getenv("ML_PROVIDER","local")
@@ -69,7 +68,7 @@ async def renewal_worklist(frame=None):
     results = response.json()
     allowed = set(data.customer_id)
     if not isinstance(results,list) or len(results)!=len(allowed):
-        raise ValueError("Azure response count does not match consented customers")
+        raise ValueError("Azure response count does not match submitted customers")
     seen = set()
     for row in results:
         customer = row.get("customer_id")
