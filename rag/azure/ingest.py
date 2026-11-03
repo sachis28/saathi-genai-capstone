@@ -25,13 +25,15 @@ OPENAI_KEY = os.environ["AZURE_OPENAI_API_KEY"]
 EMBEDDING_DEPLOYMENT = os.environ["AZURE_OPENAI_EMBED_DEPLOYMENT"]
 
 BATCH_SIZE = 16
+EXPECTED_EMBEDDING_DIMENSIONS = 1536
+EXPECTED_CHUNKS = 48
 
 
 # ==================================================
 # AZURE OPENAI CLIENT
 # ==================================================
 
-# Remove /openai/v1 if it is already present.
+# Remove /openai/v1 if already present.
 OPENAI_ENDPOINT = OPENAI_ENDPOINT.replace("/openai/v1", "")
 
 openai_client = OpenAI(
@@ -66,11 +68,57 @@ def load_chunks():
 
     with open(CORPUS_FILE, "r", encoding="utf-8") as file:
 
-        for line in file:
+        for line_number, line in enumerate(file, start=1):
 
-            if line.strip():
+            if not line.strip():
+                continue
 
-                documents.append(json.loads(line))
+            try:
+                document = json.loads(line)
+
+            except json.JSONDecodeError as error:
+                raise ValueError(
+                    f"Invalid JSON on line {line_number}: {error}"
+                ) from error
+
+            required_fields = [
+                "id",
+                "source_id",
+                "clause_id",
+                "product",
+                "tier",
+                "version",
+                "text"
+            ]
+
+            for field in required_fields:
+
+                if field not in document:
+                    raise ValueError(
+                        f"Missing field '{field}' "
+                        f"on line {line_number}"
+                    )
+
+            documents.append(document)
+
+    if len(documents) != EXPECTED_CHUNKS:
+        raise ValueError(
+            f"Expected {EXPECTED_CHUNKS} chunks, "
+            f"found {len(documents)}"
+        )
+
+    # Ensure every document has a unique ID.
+    document_ids = [
+        document["id"]
+        for document in documents
+    ]
+
+    if len(document_ids) != len(set(document_ids)):
+        raise ValueError(
+            "Duplicate document IDs found in corpus."
+        )
+
+    print(f"Successfully loaded {len(documents)} chunks.")
 
     return documents
 
@@ -81,55 +129,31 @@ def load_chunks():
 
 def generate_embeddings(texts):
 
+    if not texts:
+        return []
+
     response = openai_client.embeddings.create(
         model=EMBEDDING_DEPLOYMENT,
         input=texts
     )
 
-    embeddings = [
-        item.embedding
-        for item in response.data
-    ]
-
-    return embeddings
-
-
-# ==================================================
-# CLEAR OLD INDEX DOCUMENTS
-# ==================================================
-
-def clear_existing_documents():
-
-    print("\nRemoving previously indexed documents...")
-
-    results = search_client.search(
-        search_text="*",
-        select=["id"],
-        top=1000
+    # Preserve the original input order.
+    ordered_embeddings = sorted(
+        response.data,
+        key=lambda item: item.index
     )
 
-    old_documents = [
-        {"id": result["id"]}
-        for result in results
+    embeddings = [
+        item.embedding
+        for item in ordered_embeddings
     ]
 
-    if old_documents:
-
-        delete_result = search_client.delete_documents(
-            documents=old_documents
+    if len(embeddings) != len(texts):
+        raise RuntimeError(
+            "Embedding count does not match input text count."
         )
 
-        failed = [
-            item for item in delete_result
-            if not item.succeeded
-        ]
-
-        if failed:
-            raise RuntimeError(
-                f"Failed to delete {len(failed)} old documents."
-            )
-
-    print(f"Old documents removed: {len(old_documents)}")
+    return embeddings
 
 
 # ==================================================
@@ -155,9 +179,11 @@ def prepare_search_documents(chunks):
 
         for document, embedding in zip(batch, embeddings):
 
-            if len(embedding) != 1536:
+            if len(embedding) != EXPECTED_EMBEDDING_DIMENSIONS:
                 raise ValueError(
-                    f"Unexpected embedding dimensions: {len(embedding)}"
+                    f"Document {document['id']} has "
+                    f"{len(embedding)} dimensions. "
+                    f"Expected {EXPECTED_EMBEDDING_DIMENSIONS}."
                 )
 
             search_documents.append({
@@ -181,7 +207,8 @@ def prepare_search_documents(chunks):
             })
 
         print(
-            f"Embedded {min(start + BATCH_SIZE, len(chunks))}"
+            f"Embedded "
+            f"{min(start + BATCH_SIZE, len(chunks))}"
             f"/{len(chunks)} documents"
         )
 
@@ -196,11 +223,15 @@ def upload_documents(documents):
 
     print("\nUploading documents to Azure AI Search...")
 
+    total_uploaded = 0
+
     for start in range(0, len(documents), BATCH_SIZE):
 
         batch = documents[start:start + BATCH_SIZE]
 
-        results = search_client.upload_documents(
+        # Insert new documents or update documents
+        # with matching IDs. Does not delete other documents.
+        results = search_client.merge_or_upload_documents(
             documents=batch
         )
 
@@ -213,14 +244,24 @@ def upload_documents(documents):
 
             for item in failed:
                 print(
-                    f"Upload failed: {item.key} - {item.error_message}"
+                    f"Upload failed: {item.key} - "
+                    f"{item.error_message}"
                 )
 
             raise RuntimeError(
                 f"{len(failed)} documents failed to upload."
             )
 
-    print(f"Successfully uploaded: {len(documents)}")
+        total_uploaded += len(results)
+
+        print(
+            f"Uploaded {total_uploaded}/{len(documents)} documents"
+        )
+
+    print(
+        f"\nSuccessfully uploaded or updated "
+        f"{total_uploaded} documents."
+    )
 
 
 # ==================================================
@@ -237,7 +278,10 @@ def verify_index():
 
     print("\nVerifying Azure AI Search index...")
 
-    print(f"Indexed document count: {results.get_count()}")
+    print(
+        f"Total documents currently in index: "
+        f"{results.get_count()}"
+    )
 
 
 # ==================================================
@@ -246,29 +290,27 @@ def verify_index():
 
 def main():
 
-    print("SAATHI INSURANCE CORPUS INGESTION")
+    print("\nSAATHI INSURANCE CORPUS INGESTION")
     print("=================================")
 
+    # Step 1: Load corpus.
     chunks = load_chunks()
 
-    print(f"Total chunks loaded: {len(chunks)}")
-
-    if len(chunks) != 48:
-        raise ValueError(
-            f"Expected 48 chunks, found {len(chunks)}"
-        )
-
-    clear_existing_documents()
-
+    # Step 2: Generate embeddings.
     documents = prepare_search_documents(chunks)
 
+    # Step 3: Upload documents.
     upload_documents(documents)
 
+    # Step 4: Verify index.
     verify_index()
 
     print("\nCORPUS INGESTION COMPLETED SUCCESSFULLY!")
 
 
-if __name__ == "__main__":
+# ==================================================
+# ENTRY POINT
+# ==================================================
 
+if __name__ == "__main__":
     main()
