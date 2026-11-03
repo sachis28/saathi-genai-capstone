@@ -85,30 +85,15 @@ From the repository root:
 PYTHONPATH=api LLM_PROVIDER=mock python3 -m pytest api/tests/test_summary.py -q
 ```
 
-The five tests cover:
+The focused summary/data/contract suite now has 39 passing tests:
 
-- Summary response with valid interaction citations.
-- Unknown customer returning 404.
-- Customer without interaction history.
-- Rejection of unknown citation IDs.
-- Rejection of responses without citations.
+```bash
+LLM_PROVIDER=mock PYTHONPATH=.:api python -m pytest api/tests/test_summary.py tests -q
+```
 
-Five tests passed in the local run. A TestClient deprecation warning
-was reported without failing the tests.
+All six customer histories include all three interactions. Summaries use the live-tested fixed citation format, strict extractive grounding and injection rejection. The shared mock stays unchanged; two-record batching preserves later history.
 
-### Summary endpoint status
-
-The router defines GET /customers/{customer_id}/summary.
-
-Tests mount the router on a separate test application.
-The router is not yet registered in the main application.
-
-The existing mock returns the first two matching interaction lines.
-It does not perform full-history AI summarization.
-
-Valid citation IDs do not prove factual grounding.
-Customer authorization, stronger safety checks and real-provider
-evaluation remain pending.
+The router is tested in a standalone app. Main-app registration, customer/product authorization and runtime Azure configuration remain integration responsibilities; do not deploy this standalone endpoint without those controls. See [the summary handover](docs/sachi_summary_handover.md) for measured evidence, limits and the separate opt-in Azure command.
 
 ## Project files for these components
 
