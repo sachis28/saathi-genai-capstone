@@ -85,7 +85,7 @@ From the repository root:
 PYTHONPATH=api LLM_PROVIDER=mock python3 -m pytest api/tests/test_summary.py -q
 ```
 
-The focused summary/data/contract suite now has 33 passing tests:
+The focused summary/data/contract suite now has 39 passing tests:
 
 ```bash
 LLM_PROVIDER=mock PYTHONPATH=.:api python -m pytest api/tests/test_summary.py tests -q
