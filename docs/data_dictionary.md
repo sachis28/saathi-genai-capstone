@@ -1,152 +1,58 @@
-# Data Dictionary
+# Saathi data dictionary
 
-This document describes the current synthetic demo dataset.
-Field definitions reflect the implemented schema and handoff breakdown,
-not an exact schema prescribed by the execution plan.
+This branch integrates Sachi's completed seed-42 CRM, sentiment and annual-premium exports from commit 180f69a. Six customers and 18 interactions are synthetic demo/inference fixtures, never training rows. The reproducible demo reference date is 2026-10-28.
 
-## Dataset structure
+## CRM and centralized policy metadata
 
-- customers.json: JSON array of customer records.
-- interactions.json: JSON array of interaction records.
-- All fields below are required by data/schemas.py.
-- All names and interaction messages are synthetic.
+| Field | Definition |
+| --- | --- |
+| customer_id | Unique original CRM ID; preserved through inference |
+| agent_id | Existing assigned agent from Sachi's CRM; not a client-supplied identity |
+| product / tier | Policy product and tier; product access requires Shreya's approved server-side mapping |
+| consent | Strict boolean; controls outbound send, not scoring or worklist visibility |
+| renewal_date | ISO date; signed renewal days are renewal_date minus the explicit reference date |
+| annual_premium_inr | Positive finite current annual base premium in raw INR, excluding taxes/fees; monthly amounts must be annualized x12; never scaled to thousands |
+| cancelled | Explicit synthetic/business boolean; omitted means false. Cancellation is never inferred from days overdue |
+| policy_status | Calculated centrally in api/app/services/customers.py; not hard-coded as a calculated generator field |
+| renewal_eligible | Calculated centrally; true for ACTIVE/IN_GRACE, false for LAPSED/CANCELLED |
+| eligibility_reason | LAPSED_BEYOND_GRACE or CANCELLED for those exclusions; null for eligible rows; MISSING_RENEWAL_DATE when unavailable |
 
-## Customer fields
+The API Customer model preserves agent_id, product, consent, renewal_date and premium. load_customers rereads records so send-time consent changes are not hidden by a permanent cache. authorize_customer checks the assigned agent; the worklist and summary also require the authenticated principal's explicit product scope.
 
-| Field | JSON type | Example | Meaning |
-|---|---|---|---|
-| customer_id | string | C-204 | Unique customer identifier. |
-| name | string | Synthetic Customer 01 | Synthetic display name. |
-| product | string | Health | Policy product. |
-| tier | string | Silver | Policy tier. |
-| city | string | Pune | Customer city. |
-| segment | string | Retail | Customer segment. |
-| consent | boolean | true | Consent flag checked before outbound sending. |
-| agent_id | string | A-001 | Assigned agent identifier. |
-| renewal_date | string, YYYY-MM-DD | 2026-11-12 | Policy renewal date. |
+| Days to renewal / explicit state | Status | Eligible |
+| --- | --- | --- |
+| >= 0 | ACTIVE | true |
+| -30 through -1 inclusive | IN_GRACE | true |
+| < -30 | LAPSED | false |
+| Explicit cancelled=true or explicit CANCELLED state | CANCELLED | false |
 
-## Interaction fields
+Set SAATHI_AS_OF_DATE=2026-10-28 for the demo. If unset, central logic uses the current UTC date. Worklist features must match the central renewal-date snapshot; stale/mismatched days are rejected.
 
-| Field | JSON type | Example | Meaning |
-|---|---|---|---|
-| interaction_id | string | I-0001 | Unique interaction identifier, available for summary citations. |
-| customer_id | string | C-204 | Links the interaction to a customer. |
-| date | string, YYYY-MM-DD | 2026-10-01 | Interaction date. |
-| channel | string | email | Communication channel. |
-| text | string | Please explain my policy. | Synthetic interaction message. |
+## Demo fixture changes
 
-Examples illustrate field formats; they are not necessarily complete
-records copied from the generated files.
+| Customer | Agent | Days | Status | Consent |
+| --- | --- | --- | --- | --- |
+| C-204 | A-001 | 15 | ACTIVE | true |
+| C-311 | A-002 | 7 | ACTIVE | true |
+| C-118 | A-003 | -31 | LAPSED | true |
+| C-450 | A-001 | -5 | IN_GRACE | true |
+| C-205 | A-002 | 20 | ACTIVE | false |
+| C-999 | A-003 | 90 | CANCELLED | true |
 
-## Current demo values
+To cover the requested statuses, C-118's synthetic renewal date changes from 2026-12-27 to 2026-09-27, and C-999 gets cancelled=true. No ownership, product, consent, premium, interaction text/date or sentiment results are changed. C-450 remains -5. The generator reproduces these explicit inputs; status calculation remains centralized. data/radar_features.json and data/radar_input.json are regenerated consistently. tests/fixtures/sachi_radar_input.json remains the historical unmodified export from 180f69a.
 
-- Product: Health.
-- Tiers: Silver and Gold.
-- Segment: Retail.
-- Channels: phone, email, chat.
-- Customer IDs: C-204, C-311, C-118, C-450, C-205, C-999.
-- C-205 has consent=false.
-- These are generator choices, not schema-enforced enumerations.
+## Interactions and sentiment
 
-## Validation
+InteractionRecord contains interaction_id, customer_id, date, channel and text. IDs are unique and reference existing customers. There are three interactions per customer. Existing interaction and saved service-sentiment bytes remain unchanged.
 
-### Schema validation
+The 90-day window includes the reference day and previous 89 days, excluding future interactions. interaction_count_90d is the number of interactions in that window. Interaction sentiment is positive confidence minus negative confidence. Customer sentiment_score is its mean in the same window. No eligible history returns null, not neutral zero; the current Radar exporter rejects missing sentiment rather than imputing it.
 
-- Dates are parsed as Python date values and serialized as YYYY-MM-DD.
-- Consent uses StrictBool and must be an actual boolean.
-- The schema does not enforce ID patterns or allowed string values.
+Saved data/interaction_sentiment.json has 18 service results (13 neutral, 3 negative, 2 positive). Consistency/coverage checks are not an independent sentiment accuracy evaluation. data/customer_sentiment.json stores six scores and as_of_date. No service rerun is needed if interaction IDs, text and dates are unchanged.
 
-### Generator checks
+## Radar input
 
-- Customer IDs must be unique.
-- Interaction IDs must be unique.
-- Every interaction must reference a generated customer.
+The exact six fields in data/radar_input.json are customer_id, days_to_renewal, interaction_count_90d, sentiment_score, annual_premium_inr, consent. Model features are the middle four numeric fields only. Customer IDs, consent, policy metadata, agent IDs and outcome labels are not predictive features. Authorization and central eligibility apply before worklist/model inference. Consent does not remove customers from scoring or visibility; it must still block outbound send. Raw compatibility commands do not authenticate an agent or prove product authorization.
 
-## Reproducibility
+## Summary output
 
-- Seed: 42.
-- Fixed reference date: 2026-10-28.
-- Current size: 6 customers and 18 interactions.
-- Renewal offsets use the fixed reference date, not the execution date.
-- Identical output was verified across two consecutive runs.
-
-## Scope and integration
-
-- Premium, claims, sentiment, and Radar features are not included yet.
-- The generator writes data files only; API loading is a separate step.
-- The current API Customer model exposes only customer_id, name,
-  product, tier, and consent.
-- The existing missing-customer test uses C-999. That test needs an
-  absent ID when the API is integrated with this dataset.
-
-## Renewal Radar features
-
-Generated file: data/radar_features.json.
-One row per customer. These are model inputs, not predictions or risk scores.
-
-| Field | JSON type | Meaning |
-|---|---|---|
-| customer_id | string | Customer identifier linking to customers.json. |
-| as_of_date | string, YYYY-MM-DD | Explicit reference date for feature calculations. |
-| days_to_renewal | integer | Renewal date minus reference date; negative means overdue. |
-| interaction_count | integer | Number of interactions on or before the reference date. |
-| days_since_last_interaction | integer or null | Days since the latest eligible interaction; null if none exists. |
-
-### Generate features
-
-From the repository root:
-
-```bash
-python3 ml/radar_features.py --as-of 2026-10-28
-```
-
-Future-dated interactions are excluded.
-Premium, claims, and sentiment features are not implemented yet.
-
-### Checks performed
-
-- Six feature rows with expected renewal offsets.
-- Three eligible interactions per demo customer.
-- Customers without history return count zero and recency null.
-- Future interactions are excluded.
-- Renewal on the reference date gives zero days to renewal.
-
-## Interaction sentiment
-
-Generated file: data/interaction_sentiment.json.
-Script: ml/sentiment.py.
-
-The script sends synthetic interaction text to the configured sentiment
-service and preserves the original interaction and customer identifiers.
-
-| Field | Type | Meaning |
-|---|---|---|
-| interaction_id | string | Links to the original interaction. |
-| customer_id | string | Original CRM customer identifier. |
-| date | string, YYYY-MM-DD | Original interaction date. |
-| sentiment | string | Returned sentiment label. |
-| confidence_scores.positive | float | Positive confidence score. |
-| confidence_scores.neutral | float | Neutral confidence score. |
-| confidence_scores.negative | float | Negative confidence score. |
-| provider | string | Provider identifier recorded by the script. |
-
-### Verified output
-
-- 18 sentiment records matching all 18 source interactions.
-- Customer IDs and dates preserved.
-- Labels and confidence-score ranges validated.
-- Observed labels: 13 neutral, 3 negative, 2 positive.
-- These checks verify consistency, not sentiment accuracy.
-
-### Proposed Radar mapping: pending team approval
-
-Interaction numeric score = positive confidence minus negative confidence.
-
-Proposed customer sentiment_score = mean interaction numeric score
-within the same 90-day window used for interaction counts.
-
-This is a project-defined mapping, not an Azure-provided numeric score.
-No-history handling must be agreed explicitly; missing sentiment must
-not silently become neutral.
-
-Numeric mapping and customer aggregation are not implemented yet.
+GET /customers/{customer_id}/summary returns customer_id, summary and interaction_ids. It uses the shared customer loader/ownership authorizer plus explicit product scopes. Full history is processed in batches of two. Current grounding is conservative extractive validation: every returned statement must exactly match a supplied interaction's text and cite that same interaction; every interaction in a batch must be covered, without trailing uncited claims. This deliberately rejects unsupported paraphrases and is not a general semantic-entailment model. Injection-like history/output is rejected. Ordinary tests use mock; real Azure gpt-4.1-mini remains a separate blocked check when credentials are absent.

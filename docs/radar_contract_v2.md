@@ -1,3 +1,7 @@
+# Historical Radar v2 compatibility evidence
+
+This document records the earlier consent-filtered implementation and original fixtures. For the current uppercase status/30-day-grace and consent-at-send contract, use [sachi_followup_handover.md](sachi_followup_handover.md) and [worklist_access.md](worklist_access.md). Earlier metrics remain historical evidence.
+
 # Radar contract alignment
 
 The Radar model now consumes Sachi's annual INR premium and signed renewal-day contract. This is verified synthetic scoring compatibility; policy eligibility and customer/product authorization remain application integration requirements.

@@ -34,3 +34,8 @@ Radar v2 now supports annual_premium_inr and signed renewal days. Seventeen new 
 ## Worklist access update 2 November 2026
 
 Added a fail-closed /worklist gate for authenticated agent identity, current CRM consent, customer ownership, allowed products, explicit policy status and renewal eligibility. CRM features replace the API training-fixture fallback. 67 focused tests passed locally across authorization, endpoint integration, summaries, audit and Radar contract checks; see worklist_access.md for commands and limitations. ML/retrieval and Azure HTTP dependencies were mocked in the endpoint tests. Team-confirmed CRM metadata, deployed identity-provider integration, authorization of other endpoints, full real-model/retrieval acceptance, and Azure deployment remain pending. No statuses were assigned to the existing six customer fixtures.
+
+
+## Agreed Sachi follow-up 3 November 2026
+
+The agreed uppercase status/30-day-grace and consent-at-send contract supersedes the earlier worklist consent/status behavior. The focused follow-up suite passed 87 tests with one TestClient deprecation warning. Real local-model scores for four centrally eligible CRM customers are in docs/evidence/sachi_followup_radar.json. Protected endpoint tests use controlled test identities; summary/chat tests use mocks where documented. Real Azure and production product authorization remain blocked by missing configuration. See sachi_followup_handover.md. No main.py edits, main merge, six-customer training, corpus regeneration or intent retraining were performed in this follow-up.
