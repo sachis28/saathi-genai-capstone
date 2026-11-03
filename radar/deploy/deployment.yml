@@ -1,0 +1,14 @@
+$schema: https://azuremlschemas.azureedge.net/latest/managedOnlineDeployment.schema.json
+name: blue
+endpoint_name: saathi-radar-ep
+model: azureml:saathi-renewal-radar:1
+code_configuration:
+  code: ./code
+  scoring_script: score.py
+environment:
+  name: saathi-radar-serving
+  version: '1'
+  image: mcr.microsoft.com/azureml/openmpi4.1.0-ubuntu22.04:latest
+  conda_file: ./conda.yml
+instance_type: Standard_D2a_v4
+instance_count: 1
