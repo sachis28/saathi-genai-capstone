@@ -67,3 +67,9 @@ PYTHONPATH=.:api python scripts/verify_summary_azure.py --run-live
 ```
 
 This mounts the protected summary router without overrides, verifies real agent authentication, calls the actual Azure adapter, and requires all three C-204 IDs. Ordinary tests remain LLM_PROVIDER=mock. Neither runtime command has been reported as passing; no runtime credentials or product grants were fabricated.
+
+## Azure inventory and proposed workspace — 2026-11-03
+
+Browser sign-in/MFA succeeded. The Saathi_rg inventory contains four resources: Foundry Saathii, Foundry project Saathi_foundry, saathi-ai-search and saathistorage. Azure Machine Learning inventory in the accessible Azure subscription 1, with resource group/location/type filters set to all, returned "No workspaces to display" (0 of 0). This is limited to resources visible to the signed-in account; it does not establish the absence of inaccessible resources.
+
+Prepared workspace: saathi-radar-ml, existing Saathi_rg, Central US. Azure Review + create validation passed. Proposed dependencies are new dedicated storage, Key Vault and Application Insights; container registry is None at workspace creation. Identity is system-assigned; encryption uses Microsoft-managed keys. No compute or endpoint has been created. Supporting resource usage may incur charges. The final Create action is pending confirmation because it provisions the service identity and associated resource access. Actual Radar training/registration/deployment and live endpoint invocation still follow workspace creation and quota/configuration verification.
