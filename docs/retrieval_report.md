@@ -1,6 +1,6 @@
 # Saathi - Retrieval Evaluation Report
 
-Evaluation date: 2026-11-01 15:01
+Evaluation date: 2026-11-03 09:48
 Total test questions: 30
 Top K: 5
 
@@ -130,3 +130,52 @@ Top K: 5
 - Retrieval results are evaluated against manually defined expected clause IDs.
 - Recall@5 and MRR measure retrieval quality, not the factual accuracy of generated answers.
 - Semantic Hybrid Search uses the configured Azure AI Search semantic configuration.
+
+
+## Local vs Azure Retrieval Comparison
+
+### Evaluation Setup
+
+- Corpus: 48 synthetic insurance clauses
+- Evaluation dataset: 30 retrieval gold-set questions
+- Evaluation metric: Recall@5 and Mean Reciprocal Rank (MRR)
+- Local baseline: BM25 lexical retrieval
+- Azure methods: Vector Search, Hybrid Search, and Semantic Hybrid Search
+
+### Results
+
+| Retrieval Method | Recall@5 | MRR |
+|---|---:|---:|
+| Local BM25 | 0.9333 | 0.8400 |
+| Azure Vector Search | 1.0000 | 1.0000 |
+| Azure Hybrid Search | 1.0000 | 0.9094 |
+| Azure Semantic Hybrid Search | 1.0000 | 1.0000 |
+
+### Analysis
+
+Local BM25 achieved 93.33% Recall@5 and 0.8400 MRR on the
+30-question synthetic evaluation dataset.
+
+Azure Vector Search achieved 100% Recall@5 and 1.0000 MRR.
+Azure Hybrid Search achieved 100% Recall@5 and 0.9094 MRR.
+Azure Semantic Hybrid Search achieved 100% Recall@5 and 1.0000 MRR.
+
+BM25 uses lexical matching based on term frequency and document
+statistics. Azure Vector Search uses semantic embeddings, while
+Hybrid Search combines lexical and vector retrieval. Semantic Hybrid
+Search additionally applies Azure AI Search's semantic ranking.
+
+The results suggest that semantic retrieval and semantic ranking
+can improve retrieval performance over the local lexical baseline
+on this particular dataset.
+
+### Limitations
+
+- The corpus contains only 48 synthetic insurance clauses.
+- The evaluation dataset contains only 30 questions.
+- Results should not be interpreted as production-level retrieval accuracy.
+- Performance may change with larger datasets, different queries,
+  and more complex insurance documents.
+- BM25 and Azure retrieval use different retrieval technologies,
+  so these results demonstrate a comparison rather than a universal
+  performance guarantee.
