@@ -1,0 +1,35 @@
+# Publishes the API and web images to GitHub Container Registry on every merge to main,
+# so the Azure Container Apps can be created from the portal without the Azure CLI:
+#   ghcr.io/sachis28/saathi-api:latest   (port 8000)
+#   ghcr.io/sachis28/saathi-web:latest   (port 8080)
+# Images contain code only. Keys are set as Container App secrets in Azure, never baked in.
+name: Images
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  packages: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - { name: saathi-api, context: . }
+          - { name: saathi-web, context: dotnet }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.context }}
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/${{ matrix.name }}:latest
+            ghcr.io/${{ github.repository_owner }}/${{ matrix.name }}:${{ github.sha }}
