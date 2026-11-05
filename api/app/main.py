@@ -2,7 +2,12 @@ from typing import Dict, List
 import logging
 import uuid
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query, Depends
+from starlette.concurrency import run_in_threadpool
+import httpx
+
+from app.services.ml_service import classify_intent, renewal_worklist
+from app.services.worklist_access import AgentPrincipal, authenticate_agent, load_authorized_radar_frame
 
 from app.models.schemas import (ChatRequest, ChatResponse, Customer, Citation,
                                 SearchRequest, SearchHit, DraftRequest, Draft, Turn)
@@ -77,17 +82,22 @@ async def chat(req: ChatRequest):
                             session_id=session_id, resolved_question=req.question)
 
     resolved = memory.resolve_question(session_id, req.question)
+    try:
+        classification = await run_in_threadpool(classify_intent, resolved)
+    except (FileNotFoundError, ValueError):
+        raise HTTPException(status_code=503, detail="Configure a trained intent provider: python -m ml.hf_models distilbert, or INTENT_PROVIDER=tfidf_lr after python -m ml.train_intent")
+
     hits = get_retriever().search(resolved, k=5, product=customer.product)
     answer, citations = generate_answer(resolved, hits)
 
     memory.add_turn(session_id, req.question, resolved, answer)
     safe_log("chat", customer_id=customer.customer_id, question=req.question, citations=len(citations))
-    audit.log_event("chat", customer_id=customer.customer_id, intent="policy_question",
+    audit.log_event("chat", customer_id=customer.customer_id, intent=classification["intent"],
                     citations=len(citations))
 
     return ChatResponse(
         answer=answer,
-        intent="policy_question",  # Sairaj's classifier replaces this
+        intent=classification["intent"],
         citations=citations,
         session_id=session_id,
         resolved_question=resolved,
@@ -156,3 +166,21 @@ async def get_audit():
 async def verify_audit():
     valid, broken_at, total = audit.verify_chain()
     return {"valid": valid, "broken_at_seq": broken_at, "total_events": total}
+
+
+@app.get("/worklist")
+async def worklist(
+    limit: int = Query(default=10, ge=1, le=100),
+    principal: AgentPrincipal = Depends(authenticate_agent),
+):
+    """CRM-linked synthetic Radar scores, filtered before model inference."""
+    try:
+        frame = await run_in_threadpool(load_authorized_radar_frame, principal)
+        if frame.empty:
+            return {"items": [], "synthetic": True}
+        rows = await renewal_worklist(frame)
+        return {"items": rows[:limit], "synthetic": True}
+    except FileNotFoundError:
+        raise HTTPException(status_code=503, detail="Configure CRM-linked Radar input and train Renewal Radar first")
+    except (OSError, KeyError, ValueError, TypeError, httpx.HTTPError):
+        raise HTTPException(status_code=503, detail="Renewal risk provider is unavailable or returned invalid data")

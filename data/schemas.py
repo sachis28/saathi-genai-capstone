@@ -16,6 +16,7 @@ class CustomerRecord(BaseModel):
     agent_id: str
     renewal_date: Date
     annual_premium_inr: float = Field(gt=0, allow_inf_nan=False)
+    cancelled: StrictBool = False
 
 
 class InteractionRecord(BaseModel):

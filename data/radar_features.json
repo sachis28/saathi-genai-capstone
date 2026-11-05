@@ -16,7 +16,7 @@
   {
     "customer_id": "C-118",
     "as_of_date": "2026-10-28",
-    "days_to_renewal": 60,
+    "days_to_renewal": -31,
     "interaction_count": 3,
     "days_since_last_interaction": 3
   },

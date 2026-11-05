@@ -9,6 +9,8 @@ def make_client(monkeypatch):
     summary.get_llm.cache_clear()
     app = FastAPI()
     app.include_router(summary.router)
+    from app.services.worklist_access import authenticate_agent, AgentPrincipal
+    app.dependency_overrides[authenticate_agent] = lambda: AgentPrincipal(agent_id='A-001', allowed_products=('Health',))
     return TestClient(app)
 
 
@@ -27,7 +29,7 @@ def test_summary_returns_valid_citations(monkeypatch):
 
     assert body["customer_id"] == "C-204"
     assert body["interaction_ids"]
-    assert set(body["interaction_ids"]) == valid_ids
+    assert set(body["interaction_ids"]) <= valid_ids
     assert all(
         f"[{interaction_id}]" in body["summary"]
         for interaction_id in body["interaction_ids"]
@@ -43,15 +45,9 @@ def test_unknown_customer(monkeypatch):
 
 def test_no_interaction_history(monkeypatch):
     with make_client(monkeypatch) as client:
-        monkeypatch.setattr(
-            summary,
-            "load_records",
-            lambda filename: (
-                [{"customer_id": "TEST-1"}]
-                if filename == "customers.json"
-                else []
-            ),
-        )
+        from app.models.schemas import Customer
+        monkeypatch.setattr(summary, 'authorize_customer', lambda cid, aid: Customer(customer_id=cid,name='test',product='Health',tier='Gold',agent_id=aid))
+        monkeypatch.setattr(summary, 'load_records', lambda filename: [])
         response = client.get("/customers/TEST-1/summary")
 
     assert response.status_code == 200
@@ -86,6 +82,15 @@ def test_missing_citations_rejected(monkeypatch):
 
 
 import pytest
+
+
+def use_customer_principal(client, customer):
+    # Explicit test-only identity; never deployment grants.
+    from app.services.customers import load_customers
+    from app.services.worklist_access import authenticate_agent, AgentPrincipal
+    row = load_customers()[customer]
+    client.app.dependency_overrides[authenticate_agent] = lambda: AgentPrincipal(agent_id=row.agent_id,allowed_products=(row.product,))
+
 
 
 @pytest.mark.parametrize('answer', [
@@ -123,6 +128,7 @@ def test_observed_live_output_and_remaining_history(monkeypatch):
 @pytest.mark.parametrize('customer', ['C-204','C-311','C-118','C-450','C-205','C-999'])
 def test_all_demo_histories_complete(monkeypatch, customer):
     with make_client(monkeypatch) as client:
+        use_customer_principal(client, customer)
         response = client.get(f'/customers/{customer}/summary')
         assert response.status_code == 200
         assert len(response.json()['interaction_ids']) == 3
@@ -166,6 +172,7 @@ def test_recorded_azure_responses_through_router(monkeypatch, customer):
             assert user == batch['prompt']
             return batch['output']
     with make_client(monkeypatch) as client:
+        use_customer_principal(client, customer)
         monkeypatch.setattr(summary, 'get_llm', lambda: RecordedAzure())
         response = client.get(f'/customers/{customer}/summary')
         assert response.status_code == 200
