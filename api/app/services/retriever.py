@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import re
 from abc import ABC, abstractmethod
@@ -13,17 +14,28 @@ from sentence_transformers import SentenceTransformer
 
 from app.models.schemas import SearchHit
 
+logger = logging.getLogger("saathi")
+
 CORPUS_DIR = Path(__file__).resolve().parents[3] / "rag" / "corpus"
 RRF_K = 60
 FIELDS = ("source_id", "clause_id", "version", "product", "tier", "text")
+
+# Only these files are searched. Poisoned docs and the gold set are never loaded.
+# Override with CORPUS_FILES="a.jsonl,b.jsonl". The first existing file wins.
+DEFAULT_FILES = ["insurance_chunks.jsonl", "sample_docs.jsonl"]
 
 
 def tokenize(text: str) -> List[str]:
     return re.findall(r"\w+", text.lower())
 
 
+def corpus_files() -> List[str]:
+    env = os.getenv("CORPUS_FILES")
+    return [f.strip() for f in env.split(",") if f.strip()] if env else DEFAULT_FILES
+
+
 class IRetriever(ABC):
-    """Plugin interface: LocalRetriever now, AzureSearchRetriever on Day 41."""
+    """Plugin interface: LocalRetriever now, AzureSearchRetriever later."""
 
     @abstractmethod
     def search(self, query: str, k: int = 5,
@@ -37,7 +49,7 @@ class LocalRetriever(IRetriever):
     def __init__(self, corpus_dir: Path = CORPUS_DIR):
         self.chunks = self._load(corpus_dir)
         if not self.chunks:
-            raise RuntimeError(f"No .jsonl files found in {corpus_dir}")
+            raise RuntimeError(f"No usable clauses found in {corpus_dir} (looked for {corpus_files()})")
 
         texts = [c["text"] for c in self.chunks]
         self.bm25 = BM25Okapi([tokenize(t) for t in texts])
@@ -49,12 +61,23 @@ class LocalRetriever(IRetriever):
 
     @staticmethod
     def _load(corpus_dir: Path) -> List[dict]:
-        chunks = []
-        for f in sorted(corpus_dir.glob("*.jsonl")):
-            for line in f.read_text(encoding="utf-8").splitlines():
-                if line.strip():
-                    chunks.append(json.loads(line))
-        return chunks
+        for name in corpus_files():
+            path = corpus_dir / name
+            if not path.exists():
+                continue
+            chunks, skipped = [], 0
+            for line in path.read_text(encoding="utf-8").splitlines():
+                if not line.strip():
+                    continue
+                row = json.loads(line)
+                if all(row.get(f) not in (None, "") for f in FIELDS):
+                    chunks.append({f: str(row[f]) for f in FIELDS})
+                else:
+                    skipped += 1
+            logger.info("Loaded %d clauses from %s (skipped %d rows missing fields)", len(chunks), name, skipped)
+            if chunks:
+                return chunks
+        return []
 
     @staticmethod
     def _allowed(c: dict, product: Optional[str], tier: Optional[str]) -> bool:
@@ -70,26 +93,20 @@ class LocalRetriever(IRetriever):
         if not allowed:
             return []
 
-        # 1) Keyword ranking (BM25)
         bm25_scores = self.bm25.get_scores(tokenize(query))
         bm25_rank = [int(i) for i in np.argsort(-bm25_scores) if int(i) in allowed]
 
-        # 2) Meaning ranking (MiniLM + FAISS)
         q = self.model.encode([query], normalize_embeddings=True).astype("float32")
         _, ids = self.index.search(q, len(self.chunks))
         vec_rank = [int(i) for i in ids[0] if int(i) in allowed]
 
-        # 3) Reciprocal Rank Fusion
         fused = {}
         for ranking in (bm25_rank, vec_rank):
             for r, i in enumerate(ranking):
                 fused[i] = fused.get(i, 0.0) + 1.0 / (RRF_K + r + 1)
 
         top = sorted(fused.items(), key=lambda x: x[1], reverse=True)[:k]
-        return [
-            SearchHit(**{f: self.chunks[i][f] for f in FIELDS}, score=round(s, 4))
-            for i, s in top
-        ]
+        return [SearchHit(**self.chunks[i], score=round(s, 4)) for i, s in top]
 
 
 @lru_cache
@@ -97,4 +114,4 @@ def get_retriever() -> IRetriever:
     mode = os.getenv("RETRIEVER", "local")
     if mode == "local":
         return LocalRetriever()
-    raise NotImplementedError(f"RETRIEVER={mode} not built yet (Azure comes on Day 41)")
+    raise NotImplementedError(f"RETRIEVER={mode} not built yet")

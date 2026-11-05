@@ -1,0 +1,32 @@
+[
+  {
+    "customer_id": "C-204",
+    "as_of_date": "2026-10-28",
+    "sentiment_score": 0.05333333333333334
+  },
+  {
+    "customer_id": "C-311",
+    "as_of_date": "2026-10-28",
+    "sentiment_score": -0.3233333333333333
+  },
+  {
+    "customer_id": "C-118",
+    "as_of_date": "2026-10-28",
+    "sentiment_score": 0.34
+  },
+  {
+    "customer_id": "C-450",
+    "as_of_date": "2026-10-28",
+    "sentiment_score": -0.29
+  },
+  {
+    "customer_id": "C-205",
+    "as_of_date": "2026-10-28",
+    "sentiment_score": -0.27999999999999997
+  },
+  {
+    "customer_id": "C-999",
+    "as_of_date": "2026-10-28",
+    "sentiment_score": 0.36333333333333334
+  }
+]

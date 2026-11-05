@@ -28,6 +28,12 @@ class Customer(BaseModel):
     product: str
     tier: str
     consent: bool = True
+    agent_id: Optional[str] = None
+    renewal_date: Optional[str] = None
+    days_to_renewal: Optional[int] = None
+    policy_status: Optional[str] = None
+    renewal_eligible: bool = False
+    eligibility_reason: Optional[str] = None
 
 
 class SearchRequest(BaseModel):
@@ -63,3 +69,5 @@ class Turn(BaseModel):
     question: str
     resolved_question: str
     answer: str
+
+    
