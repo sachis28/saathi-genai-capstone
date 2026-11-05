@@ -32,7 +32,7 @@
     "segment": "Retail",
     "consent": true,
     "agent_id": "A-003",
-    "renewal_date": "2026-12-27",
+    "renewal_date": "2026-09-27",
     "annual_premium_inr": 14476.44
   },
   {
@@ -69,6 +69,7 @@
     "consent": true,
     "agent_id": "A-003",
     "renewal_date": "2027-01-26",
-    "annual_premium_inr": 34158.27
+    "annual_premium_inr": 34158.27,
+    "cancelled": true
   }
 ]

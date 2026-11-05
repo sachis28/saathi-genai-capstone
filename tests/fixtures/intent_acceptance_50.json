@@ -1,0 +1,252 @@
+[
+  {
+    "id": "A-01",
+    "text": "Compare Silver versus Gold",
+    "label": "compare_products"
+  },
+  {
+    "id": "A-02",
+    "text": "Show differences between Gold and Platinum",
+    "label": "compare_products"
+  },
+  {
+    "id": "A-03",
+    "text": "Silver or Gold: compare benefits",
+    "label": "compare_products"
+  },
+  {
+    "id": "A-04",
+    "text": "Help compare Silver and Platinum",
+    "label": "compare_products"
+  },
+  {
+    "id": "A-05",
+    "text": "What differs in Gold and Silver?",
+    "label": "compare_products"
+  },
+  {
+    "id": "A-06",
+    "text": "Compare Gold and Gold Plus",
+    "label": "compare_products"
+  },
+  {
+    "id": "A-07",
+    "text": "Which is better, Silver or Gold?",
+    "label": "compare_products"
+  },
+  {
+    "id": "A-08",
+    "text": "Silver versus Platinum policy comparison",
+    "label": "compare_products"
+  },
+  {
+    "id": "A-09",
+    "text": "Compare the two plans Silver and Gold",
+    "label": "compare_products"
+  },
+  {
+    "id": "A-10",
+    "text": "Compare the benefits of Silver and Gold for C-204",
+    "label": "compare_products"
+  },
+  {
+    "id": "A-11",
+    "text": "What is covered by Silver?",
+    "label": "coverage_question"
+  },
+  {
+    "id": "A-12",
+    "text": "Explain Gold exclusions",
+    "label": "coverage_question"
+  },
+  {
+    "id": "A-13",
+    "text": "Is surgery covered under Gold?",
+    "label": "coverage_question"
+  },
+  {
+    "id": "A-14",
+    "text": "Tell me the Platinum waiting period",
+    "label": "coverage_question"
+  },
+  {
+    "id": "A-15",
+    "text": "Does Silver include hospitalization?",
+    "label": "coverage_question"
+  },
+  {
+    "id": "A-16",
+    "text": "What are the coverage limitations?",
+    "label": "coverage_question"
+  },
+  {
+    "id": "A-17",
+    "text": "Explain the policy's exclusions",
+    "label": "coverage_question"
+  },
+  {
+    "id": "A-18",
+    "text": "Is dental treatment included in Silver?",
+    "label": "coverage_question"
+  },
+  {
+    "id": "A-19",
+    "text": "What is the waiting period for Gold?",
+    "label": "coverage_question"
+  },
+  {
+    "id": "A-20",
+    "text": "Explain hospitalization cover under Platinum",
+    "label": "coverage_question"
+  },
+  {
+    "id": "A-21",
+    "text": "Draft renewal reminder for C-204",
+    "label": "renewal_draft"
+  },
+  {
+    "id": "A-22",
+    "text": "Compose a renewal SMS for C-311",
+    "label": "renewal_draft"
+  },
+  {
+    "id": "A-23",
+    "text": "Write a premium renewal note",
+    "label": "renewal_draft"
+  },
+  {
+    "id": "A-24",
+    "text": "Prepare a renewal email draft",
+    "label": "renewal_draft"
+  },
+  {
+    "id": "A-25",
+    "text": "Create a policy renewal reminder",
+    "label": "renewal_draft"
+  },
+  {
+    "id": "A-26",
+    "text": "Help draft the renewal message",
+    "label": "renewal_draft"
+  },
+  {
+    "id": "A-27",
+    "text": "Write a notice about policy renewal",
+    "label": "renewal_draft"
+  },
+  {
+    "id": "A-28",
+    "text": "Draft a renewal reminder pending approval",
+    "label": "renewal_draft"
+  },
+  {
+    "id": "A-29",
+    "text": "Prepare a renewal notice for Gold",
+    "label": "renewal_draft"
+  },
+  {
+    "id": "A-30",
+    "text": "Compose a reminder to renew the policy",
+    "label": "renewal_draft"
+  },
+  {
+    "id": "A-31",
+    "text": "Show C-204 profile",
+    "label": "customer_lookup"
+  },
+  {
+    "id": "A-32",
+    "text": "Find the CRM record for C-311",
+    "label": "customer_lookup"
+  },
+  {
+    "id": "A-33",
+    "text": "Look up C-118 contact details",
+    "label": "customer_lookup"
+  },
+  {
+    "id": "A-34",
+    "text": "Fetch customer C-450 information",
+    "label": "customer_lookup"
+  },
+  {
+    "id": "A-35",
+    "text": "Get the profile of customer C-205",
+    "label": "customer_lookup"
+  },
+  {
+    "id": "A-36",
+    "text": "Display customer account details",
+    "label": "customer_lookup"
+  },
+  {
+    "id": "A-37",
+    "text": "Show saved contact information for C-999",
+    "label": "customer_lookup"
+  },
+  {
+    "id": "A-38",
+    "text": "Find C-204's policy record",
+    "label": "customer_lookup"
+  },
+  {
+    "id": "A-39",
+    "text": "Retrieve CRM details for C-118",
+    "label": "customer_lookup"
+  },
+  {
+    "id": "A-40",
+    "text": "Who is customer C-311?",
+    "label": "customer_lookup"
+  },
+  {
+    "id": "A-41",
+    "text": "Tell me a joke",
+    "label": "out_of_scope"
+  },
+  {
+    "id": "A-42",
+    "text": "Give a cake recipe",
+    "label": "out_of_scope"
+  },
+  {
+    "id": "A-43",
+    "text": "Book a flight to Delhi",
+    "label": "out_of_scope"
+  },
+  {
+    "id": "A-44",
+    "text": "Predict the cricket score",
+    "label": "out_of_scope"
+  },
+  {
+    "id": "A-45",
+    "text": "Write a love poem",
+    "label": "out_of_scope"
+  },
+  {
+    "id": "A-46",
+    "text": "Recommend a movie",
+    "label": "out_of_scope"
+  },
+  {
+    "id": "A-47",
+    "text": "Solve calculus homework",
+    "label": "out_of_scope"
+  },
+  {
+    "id": "A-48",
+    "text": "Order a pizza",
+    "label": "out_of_scope"
+  },
+  {
+    "id": "A-49",
+    "text": "What is today's weather?",
+    "label": "out_of_scope"
+  },
+  {
+    "id": "A-50",
+    "text": "Play music for me",
+    "label": "out_of_scope"
+  }
+]

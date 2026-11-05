@@ -13,7 +13,7 @@ DATA_DIR = Path(__file__).resolve().parent
 
 
 def write_json(filename, records):
-    payload = [record.model_dump(mode="json") for record in records]
+    payload = [record.model_dump(mode="json", exclude_defaults=True) for record in records]
     output = DATA_DIR / filename
     output.write_text(
         json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
@@ -49,7 +49,7 @@ def main():
         },
         {
             "id": "C-118", "tier": "Silver", "consent": True,
-            "city": "Nagpur", "days": 60,
+            "city": "Nagpur", "days": -31,
             "messages": [
                 "Please explain the available policy tiers.",
                 "I would like to understand upgrade options.",
@@ -76,7 +76,7 @@ def main():
         },
         {
             "id": "C-999", "tier": "Silver", "consent": True,
-            "city": "Mumbai", "days": 90,
+            "city": "Mumbai", "days": 90, "cancelled": True,
             "messages": [
                 "I would like an overview of my policy.",
                 "Please explain how to contact my agent.",
@@ -101,6 +101,7 @@ def main():
             renewal_date=REFERENCE_DATE + timedelta(days=scenario["days"]),
             # Synthetic annual base premium in INR, excluding taxes/fees.
             annual_premium_inr=round(premium_rng.uniform(1000, 50000), 2),
+            cancelled=scenario.get("cancelled", False),
         )
         customers.append(customer)
 
