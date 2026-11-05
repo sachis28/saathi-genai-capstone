@@ -28,3 +28,16 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with: { dotnet-version: "10.0.x" }
       - run: dotnet test dotnet/Saathi.slnx
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the API image
+        run: docker build -t saathi-api .
+      - name: API image starts and answers /health
+        run: |
+          docker run -d -p 8000:8000 --name api saathi-api
+          for i in $(seq 1 30); do curl -fsS localhost:8000/health && exit 0; sleep 3; done
+          docker logs api; exit 1
+      - name: Build the web image
+        run: docker build -t saathi-web dotnet
