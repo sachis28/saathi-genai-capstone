@@ -109,9 +109,70 @@ class LocalRetriever(IRetriever):
         return [SearchHit(**self.chunks[i], score=round(s, 4)) for i, s in top]
 
 
+def _odata_literal(value: str) -> str:
+    return "'" + value.replace("'", "''") + "'"
+
+
+def azure_filter(product: Optional[str], tier: Optional[str]) -> Optional[str]:
+    """Same rule as LocalRetriever._allowed: a clause for 'All' matches every product/tier."""
+    parts = []
+    for field, value in (("product", product), ("tier", tier)):
+        if value:
+            parts.append(f"({field} eq {_odata_literal(value)} or {field} eq 'All')")
+    return " and ".join(parts) or None
+
+
+class AzureSearchRetriever(IRetriever):
+    """Hybrid (keyword + vector) query on Rohan's Azure AI Search index, reranked by the semantic ranker."""
+
+    def __init__(self, search_client=None, embed=None):
+        if search_client is None:
+            from azure.core.credentials import AzureKeyCredential
+            from azure.search.documents import SearchClient
+            search_client = SearchClient(
+                endpoint=os.environ["AZURE_SEARCH_ENDPOINT"].strip(),
+                index_name=os.environ["AZURE_SEARCH_INDEX_NAME"].strip(),
+                credential=AzureKeyCredential(os.environ["AZURE_SEARCH_ADMIN_KEY"].strip()),
+            )
+        self.client = search_client
+        self.embed = embed or self._foundry_embedder()
+        self.semantic_config = os.getenv("AZURE_SEARCH_SEMANTIC_CONFIG", "insurance-semantic-config")
+
+    @staticmethod
+    def _foundry_embedder():
+        from openai import OpenAI
+        endpoint = os.environ["AZURE_OPENAI_ENDPOINT"].strip().rstrip("/")
+        if endpoint.endswith("/openai/v1"):
+            endpoint = endpoint[: -len("/openai/v1")]
+        client = OpenAI(base_url=f"{endpoint}/openai/v1/", api_key=os.environ["AZURE_OPENAI_API_KEY"].strip())
+        deployment = os.environ["AZURE_OPENAI_EMBED_DEPLOYMENT"].strip()
+        return lambda text: client.embeddings.create(model=deployment, input=text).data[0].embedding
+
+    def search(self, query: str, k: int = 5,
+               product: Optional[str] = None, tier: Optional[str] = None) -> List[SearchHit]:
+        from azure.search.documents.models import VectorizedQuery
+        vector = VectorizedQuery(vector=self.embed(query), k_nearest_neighbors=50, fields="embedding")
+        results = self.client.search(
+            search_text=query,
+            vector_queries=[vector],
+            query_type="semantic",
+            semantic_configuration_name=self.semantic_config,
+            filter=azure_filter(product, tier),
+            select=list(FIELDS),
+            top=k,
+        )
+        hits = []
+        for r in results:
+            score = r.get("@search.reranker_score") or r.get("@search.score") or 0.0
+            hits.append(SearchHit(**{f: str(r[f]) for f in FIELDS}, score=round(float(score), 4)))
+        return hits
+
+
 @lru_cache
 def get_retriever() -> IRetriever:
     mode = os.getenv("RETRIEVER", "local")
     if mode == "local":
         return LocalRetriever()
-    raise NotImplementedError(f"RETRIEVER={mode} not built yet")
+    if mode == "azure":
+        return AzureSearchRetriever()
+    raise ValueError(f"Unknown RETRIEVER={mode} (use local or azure)")

@@ -13,6 +13,7 @@ from app.models.schemas import (ChatRequest, ChatResponse, Customer, Citation,
                                 SearchRequest, SearchHit, DraftRequest, Draft, Turn)
 from app.routers.summary import router as summary_router
 from app.services.retriever import get_retriever
+from app.services.query_rewrite import rewrite_query
 from app.services.answer import generate_answer
 from app.services.customers import load_customers
 from app.services import memory
@@ -87,7 +88,7 @@ async def chat(req: ChatRequest):
     except (FileNotFoundError, ValueError):
         raise HTTPException(status_code=503, detail="Configure a trained intent provider: python -m ml.hf_models distilbert, or INTENT_PROVIDER=tfidf_lr after python -m ml.train_intent")
 
-    hits = get_retriever().search(resolved, k=5, product=customer.product)
+    hits = get_retriever().search(rewrite_query(resolved), k=5, product=customer.product)
     answer, citations = generate_answer(resolved, hits)
 
     memory.add_turn(session_id, req.question, resolved, answer)
