@@ -19,6 +19,7 @@ from app.services.customers import load_customers
 from app.services import memory
 from app.services import audit
 from app.services.safety import is_injection, safe_log
+from app.agent.agent import run_agent
 
 logging.basicConfig(level=logging.INFO)
 
@@ -103,6 +104,18 @@ async def chat(req: ChatRequest):
         session_id=session_id,
         resolved_question=resolved,
     )
+
+
+@app.post("/agent/chat")
+async def agent_chat(req: ChatRequest):
+    """Agentic RAG: the model picks MCP tools (max 3, allowlisted); the answer stays grounded."""
+    customer = get_customer_or_404(req.customer_id)
+    if is_injection(req.question):
+        audit.log_event("injection_blocked", customer_id=customer.customer_id, route="agent")
+        raise HTTPException(status_code=400, detail=BLOCKED_MSG)
+    result = await run_agent(req.question, customer.customer_id, customer.agent_id or "")
+    audit.log_event("agent_chat", customer_id=customer.customer_id, tools=len(result["trace"]))
+    return result
 
 
 @app.get("/sessions/{session_id}", response_model=List[Turn])

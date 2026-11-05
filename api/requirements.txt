@@ -10,3 +10,4 @@ openai
 azure-search-documents
 python-dotenv
 -r ../requirements.txt
+mcp>=1.10,<2
