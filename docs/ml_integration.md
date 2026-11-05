@@ -1,0 +1,33 @@
+# ML integration handoff
+
+Sairaj owns this package. It is compatible with the current repository skeleton, but the rest of the product is still under development. Do not treat a successful intent classification as customer authorization.
+
+## Sachi
+
+The supplied fixtures are temporary synthetic ML-owned data, not a replacement for your CRM generator. `data/validate.py` defines Pandera schemas for these fixtures. Bring your approved schemas and generated fixtures into the validation step once available; actual CRM relationship, consent-history and product-version checks remain pending that contract.
+
+Radar input rows require `customer_id` (unique string), `days_to_renewal` (signed integer; negative means overdue), `interaction_count_90d` (integer 0–10000), `sentiment_score` (float −1 to 1), `annual_premium_inr` (positive finite annual base INR, excluding taxes/fees) and `consent` (boolean). In training, `nonrenewed` is a historical binary outcome and `age_band` is audit-only metadata. Inference strips both before cloud submission. Sentiment is the 90-day mean of positive confidence minus negative confidence, including the reference date and prior 89 days, excluding future interactions. Missing sentiment is rejected, never silently replaced with zero. Random synthetic sentiment remains a training fixture. Training features must be available at prediction time: never include future interactions or renewal outcomes.
+
+The current renewal label is a noisy synthetic function. Real Radar evaluation needs customer/time-separated historical outcomes, calibration, useful ranking metrics and representative fairness checks. The present holdout is a reproducible stratified synthetic row split, not proof of real-world usefulness.
+
+## Shreya
+
+`api/app/services/ml_service.py` exposes `classify_intent(text)` and async `renewal_worklist(frame=None)`. The API calls the former off the event loop. Worklist uses ML_PROVIDER=local|azure and validates Azure responses. The local path performs small batch Pandas/scikit-learn work directly; move larger batches to a background worker before scaling.
+
+The five intent labels are provisional and are listed in README.md. The old API's `policy_question` was a dummy value; agree on whether to map it to `coverage_question`. Model confidence is not calibrated. Choose a threshold and ambiguity behavior on new representative development data before a production route is enabled. The API defaults to locally trained DistilBERT; INTENT_PROVIDER=tfidf_lr selects the lightweight baseline, with its measured quality limitation disclosed. Inference never downloads remote weights.
+
+Authorization filters the CRM candidate frame before Radar. The worklist now checks authenticated ownership, approved product scope and central renewal eligibility; consent does not filter scoring or worklist visibility and is enforced before outbound send. Chat uses the integrated answer/citation pipeline. See worklist_access.md and sachi_followup_handover.md for current contracts and evidence.
+
+## Rohan and Soham
+
+`tests/fixtures/intent_acceptance_50.json` checks intent routing only. It has no retrieval gold answers and is not the Day 45 full-product evaluation. Bring Rohan's 50 retrieval queries/gold clauses into the shared evaluation, then measure Recall@5/MRR, citation correctness, groundedness, authorization, draft approval and simulated-send behavior against the actual application.
+
+`tests/test_ml.py` covers data leakage, invalid schema inputs, training-only vocabulary, Transformer padding, Radar consent and target exclusion, Azure scoring parity and response validation, prompt grading, and local API integration. HTTP fakes are labeled integration tests, not cloud evidence. The acceptance sheet and rehearsals remain pending the complete application and team participants.
+
+
+See [Radar v2 contract and reproduction](radar_contract_v2.md) for the verified Sachi export integration, artifact rebuild, and outstanding eligibility requirements.
+
+
+## Protected worklist boundary
+
+The API worklist now filters CRM-linked inputs using a verified agent principal and explicit CRM access/eligibility metadata before scoring. The standalone scoring commands remain synthetic compatibility tools. See [worklist_access.md](worklist_access.md) for exact fields, configuration, and pending team metadata/identity integration. Missing metadata is not silently treated as eligible.

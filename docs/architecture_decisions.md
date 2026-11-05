@@ -1,200 +1,31 @@
-# Architecture Decisions
+# Saathi architecture decisions and integration evidence
 
-Status: Draft for team review.
+This document describes implemented local behavior on Sairaj's review branch. It incorporates Sachi's completed work without claiming production readiness. The task's reported feat/shreya-rohan-corpus branch was not present in the repository inventory. The inspected feat/shreya-integrate-sachi and main customer services still lacked the proposed centralized policy/authorization helpers; this branch adds those helpers for review. No main.py edits or main-branch merge are part of this follow-up.
 
-This document describes the implementation inspected during development.
-Design rationales below are proposed explanations, pending team approval.
-It does not claim production readiness or completed cloud deployment.
+## Central customer and policy service
 
-## 1. RAG versus fine-tuning
+CRM loading, metadata preservation, the fixed/current reference date, 30-day-grace calculation and authorize_customer belong to api/app/services/customers.py. The API Customer preserves ownership, product, consent, renewal date and annual premium. Loaders reread current files so send-time consent is not stale. Derived statuses are ACTIVE, IN_GRACE, LAPSED and CANCELLED with explicit cancellation taking precedence. This removes duplicated status logic from worklist filtering and generators.
 
-### Current implementation
+The six-customer export remains inference/demo data. Two documented synthetic changes exercise LAPSED and CANCELLED. Existing ownership, premiums, interaction text/dates, saved service sentiment and locked intent data are preserved. Sachi's existing generator/export/helper implementations are restored from pinned commit 180f69a rather than rebuilt from scratch.
 
-The policy-answering code retrieves SearchHit records and passes their
-text, product, tier, version and citation tags to the LLM adapter.
+## Separate access, eligibility and consent
 
-The policy prompt requests answers using only supplied context.
-The answer service checks citation IDs against retrieved hits and calls
-the existing grounding-check function.
+An authenticated principal plus original CRM agent ownership and approved product access determine visibility. Central renewal eligibility excludes LAPSED/CANCELLED before inference. Consent determines whether an approved outbound message may be sent, not whether risk information can appear in the worklist. The same model features and finite-score checks apply locally and through the Azure adapter. Policy metadata and identity credentials never enter predictive features.
 
-No policy-answering fine-tuning implementation has been demonstrated
-in the inspected code.
+The local bearer adapter is replaceable. No actual production credentials or approved product mapping were created. Controlled test scopes exercise cross-agent/product isolation, but do not establish a real deployment authorization configuration. Broader endpoint authorization remains an integration task for Shreya.
 
-### Proposed rationale
+## Interaction summaries
 
-Use retrieved policy clauses as the evidence for policy answers rather
-than relying on model memory.
+The existing get_llm().complete(system,user) interface is preserved. Summary loading/ownership comes from the shared customer service, with product scope checked before history is read. Every interaction is processed in two-record batches, removing the previous mock-only-first-two limitation.
 
-Retain source, clause and version identifiers so answers can point back
-to the retrieved material.
+Policy grounding expects SOURCE#CLAUSE tags and is not used for interaction summaries. A new interaction-specific validator requires exact source text and matching customer interaction IDs for every returned statement, complete batch coverage and no uncited trailing text. Injection-like input/output is rejected. This is conservative extractive grounding, not proof of arbitrary semantic correctness or an abstractive summarizer; it can reject safe paraphrases. Future abstraction requires a separately evaluated entailment approach.
 
-This decision concerns policy answering. It does not determine how the
-separate intent classifier should be trained.
+## Actual evidence and limitations
 
-### Limitations
+The current targeted suite has 87 passing tests. Local Radar uses an actual rebuilt compatible scikit-learn artifact, trained only on the separate 1,200-row synthetic ML fixture. Four eligible CRM customers have measured finite scores; C-118 and C-999 are excluded by policy rules. C-205 remains visible while its simulated send is blocked after approval.
 
-Prompt instructions and citation checks do not prove factual correctness.
-Retrieval quality and grounding checks still need evaluation.
-The final team decision and evaluation results remain pending.
+Integrated TestClient flows use real Radar/central eligibility, test-only identity scopes, mock interaction summaries, mock chat classifier/retrieval and existing draft/approval/consent behavior. These do not prove live RAG, real DistilBERT inference, browser UI operation or end-to-end deployed authorization. The full application suite has not been run here because heavy retrieval/intent dependencies and trained intent artifacts are absent. Rohan's corpus is not regenerated.
 
-## 2. LLM adapter pattern
+Azure summary integration was not attempted: AZURE_OPENAI_ENDPOINT, AZURE_OPENAI_API_KEY and AZURE_OPENAI_DEPLOYMENT were absent. Configure gpt-4.1-mini through the existing Azure adapter and run a separately approved real integration check; ordinary tests keep LLM_PROVIDER=mock. No cloud metrics, credentials or screenshots are fabricated. Synthetic model metrics are not real customer accuracy.
 
-### Current implementation
-
-LLMAdapter defines complete(system, user).
-
-The inspected adapter module provides mock, Ollama and Azure OpenAI
-implementations. get_llm selects a provider using LLM_PROVIDER.
-
-The customer summary router reuses this interface rather than creating
-a separate provider client.
-
-### Proposed rationale
-
-Keep provider-specific code separate from endpoint logic.
-Use the mock for local integration tests without cloud credentials.
-
-### Limitations
-
-Provider implementations exist, but successful real-provider execution
-has not been demonstrated in this work.
-
-The current mock returns the first two matching context lines.
-It does not perform full-history summarization.
-
-## 3. Synthetic data and reproducibility
-
-### Implemented
-
-- Generator seed: 42.
-- Fixed reference date: 2026-10-28.
-- Six synthetic customers and 18 interactions.
-- Pydantic customer and interaction schemas.
-- Checks for unique IDs and valid customer references.
-- Identical generated files verified across two consecutive runs.
-
-### Proposed rationale
-
-Use a fixed seed and reference date to make demo output repeatable.
-Keep synthetic data separate from real customer information.
-
-### Limitations
-
-This is a starter demo dataset, not an approved training dataset.
-Final dataset size, outcome labels and additional fields require agreement.
-
-## 4. Renewal Radar features
-
-### Implemented
-
-One feature row per customer containing:
-
-- customer_id
-- as_of_date
-- days_to_renewal
-- interaction_count
-- days_since_last_interaction
-
-Only interactions on or before as_of_date are counted.
-Customers without eligible history receive count zero and recency null.
-
-### Checks performed
-
-- Expected renewal offsets for all six customers.
-- Three eligible interactions per demo customer.
-- No-history handling.
-- Future-interaction exclusion.
-- Zero days when renewal equals the reference date.
-
-### Pending
-
-Premium, claims, sentiment and renewal outcome labels.
-Final model input contract and integrated model evaluation.
-
-These feature rows are not predictions or risk scores.
-
-## 5. Safety controls and boundaries
-
-### Observed in existing policy-answering code
-
-- Input injection check before retrieval.
-- Retrieved-context filtering.
-- Citation validation against retrieved hits.
-- A grounding-check function.
-- Human approval and consent checks before simulated draft sending.
-
-These observations describe code paths, not independently verified
-security guarantees.
-
-### Implemented in the summary router
-
-- Unknown customer returns 404.
-- Empty interaction history returns an explicit empty-history response.
-- Missing interaction citations return 502.
-- Unknown interaction citation IDs return 502.
-- Prompt identifies interaction text as untrusted data.
-
-### Unresolved summary limitations
-
-- No customer authorization is implemented in this router.
-- Existing citation IDs do not prove that claims are supported.
-- Prompt instructions alone are not a complete injection defense.
-- Main-application router integration is pending.
-- Real-provider behavior and full-history summary quality remain untested.
-
-## 6. Case study: C-204 summary
-
-### Setup
-
-C-204 is a synthetic Health/Silver customer with three interactions.
-
-### Observed result
-
-The standalone router test using the mock returned HTTP 200.
-The response cited I-0001 and I-0002.
-
-### Interpretation
-
-The test demonstrates adapter wiring and citation extraction.
-It does not demonstrate coverage of all three interactions or the
-quality of a real LLM summary.
-
-## 7. Case study: missing and invalid evidence
-
-### Setup
-
-The summary router was tested with an unknown customer, no interaction
-history, an unknown citation and a response without citations.
-
-### Observed result
-
-- Unknown customer: HTTP 404.
-- No history: HTTP 200 with an empty citation list.
-- Unknown citation: HTTP 502.
-- Missing citations: HTTP 502.
-
-### Interpretation
-
-These tests demonstrate the implemented response boundaries.
-They do not establish factual grounding or authorization.
-
-## 8. Lessons learned
-
-- A syntax check does not test endpoint behavior.
-- Standalone router tests do not prove main-app integration.
-- Mock responses must not be presented as real LLM summaries.
-- Valid citation IDs are necessary but insufficient for grounding.
-- Fixed dates are important for reproducible time-based features.
-- Demo IDs must be coordinated with existing tests.
-
-## 9. Integration and completion checklist
-
-- Agree on the final Radar input contract and outcome-label rules.
-- Obtain approved Azure AI Language access for sentiment.
-- Agree on sentiment aggregation into customer-level features.
-- Integrate the summary router with the main application.
-- Implement or connect customer authorization.
-- Evaluate summary grounding and injection resistance.
-- Test with the agreed real LLM provider.
-- Replace the missing-customer test ID when C-999 is integrated.
-- Complete team review, evaluation evidence and final README.
+See sachi_followup_handover.md for exact changed files, commands, fixture mapping, scores and external blockers.

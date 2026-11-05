@@ -1,0 +1,26 @@
+{
+  "data": "synthetic noisy renewal outcomes",
+  "seed": 42,
+  "train_n": 900,
+  "test_n": 300,
+  "roc_auc": 0.9669463839600282,
+  "average_precision": 0.8940184312766408,
+  "brier_score": 0.06325914627763117,
+  "positive_prevalence": 0.22333333333333333,
+  "features": [
+    "days_to_renewal",
+    "interaction_count_90d",
+    "sentiment_score",
+    "annual_premium_inr"
+  ],
+  "contract": "radar-v2-annual-inr-signed-days",
+  "train_overdue_n": 196,
+  "test_overdue_n": 52,
+  "excluded_features": [
+    "customer_id",
+    "age_band",
+    "consent",
+    "nonrenewed"
+  ],
+  "limitations": "No real-world validation, no causal explanations, no eligibility or pricing decisions"
+}

@@ -1,0 +1,33 @@
+{
+  "date": "2026-11-03",
+  "workspace": "saathi-radar-ml",
+  "resource_group": "Saathi_rg",
+  "region": "centralus",
+  "provisioning_state": "Succeeded",
+  "verification": "Azure portal workspace overview and ML Studio signed-in access",
+  "resources": {
+    "storage": "saathiradarml2632017274",
+    "key_vault": "saathiradarml4708996853",
+    "application_insights": "saathiradarml7130385652",
+    "identity": "System assigned"
+  },
+  "registered_model": {
+    "name": "saathi-renewal-radar",
+    "version": "1",
+    "type": "CUSTOM",
+    "training": "Local locked 1200-row synthetic fixture; not an Azure training job",
+    "model_sha256": "3c1969fffc0e348faceecb4fd090936d4f4f97b02aeff6980cc1e393d777f13b",
+    "verification": "ML Studio success notification and registered model version details"
+  },
+  "compute_created": false,
+  "endpoint_created": false,
+  "endpoint_scoring_test": "not run",
+  "quota_observation": {
+    "scope": "Azure subscription 1, Central US, dedicated cluster cores",
+    "total_available_cores": 20,
+    "standard_dsv2_available_cores": 0,
+    "some_alternative_cpu_families_available_cores": 4,
+    "note": "Managed endpoint SKU support/capacity and required reservation must be checked separately; no quota change requested"
+  },
+  "next": "Choose a supported CPU SKU with sufficient quota and review compute costs before endpoint provisioning; preserve existing agent/customer/product access gate before cloud scoring."
+}
