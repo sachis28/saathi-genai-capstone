@@ -8,7 +8,8 @@
     "segment": "Retail",
     "consent": true,
     "agent_id": "A-001",
-    "renewal_date": "2026-11-12"
+    "renewal_date": "2026-11-12",
+    "annual_premium_inr": 32331.91
   },
   {
     "customer_id": "C-311",
@@ -19,7 +20,8 @@
     "segment": "Retail",
     "consent": true,
     "agent_id": "A-002",
-    "renewal_date": "2026-11-04"
+    "renewal_date": "2026-11-04",
+    "annual_premium_inr": 2225.53
   },
   {
     "customer_id": "C-118",
@@ -30,7 +32,8 @@
     "segment": "Retail",
     "consent": true,
     "agent_id": "A-003",
-    "renewal_date": "2026-12-27"
+    "renewal_date": "2026-12-27",
+    "annual_premium_inr": 14476.44
   },
   {
     "customer_id": "C-450",
@@ -41,7 +44,8 @@
     "segment": "Retail",
     "consent": true,
     "agent_id": "A-001",
-    "renewal_date": "2026-10-23"
+    "renewal_date": "2026-10-23",
+    "annual_premium_inr": 11937.33
   },
   {
     "customer_id": "C-205",
@@ -52,7 +56,8 @@
     "segment": "Retail",
     "consent": false,
     "agent_id": "A-002",
-    "renewal_date": "2026-11-17"
+    "renewal_date": "2026-11-17",
+    "annual_premium_inr": 37087.09
   },
   {
     "customer_id": "C-999",
@@ -63,6 +68,7 @@
     "segment": "Retail",
     "consent": true,
     "agent_id": "A-003",
-    "renewal_date": "2027-01-26"
+    "renewal_date": "2027-01-26",
+    "annual_premium_inr": 34158.27
   }
 ]
