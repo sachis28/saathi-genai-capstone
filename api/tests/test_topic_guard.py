@@ -30,3 +30,9 @@ def test_chat_redirects_off_topic_after_a_real_question():
     assert r["answer"] == OFF_TOPIC_MSG
     assert r["citations"] == []
     assert r["intent"] == "out_of_scope"
+
+
+def test_customer_details_question_is_not_treated_as_off_topic():
+    r = client.post("/chat", json={"customer_id": "C-204", "question": "what is this customers details"}).json()
+    assert r["answer"].startswith("From the customer record")
+    assert "C-204" in r["answer"]
