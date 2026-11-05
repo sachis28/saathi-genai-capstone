@@ -22,7 +22,13 @@ def add_turn(session_id: str, question: str, resolved_question: str, answer: str
 
 
 def is_follow_up(question: str) -> bool:
-    return bool(FOLLOW_UP.match(question)) or len(question.split()) <= 3
+    """'and Platinum?' or a short 'Platinum?' continues the last question; 'dumb?' does not."""
+    if FOLLOW_UP.match(question):
+        return True
+    if len(question.split()) <= 3:
+        from app.services.topic_guard import is_on_topic
+        return is_on_topic(question)
+    return False
 
 
 def resolve_question(session_id: str, question: str) -> str:

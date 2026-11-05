@@ -15,6 +15,7 @@ from app.routers.summary import router as summary_router
 from app.services.retriever import get_retriever
 from app.services.query_rewrite import rewrite_query
 from app.services.customer_context import scope_question, renewal_answer
+from app.services.topic_guard import is_on_topic, OFF_TOPIC_MSG
 from app.services.answer import generate_answer
 from app.services.customers import load_customers
 from app.services import memory
@@ -82,6 +83,12 @@ async def chat(req: ChatRequest):
         safe_log("prompt_injection_blocked", customer_id=customer.customer_id, question=req.question)
         audit.log_event("prompt_injection_blocked", customer_id=customer.customer_id)
         return ChatResponse(answer=BLOCKED_MSG, intent="prompt_injection", citations=[],
+                            session_id=session_id, resolved_question=req.question)
+
+    # Off-topic input ("dumb?", "tell me a joke") gets a polite redirect, not retrieved clauses.
+    if not memory.FOLLOW_UP.match(req.question) and not is_on_topic(req.question):
+        audit.log_event("off_topic_redirected", customer_id=customer.customer_id)
+        return ChatResponse(answer=OFF_TOPIC_MSG, intent="out_of_scope", citations=[],
                             session_id=session_id, resolved_question=req.question)
 
     resolved = memory.resolve_question(session_id, req.question)
