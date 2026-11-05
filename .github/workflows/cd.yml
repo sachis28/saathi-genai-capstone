@@ -1,0 +1,35 @@
+# Deploys to Azure Container Apps on every merge to main, once deployment is switched on.
+# Setup (once): add repository secrets AZURE_CREDENTIALS (service principal JSON from
+# `az ad sp create-for-rbac --sdk-auth`), AZURE_OPENAI_API_KEY and AZURE_SEARCH_ADMIN_KEY;
+# repository variables AZURE_OPENAI_ENDPOINT, AZURE_OPENAI_DEPLOYMENT, AZURE_OPENAI_EMBED_DEPLOYMENT,
+# AZURE_SEARCH_ENDPOINT, AZURE_SEARCH_INDEX_NAME; then set variable AZURE_DEPLOY=true.
+name: CD
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+permissions:
+  contents: read
+jobs:
+  deploy:
+    if: vars.AZURE_DEPLOY == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Build in ACR, deploy, smoke check /health
+        run: scripts/deploy_azure.sh
+        env:
+          RG: ${{ vars.RG || 'saathi-rg' }}
+          AZURE_OPENAI_ENDPOINT: ${{ vars.AZURE_OPENAI_ENDPOINT }}
+          AZURE_OPENAI_DEPLOYMENT: ${{ vars.AZURE_OPENAI_DEPLOYMENT }}
+          AZURE_OPENAI_EMBED_DEPLOYMENT: ${{ vars.AZURE_OPENAI_EMBED_DEPLOYMENT }}
+          AZURE_SEARCH_ENDPOINT: ${{ vars.AZURE_SEARCH_ENDPOINT }}
+          AZURE_SEARCH_INDEX_NAME: ${{ vars.AZURE_SEARCH_INDEX_NAME }}
+          AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
+          AZURE_SEARCH_ADMIN_KEY: ${{ secrets.AZURE_SEARCH_ADMIN_KEY }}
