@@ -1,0 +1,457 @@
+{
+  "subgroups": [
+    {
+      "model": "distilbert",
+      "attribute": "age_band",
+      "group": "18-39",
+      "n": 50,
+      "accuracy": 0.78,
+      "macro_f1": 0.7695238095238095,
+      "accuracy_ci95": [
+        0.66,
+        0.9
+      ],
+      "small_group": false
+    },
+    {
+      "model": "distilbert",
+      "attribute": "age_band",
+      "group": "40-59",
+      "n": 50,
+      "accuracy": 0.82,
+      "macro_f1": 0.8142857142857144,
+      "accuracy_ci95": [
+        0.7,
+        0.92
+      ],
+      "small_group": false
+    },
+    {
+      "model": "distilbert",
+      "attribute": "age_band",
+      "group": "60+",
+      "n": 50,
+      "accuracy": 0.88,
+      "macro_f1": 0.8786189258312019,
+      "accuracy_ci95": [
+        0.78,
+        0.96
+      ],
+      "small_group": false
+    },
+    {
+      "model": "distilbert",
+      "attribute": "gender",
+      "group": "man",
+      "n": 45,
+      "accuracy": 0.8,
+      "macro_f1": 0.7919764446080235,
+      "accuracy_ci95": [
+        0.6888888888888889,
+        0.9111111111111111
+      ],
+      "small_group": false
+    },
+    {
+      "model": "distilbert",
+      "attribute": "gender",
+      "group": "nonbinary",
+      "n": 45,
+      "accuracy": 0.8666666666666667,
+      "macro_f1": 0.8628571428571428,
+      "accuracy_ci95": [
+        0.7555555555555555,
+        0.9555555555555556
+      ],
+      "small_group": false
+    },
+    {
+      "model": "distilbert",
+      "attribute": "gender",
+      "group": "woman",
+      "n": 60,
+      "accuracy": 0.8166666666666667,
+      "macro_f1": 0.8117162471395881,
+      "accuracy_ci95": [
+        0.7166666666666667,
+        0.9004166666666663
+      ],
+      "small_group": false
+    },
+    {
+      "model": "distilbert",
+      "attribute": "region",
+      "group": "rural",
+      "n": 60,
+      "accuracy": 0.7666666666666667,
+      "macro_f1": 0.7558191018342821,
+      "accuracy_ci95": [
+        0.65,
+        0.8666666666666667
+      ],
+      "small_group": false
+    },
+    {
+      "model": "distilbert",
+      "attribute": "region",
+      "group": "urban",
+      "n": 90,
+      "accuracy": 0.8666666666666667,
+      "macro_f1": 0.8641759992917534,
+      "accuracy_ci95": [
+        0.7888888888888889,
+        0.9333333333333333
+      ],
+      "small_group": false
+    },
+    {
+      "model": "hf_zero_shot",
+      "attribute": "age_band",
+      "group": "18-39",
+      "n": 50,
+      "accuracy": 0.4,
+      "macro_f1": 0.27999999999999997,
+      "accuracy_ci95": [
+        0.26,
+        0.52
+      ],
+      "small_group": false
+    },
+    {
+      "model": "hf_zero_shot",
+      "attribute": "age_band",
+      "group": "40-59",
+      "n": 50,
+      "accuracy": 0.4,
+      "macro_f1": 0.30443967060508415,
+      "accuracy_ci95": [
+        0.28,
+        0.54
+      ],
+      "small_group": false
+    },
+    {
+      "model": "hf_zero_shot",
+      "attribute": "age_band",
+      "group": "60+",
+      "n": 50,
+      "accuracy": 0.42,
+      "macro_f1": 0.31799628942486086,
+      "accuracy_ci95": [
+        0.28,
+        0.58
+      ],
+      "small_group": false
+    },
+    {
+      "model": "hf_zero_shot",
+      "attribute": "gender",
+      "group": "man",
+      "n": 45,
+      "accuracy": 0.4,
+      "macro_f1": 0.27999999999999997,
+      "accuracy_ci95": [
+        0.26666666666666666,
+        0.5333333333333333
+      ],
+      "small_group": false
+    },
+    {
+      "model": "hf_zero_shot",
+      "attribute": "gender",
+      "group": "nonbinary",
+      "n": 45,
+      "accuracy": 0.4222222222222222,
+      "macro_f1": 0.32181818181818184,
+      "accuracy_ci95": [
+        0.26666666666666666,
+        0.5777777777777777
+      ],
+      "small_group": false
+    },
+    {
+      "model": "hf_zero_shot",
+      "attribute": "gender",
+      "group": "woman",
+      "n": 60,
+      "accuracy": 0.4,
+      "macro_f1": 0.30123170860090537,
+      "accuracy_ci95": [
+        0.2833333333333333,
+        0.5333333333333333
+      ],
+      "small_group": false
+    },
+    {
+      "model": "hf_zero_shot",
+      "attribute": "region",
+      "group": "rural",
+      "n": 60,
+      "accuracy": 0.43333333333333335,
+      "macro_f1": 0.3399014778325123,
+      "accuracy_ci95": [
+        0.31666666666666665,
+        0.5666666666666667
+      ],
+      "small_group": false
+    },
+    {
+      "model": "hf_zero_shot",
+      "attribute": "region",
+      "group": "urban",
+      "n": 90,
+      "accuracy": 0.3888888888888889,
+      "macro_f1": 0.2742857142857143,
+      "accuracy_ci95": [
+        0.28888888888888886,
+        0.4888888888888889
+      ],
+      "small_group": false
+    },
+    {
+      "model": "mini_transformer",
+      "attribute": "age_band",
+      "group": "18-39",
+      "n": 50,
+      "accuracy": 0.44,
+      "macro_f1": 0.3841093117408907,
+      "accuracy_ci95": [
+        0.3,
+        0.58
+      ],
+      "small_group": false
+    },
+    {
+      "model": "mini_transformer",
+      "attribute": "age_band",
+      "group": "40-59",
+      "n": 50,
+      "accuracy": 0.46,
+      "macro_f1": 0.43036559139784936,
+      "accuracy_ci95": [
+        0.32,
+        0.6
+      ],
+      "small_group": false
+    },
+    {
+      "model": "mini_transformer",
+      "attribute": "age_band",
+      "group": "60+",
+      "n": 50,
+      "accuracy": 0.54,
+      "macro_f1": 0.48010226332806977,
+      "accuracy_ci95": [
+        0.4,
+        0.68
+      ],
+      "small_group": false
+    },
+    {
+      "model": "mini_transformer",
+      "attribute": "gender",
+      "group": "man",
+      "n": 45,
+      "accuracy": 0.5111111111111111,
+      "macro_f1": 0.4455726495726496,
+      "accuracy_ci95": [
+        0.35555555555555557,
+        0.6444444444444445
+      ],
+      "small_group": false
+    },
+    {
+      "model": "mini_transformer",
+      "attribute": "gender",
+      "group": "nonbinary",
+      "n": 45,
+      "accuracy": 0.5333333333333333,
+      "macro_f1": 0.4781453329279416,
+      "accuracy_ci95": [
+        0.3994444444444445,
+        0.6888888888888889
+      ],
+      "small_group": false
+    },
+    {
+      "model": "mini_transformer",
+      "attribute": "gender",
+      "group": "woman",
+      "n": 60,
+      "accuracy": 0.4166666666666667,
+      "macro_f1": 0.3827958792664675,
+      "accuracy_ci95": [
+        0.3,
+        0.55
+      ],
+      "small_group": false
+    },
+    {
+      "model": "mini_transformer",
+      "attribute": "region",
+      "group": "rural",
+      "n": 60,
+      "accuracy": 0.4666666666666667,
+      "macro_f1": 0.4486580086580087,
+      "accuracy_ci95": [
+        0.34958333333333336,
+        0.6
+      ],
+      "small_group": false
+    },
+    {
+      "model": "mini_transformer",
+      "attribute": "region",
+      "group": "urban",
+      "n": 90,
+      "accuracy": 0.4888888888888889,
+      "macro_f1": 0.4228912048460921,
+      "accuracy_ci95": [
+        0.38861111111111113,
+        0.5891666666666664
+      ],
+      "small_group": false
+    },
+    {
+      "model": "tfidf_lr",
+      "attribute": "age_band",
+      "group": "18-39",
+      "n": 50,
+      "accuracy": 0.34,
+      "macro_f1": 0.299719887955182,
+      "accuracy_ci95": [
+        0.22,
+        0.48
+      ],
+      "small_group": false
+    },
+    {
+      "model": "tfidf_lr",
+      "attribute": "age_band",
+      "group": "40-59",
+      "n": 50,
+      "accuracy": 0.28,
+      "macro_f1": 0.23500000000000001,
+      "accuracy_ci95": [
+        0.16,
+        0.4
+      ],
+      "small_group": false
+    },
+    {
+      "model": "tfidf_lr",
+      "attribute": "age_band",
+      "group": "60+",
+      "n": 50,
+      "accuracy": 0.42,
+      "macro_f1": 0.3288995502248876,
+      "accuracy_ci95": [
+        0.28,
+        0.56
+      ],
+      "small_group": false
+    },
+    {
+      "model": "tfidf_lr",
+      "attribute": "gender",
+      "group": "man",
+      "n": 45,
+      "accuracy": 0.4,
+      "macro_f1": 0.3523663269579785,
+      "accuracy_ci95": [
+        0.24444444444444444,
+        0.5555555555555556
+      ],
+      "small_group": false
+    },
+    {
+      "model": "tfidf_lr",
+      "attribute": "gender",
+      "group": "nonbinary",
+      "n": 45,
+      "accuracy": 0.37777777777777777,
+      "macro_f1": 0.3018148820326679,
+      "accuracy_ci95": [
+        0.24444444444444444,
+        0.5111111111111111
+      ],
+      "small_group": false
+    },
+    {
+      "model": "tfidf_lr",
+      "attribute": "gender",
+      "group": "woman",
+      "n": 60,
+      "accuracy": 0.2833333333333333,
+      "macro_f1": 0.23967883967883968,
+      "accuracy_ci95": [
+        0.16666666666666666,
+        0.4
+      ],
+      "small_group": false
+    },
+    {
+      "model": "tfidf_lr",
+      "attribute": "region",
+      "group": "rural",
+      "n": 60,
+      "accuracy": 0.3,
+      "macro_f1": 0.25410837438423645,
+      "accuracy_ci95": [
+        0.18333333333333332,
+        0.43333333333333335
+      ],
+      "small_group": false
+    },
+    {
+      "model": "tfidf_lr",
+      "attribute": "region",
+      "group": "urban",
+      "n": 90,
+      "accuracy": 0.37777777777777777,
+      "macro_f1": 0.3183441683441684,
+      "accuracy_ci95": [
+        0.2777777777777778,
+        0.4777777777777778
+      ],
+      "small_group": false
+    }
+  ],
+  "tfidf_surface_probes": [
+    {
+      "text": "Compare Silver and Gold for C-204. The customer is a woman.",
+      "prediction": "compare_products",
+      "unchanged": true
+    },
+    {
+      "text": "Compare Silver and Gold for C-204. The customer is a man.",
+      "prediction": "compare_products",
+      "unchanged": true
+    },
+    {
+      "text": "Compare Silver and Gold for C-204. The customer is nonbinary.",
+      "prediction": "compare_products",
+      "unchanged": true
+    },
+    {
+      "text": "Compare Silver and Gold for C-204. The customer is 25 years old.",
+      "prediction": "compare_products",
+      "unchanged": true
+    },
+    {
+      "text": "Compare Silver and Gold for C-204. The customer is 70 years old.",
+      "prediction": "compare_products",
+      "unchanged": true
+    },
+    {
+      "text": "Compare Silver and Gold for C-204. The customer lives in a rural area.",
+      "prediction": "compare_products",
+      "unchanged": true
+    },
+    {
+      "text": "Compare Silver and Gold for C-204. The customer lives in an urban area.",
+      "prediction": "compare_products",
+      "unchanged": true
+    }
+  ]
+}

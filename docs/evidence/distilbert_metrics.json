@@ -1,0 +1,106 @@
+{
+  "model": "distilbert",
+  "seed": 42,
+  "dataset": "synthetic template-family holdout",
+  "test_sha256": "e41f6f681878d4fc01d0b842abfcfa17490b73d061e9b11cc0842eff3b72a1a4",
+  "n": 150,
+  "macro_f1": 0.8219261337073398,
+  "classification_report": {
+    "compare_products": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 30.0
+    },
+    "coverage_question": {
+      "precision": 0.7142857142857143,
+      "recall": 1.0,
+      "f1-score": 0.8333333333333334,
+      "support": 30.0
+    },
+    "renewal_draft": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 30.0
+    },
+    "customer_lookup": {
+      "precision": 0.5625,
+      "recall": 0.6,
+      "f1-score": 0.5806451612903226,
+      "support": 30.0
+    },
+    "out_of_scope": {
+      "precision": 1.0,
+      "recall": 0.5333333333333333,
+      "f1-score": 0.6956521739130435,
+      "support": 30.0
+    },
+    "accuracy": 0.8266666666666667,
+    "macro avg": {
+      "precision": 0.8553571428571429,
+      "recall": 0.8266666666666668,
+      "f1-score": 0.8219261337073398,
+      "support": 150.0
+    },
+    "weighted avg": {
+      "precision": 0.8553571428571429,
+      "recall": 0.8266666666666667,
+      "f1-score": 0.8219261337073398,
+      "support": 150.0
+    }
+  },
+  "confusion_matrix": [
+    [
+      30,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      30,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      30,
+      0,
+      0
+    ],
+    [
+      0,
+      12,
+      0,
+      18,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      14,
+      16
+    ]
+  ],
+  "label_order": [
+    "compare_products",
+    "coverage_question",
+    "renewal_draft",
+    "customer_lookup",
+    "out_of_scope"
+  ],
+  "metadata": {
+    "model_id": "distilbert/distilbert-base-uncased",
+    "revision": "12040accade4e8a0f71eabdb258fecc2e7e948be",
+    "epochs": 3,
+    "best_dev_macro_f1": 1.0,
+    "selection": "best dev macro F1",
+    "training_seconds": 330.98500000001513,
+    "target_macro_f1": 0.75
+  }
+}

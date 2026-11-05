@@ -8,3 +8,5 @@ faiss-cpu
 sentence-transformers
 openai
 azure-search-documents
+python-dotenv
+-r ../requirements.txt

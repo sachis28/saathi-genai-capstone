@@ -1,0 +1,31 @@
+{
+  "date": "2026-11-03",
+  "status": "prepared_not_deployed",
+  "azure_cli_extension_ml": "2.45.2",
+  "verified_model_type": "custom_model",
+  "registered_model": "saathi-renewal-radar:1",
+  "endpoint_name": "saathi-radar-ep",
+  "endpoint_existence_check": [],
+  "deployment_name": "blue",
+  "instance_type": "Standard_D2a_v4",
+  "instance_count": 1,
+  "autoscale_created": false,
+  "traffic_plan": {
+    "blue": 100
+  },
+  "sample_customer_ids": [
+    "C-204",
+    "C-450",
+    "C-205"
+  ],
+  "sample_scope": "checked-in synthetic CRM inference rows only",
+  "code_payload": "allowlisted scoring source/configuration and 3 synthetic rows; no secrets, weights, training data or unrelated repository contents",
+  "model_sha256": "3c1969fffc0e348faceecb4fd090936d4f4f97b02aeff6980cc1e393d777f13b",
+  "cli_session": "Azure Cloud Shell, ephemeral, authenticated existing subscription; no Codespace created",
+  "local_tests": 117,
+  "live_invoke": "not yet run",
+  "notes": [
+    "Full repository clone was blocked by automatic approval review; used the explicitly recommended minimal-file upload instead.",
+    "Cloud Shell warned subscription is not registered to Microsoft.CloudShell; session started successfully and CLI model/endpoint-list queries succeeded. No provider registration was performed."
+  ]
+}

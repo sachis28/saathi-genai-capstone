@@ -1,0 +1,2 @@
+# Preserve the exact bytes checked by data/generated/manifest.json on every OS.
+data/generated/*.csv -text whitespace=cr-at-eol

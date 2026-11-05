@@ -1,0 +1,41 @@
+# Sairaj evaluation and delivery status
+
+Local ML work is implemented. Azure and full-product acceptance are incomplete. No deployed URL, cloud screenshot, team sign-off, or rehearsal is claimed.
+
+| Assignment | Evidence | Status |
+|---|---|---|
+| Pandera data quality | evidence/data_validation.json; data/validate.py | Local ML fixtures validated; CRM schemas await team |
+| 1,000 train / 150 locked test | data/generated/manifest.json | Complete; 200 extra dev rows |
+| TF-IDF + Logistic Regression | evidence/tfidf_lr_metrics.json | Measured |
+| Mini Transformer | ml/notebooks/mini_transformer.ipynb | Implemented and locally trained |
+| HF zero-shot baseline | evidence/hf_zero_shot_metrics.json | Measured |
+| DistilBERT Macro F1 ≥ 0.75 | evidence/distilbert_metrics.json | PASS on synthetic holdout |
+| Fairness report | fairness_report.md | Synthetic subgroup audit; no fairness certification |
+| Renewal Radar | evidence/radar_metrics.json; evidence/radar_top10.json | Locally trained and scored |
+| Azure ML training/register/deploy | ml/azureml/ | Scripts ready; no Azure account/workspace configured |
+| Azure /worklist provider | api/app/services/ml_service.py | Local scoring tested; cloud path tested with mocked HTTP only |
+| V1/V2/V3 × 25 cases × 2 models | prompt_experiment.md | Design and runner ready; live Azure/Ollama runs pending |
+| 50-query evaluation | evidence/intent_acceptance_50_metrics.json | Intent-only local smoke check; not full RAG acceptance |
+| Full-product acceptance, 2 rehearsals, offline demo | team_acceptance.md | Pending team application and participants |
+| Local Python test suite | evidence/test_results.xml | 11 passed, 0 failed, 0 skipped |
+| Real HTTP local API check | evidence/local_api_smoke.json | Passed: DistilBERT intent and 10 local Radar entries |
+| Existing .NET client tests | dotnet/Saathi.slnx | Attempted; no .NET SDK installed, so tests could not run |
+
+Reports are generated from actual JSON metrics. Model weights are local under artifacts/ and ignored by Git; recreate them with the documented commands. Small evidence files are included in docs/evidence/ for review.
+
+Remaining dependencies: Sachi's approved data/features; Shreya's orchestration, authorization, and policy contracts; Azure subscription/workspace and deployed GPT model; installed Ollama model; Rohan's retrieval gold set; Soham's acceptance workflow.
+
+
+## Radar contract update 2 November 2026
+
+Radar v2 now supports annual_premium_inr and signed renewal days. Seventeen new contract tests passed; Sachi's pinned six-row export produced five consent-filtered scores, including overdue C-450 and excluding C-205. See [radar_contract_v2.md](radar_contract_v2.md) for commands, provenance, and limitations. This supersedes old Radar input-contract descriptions; previous metrics remain historical. Azure deployment, application eligibility/authorization integration, and representative-data validation remain pending.
+
+
+## Worklist access update 2 November 2026
+
+Added a fail-closed /worklist gate for authenticated agent identity, current CRM consent, customer ownership, allowed products, explicit policy status and renewal eligibility. CRM features replace the API training-fixture fallback. 67 focused tests passed locally across authorization, endpoint integration, summaries, audit and Radar contract checks; see worklist_access.md for commands and limitations. ML/retrieval and Azure HTTP dependencies were mocked in the endpoint tests. Team-confirmed CRM metadata, deployed identity-provider integration, authorization of other endpoints, full real-model/retrieval acceptance, and Azure deployment remain pending. No statuses were assigned to the existing six customer fixtures.
+
+
+## Agreed Sachi follow-up 3 November 2026
+
+The agreed uppercase status/30-day-grace and consent-at-send contract supersedes the earlier worklist consent/status behavior. The focused follow-up suite passed 87 tests with one TestClient deprecation warning. Real local-model scores for four centrally eligible CRM customers are in docs/evidence/sachi_followup_radar.json. Protected endpoint tests use controlled test identities; summary/chat tests use mocks where documented. Real Azure and production product authorization remain blocked by missing configuration. See sachi_followup_handover.md. No main.py edits, main merge, six-customer training, corpus regeneration or intent retraining were performed in this follow-up.

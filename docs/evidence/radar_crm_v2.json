@@ -1,0 +1,56 @@
+{
+  "status": "technical scoring compatibility passed",
+  "synthetic": true,
+  "as_of_date": "2026-10-28",
+  "input_sha256": "a7657fb91002c3d2ae2e3ae64441d6b40691e5158a9c36eee41b069e3397ed00",
+  "model_sha256": "3c1969fffc0e348faceecb4fd090936d4f4f97b02aeff6980cc1e393d777f13b",
+  "features": [
+    "days_to_renewal",
+    "interaction_count_90d",
+    "sentiment_score",
+    "annual_premium_inr"
+  ],
+  "input_n": 6,
+  "scored_n": 5,
+  "consent_excluded_ids": [
+    "C-205"
+  ],
+  "results": [
+    {
+      "customer_id": "C-450",
+      "risk_score": 0.7177242351185431,
+      "main_risk_factor": "days_to_renewal",
+      "explanation_type": "largest standardized logistic feature contribution; not causal",
+      "synthetic": true
+    },
+    {
+      "customer_id": "C-311",
+      "risk_score": 0.6765719909027277,
+      "main_risk_factor": "days_to_renewal",
+      "explanation_type": "largest standardized logistic feature contribution; not causal",
+      "synthetic": true
+    },
+    {
+      "customer_id": "C-204",
+      "risk_score": 0.46706545389510457,
+      "main_risk_factor": "days_to_renewal",
+      "explanation_type": "largest standardized logistic feature contribution; not causal",
+      "synthetic": true
+    },
+    {
+      "customer_id": "C-118",
+      "risk_score": 0.19585277861601616,
+      "main_risk_factor": "days_to_renewal",
+      "explanation_type": "largest standardized logistic feature contribution; not causal",
+      "synthetic": true
+    },
+    {
+      "customer_id": "C-999",
+      "risk_score": 0.07721049024686644,
+      "main_risk_factor": "days_to_renewal",
+      "explanation_type": "largest standardized logistic feature contribution; not causal",
+      "synthetic": true
+    }
+  ],
+  "limitations": "Consent filter only. Policy eligibility and customer/product authorization are not verified; this output is not an approved application worklist. Synthetic model outcomes are not real-world risk probabilities."
+}

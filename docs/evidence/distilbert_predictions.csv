@@ -1,0 +1,151 @@
+id,text,label,template_family,age_band,gender,region,prediction
+test-renewal_draft-013,Please Compose a policy extension reminder for C-450 with Platinum,renewal_draft,renewal_draft-test-0,40-59,man,rural,renewal_draft
+test-compare_products-018,Please How does Platinum stack up against Silver Plus for C-450?,compare_products,compare_products-test-1,18-39,woman,urban,compare_products
+test-customer_lookup-028,"Please Who is C-104, the holder of Silver?",customer_lookup,customer_lookup-test-0,40-59,woman,rural,coverage_question
+test-renewal_draft-018,Compose a policy extension reminder for C-450 with Gold,renewal_draft,renewal_draft-test-0,18-39,woman,urban,renewal_draft
+test-renewal_draft-016,Put together a message asking C-104 to renew Platinum,renewal_draft,renewal_draft-test-1,40-59,nonbinary,rural,renewal_draft
+test-coverage_question-001,Would a hospital claim qualify under Silver for C-999?,coverage_question,coverage_question-test-0,40-59,woman,urban,coverage_question
+test-renewal_draft-004,Please Put together a message asking C-311 to renew Silver Plus,renewal_draft,renewal_draft-test-1,40-59,man,urban,renewal_draft
+test-out_of_scope-021,"Find a pizza restaurant for C-118, not Gold",out_of_scope,out_of_scope-test-1,18-39,man,urban,customer_lookup
+test-renewal_draft-008,Compose a policy extension reminder for C-205 with Gold Plus,renewal_draft,renewal_draft-test-0,60+,nonbinary,urban,renewal_draft
+test-renewal_draft-022,Compose a policy extension reminder for C-205 with Silver Plus,renewal_draft,renewal_draft-test-0,40-59,man,urban,renewal_draft
+test-customer_lookup-020,"Who is C-311, the holder of Gold Plus?",customer_lookup,customer_lookup-test-0,60+,woman,urban,coverage_question
+test-compare_products-012,Please Put Gold Plus alongside Silver for customer C-204,compare_products,compare_products-test-0,18-39,man,rural,compare_products
+test-coverage_question-006,Would a hospital claim qualify under Silver Plus for C-450?,coverage_question,coverage_question-test-0,18-39,nonbinary,urban,coverage_question
+test-compare_products-009,Put Gold alongside Platinum for customer C-204,compare_products,compare_products-test-0,18-39,woman,rural,compare_products
+test-compare_products-019,How does Gold stack up against Platinum for C-118?,compare_products,compare_products-test-1,40-59,woman,urban,compare_products
+test-coverage_question-026,Where does protection stop under Silver Plus for C-999?,coverage_question,coverage_question-test-1,60+,nonbinary,urban,coverage_question
+test-customer_lookup-014,"Please Who is C-102, the holder of Gold?",customer_lookup,customer_lookup-test-0,60+,man,rural,coverage_question
+test-renewal_draft-009,Compose a policy extension reminder for C-103 with Platinum,renewal_draft,renewal_draft-test-0,18-39,woman,rural,renewal_draft
+test-coverage_question-025,Please Where does protection stop under Gold for C-999?,coverage_question,coverage_question-test-1,40-59,nonbinary,urban,coverage_question
+test-out_of_scope-012,"Solve a calculus problem for C-101, unrelated to Silver",out_of_scope,out_of_scope-test-0,18-39,man,rural,out_of_scope
+test-compare_products-029,How does Gold Plus stack up against Silver for C-205?,compare_products,compare_products-test-1,60+,woman,rural,compare_products
+test-out_of_scope-007,"Please Solve a calculus problem for C-102, unrelated to Gold Plus",out_of_scope,out_of_scope-test-0,40-59,nonbinary,urban,out_of_scope
+test-compare_products-026,How does Platinum stack up against Silver Plus for C-103?,compare_products,compare_products-test-1,60+,nonbinary,urban,compare_products
+test-out_of_scope-008,"Find a pizza restaurant for C-205, not Gold Plus",out_of_scope,out_of_scope-test-1,60+,nonbinary,urban,customer_lookup
+test-out_of_scope-011,"Please Solve a calculus problem for C-450, unrelated to Silver",out_of_scope,out_of_scope-test-0,60+,woman,rural,out_of_scope
+test-out_of_scope-025,"Please Solve a calculus problem for C-450, unrelated to Platinum",out_of_scope,out_of_scope-test-0,40-59,nonbinary,urban,out_of_scope
+test-customer_lookup-018,Please Pull up C-204's registered particulars for Silver,customer_lookup,customer_lookup-test-1,18-39,woman,urban,customer_lookup
+test-out_of_scope-023,"Please Solve a calculus problem for C-101, unrelated to Silver Plus",out_of_scope,out_of_scope-test-0,60+,man,urban,out_of_scope
+test-coverage_question-015,Please Where does protection stop under Silver Plus for C-999?,coverage_question,coverage_question-test-1,18-39,nonbinary,rural,coverage_question
+test-coverage_question-000,Please Would a hospital claim qualify under Silver for C-999?,coverage_question,coverage_question-test-0,18-39,woman,urban,coverage_question
+test-compare_products-022,Please How does Silver stack up against Gold for C-104?,compare_products,compare_products-test-1,40-59,man,urban,compare_products
+test-compare_products-015,Put Gold Plus alongside Silver for customer C-101,compare_products,compare_products-test-0,18-39,nonbinary,rural,compare_products
+test-renewal_draft-005,Compose a policy extension reminder for C-101 with Silver Plus,renewal_draft,renewal_draft-test-0,60+,man,urban,renewal_draft
+test-compare_products-011,How does Silver Plus stack up against Gold Plus for C-204?,compare_products,compare_products-test-1,60+,woman,rural,compare_products
+test-coverage_question-012,Please Where does protection stop under Gold Plus for C-999?,coverage_question,coverage_question-test-1,18-39,man,rural,coverage_question
+test-out_of_scope-026,"Please Solve a calculus problem for C-450, unrelated to Gold",out_of_scope,out_of_scope-test-0,60+,nonbinary,urban,out_of_scope
+test-coverage_question-021,Please Would a hospital claim qualify under Gold Plus for C-450?,coverage_question,coverage_question-test-0,18-39,man,urban,coverage_question
+test-compare_products-027,How does Gold Plus stack up against Silver for C-104?,compare_products,compare_products-test-1,18-39,woman,rural,compare_products
+test-compare_products-004,Please Put Silver alongside Gold for customer C-204,compare_products,compare_products-test-0,40-59,man,urban,compare_products
+test-coverage_question-002,Where does protection stop under Silver for C-999?,coverage_question,coverage_question-test-1,60+,woman,urban,coverage_question
+test-out_of_scope-022,"Solve a calculus problem for C-450, unrelated to Silver",out_of_scope,out_of_scope-test-0,40-59,man,urban,out_of_scope
+test-renewal_draft-025,Please Put together a message asking C-103 to renew Silver,renewal_draft,renewal_draft-test-1,40-59,nonbinary,urban,renewal_draft
+test-renewal_draft-026,Please Put together a message asking C-999 to renew Silver,renewal_draft,renewal_draft-test-1,60+,nonbinary,urban,renewal_draft
+test-compare_products-016,Put Platinum alongside Silver Plus for customer C-999,compare_products,compare_products-test-0,40-59,nonbinary,rural,compare_products
+test-compare_products-010,How does Silver stack up against Gold for C-204?,compare_products,compare_products-test-1,40-59,woman,rural,compare_products
+test-renewal_draft-021,Please Put together a message asking C-204 to renew Gold,renewal_draft,renewal_draft-test-1,18-39,man,urban,renewal_draft
+test-out_of_scope-013,"Please Find a pizza restaurant for C-450, not Platinum",out_of_scope,out_of_scope-test-1,40-59,man,rural,customer_lookup
+test-out_of_scope-017,"Find a pizza restaurant for C-204, not Silver",out_of_scope,out_of_scope-test-1,60+,nonbinary,rural,customer_lookup
+test-renewal_draft-015,Put together a message asking C-118 to renew Silver,renewal_draft,renewal_draft-test-1,18-39,nonbinary,rural,renewal_draft
+test-customer_lookup-019,"Who is C-311, the holder of Platinum?",customer_lookup,customer_lookup-test-0,40-59,woman,urban,coverage_question
+test-customer_lookup-006,Pull up C-104's registered particulars for Silver Plus,customer_lookup,customer_lookup-test-1,18-39,nonbinary,urban,customer_lookup
+test-customer_lookup-015,"Please Who is C-118, the holder of Silver?",customer_lookup,customer_lookup-test-0,18-39,nonbinary,rural,coverage_question
+test-renewal_draft-006,Compose a policy extension reminder for C-311 with Platinum,renewal_draft,renewal_draft-test-0,18-39,nonbinary,urban,renewal_draft
+test-compare_products-000,Please Put Silver alongside Gold for customer C-101,compare_products,compare_products-test-0,18-39,woman,urban,compare_products
+test-out_of_scope-002,"Solve a calculus problem for C-999, unrelated to Platinum",out_of_scope,out_of_scope-test-0,60+,woman,urban,out_of_scope
+test-renewal_draft-007,Please Compose a policy extension reminder for C-311 with Platinum,renewal_draft,renewal_draft-test-0,40-59,nonbinary,urban,renewal_draft
+test-compare_products-028,Please Put Silver alongside Gold for customer C-104,compare_products,compare_products-test-0,40-59,woman,rural,compare_products
+test-coverage_question-010,Please Would a hospital claim qualify under Gold Plus for C-101?,coverage_question,coverage_question-test-0,40-59,woman,rural,coverage_question
+test-coverage_question-014,Please Would a hospital claim qualify under Gold Plus for C-999?,coverage_question,coverage_question-test-0,60+,man,rural,coverage_question
+test-renewal_draft-000,Put together a message asking C-450 to renew Gold Plus,renewal_draft,renewal_draft-test-1,18-39,woman,urban,renewal_draft
+test-out_of_scope-003,"Find a pizza restaurant for C-450, not Platinum",out_of_scope,out_of_scope-test-1,18-39,man,urban,customer_lookup
+test-compare_products-024,Put Silver alongside Gold for customer C-999,compare_products,compare_products-test-0,18-39,nonbinary,urban,compare_products
+test-compare_products-025,How does Gold stack up against Platinum for C-205?,compare_products,compare_products-test-1,40-59,nonbinary,urban,compare_products
+test-compare_products-023,Please Put Gold Plus alongside Silver for customer C-118,compare_products,compare_products-test-0,60+,man,urban,compare_products
+test-customer_lookup-004,Please Pull up C-311's registered particulars for Gold Plus,customer_lookup,customer_lookup-test-1,40-59,man,urban,customer_lookup
+test-coverage_question-009,Please Would a hospital claim qualify under Silver Plus for C-103?,coverage_question,coverage_question-test-0,18-39,woman,rural,coverage_question
+test-customer_lookup-005,Please Pull up C-118's registered particulars for Platinum,customer_lookup,customer_lookup-test-1,60+,man,urban,customer_lookup
+test-customer_lookup-027,"Who is C-103, the holder of Silver?",customer_lookup,customer_lookup-test-0,18-39,woman,rural,coverage_question
+test-coverage_question-017,Where does protection stop under Platinum for C-999?,coverage_question,coverage_question-test-1,60+,nonbinary,rural,coverage_question
+test-customer_lookup-007,Please Pull up C-102's registered particulars for Gold,customer_lookup,customer_lookup-test-1,40-59,nonbinary,urban,customer_lookup
+test-customer_lookup-023,Pull up C-101's registered particulars for Platinum,customer_lookup,customer_lookup-test-1,60+,man,urban,customer_lookup
+test-coverage_question-003,Please Where does protection stop under Gold Plus for C-450?,coverage_question,coverage_question-test-1,18-39,man,urban,coverage_question
+test-out_of_scope-018,"Please Solve a calculus problem for C-118, unrelated to Platinum",out_of_scope,out_of_scope-test-0,18-39,woman,urban,out_of_scope
+test-customer_lookup-011,Please Pull up C-102's registered particulars for Silver,customer_lookup,customer_lookup-test-1,60+,woman,rural,customer_lookup
+test-renewal_draft-002,Please Put together a message asking C-450 to renew Gold,renewal_draft,renewal_draft-test-1,60+,woman,urban,renewal_draft
+test-renewal_draft-024,Compose a policy extension reminder for C-205 with Gold,renewal_draft,renewal_draft-test-0,18-39,nonbinary,urban,renewal_draft
+test-out_of_scope-028,"Find a pizza restaurant for C-104, not Silver",out_of_scope,out_of_scope-test-1,40-59,woman,rural,customer_lookup
+test-coverage_question-023,Where does protection stop under Gold Plus for C-204?,coverage_question,coverage_question-test-1,60+,man,urban,coverage_question
+test-compare_products-005,Put Gold alongside Platinum for customer C-999,compare_products,compare_products-test-0,60+,man,urban,compare_products
+test-customer_lookup-003,"Who is C-102, the holder of Gold?",customer_lookup,customer_lookup-test-0,18-39,man,urban,coverage_question
+test-customer_lookup-021,"Who is C-999, the holder of Silver Plus?",customer_lookup,customer_lookup-test-0,18-39,man,urban,coverage_question
+test-coverage_question-019,Would a hospital claim qualify under Platinum for C-205?,coverage_question,coverage_question-test-0,40-59,woman,urban,coverage_question
+test-coverage_question-005,Where does protection stop under Silver for C-205?,coverage_question,coverage_question-test-1,60+,man,urban,coverage_question
+test-renewal_draft-020,Put together a message asking C-104 to renew Gold,renewal_draft,renewal_draft-test-1,60+,woman,urban,renewal_draft
+test-renewal_draft-017,Please Compose a policy extension reminder for C-103 with Gold Plus,renewal_draft,renewal_draft-test-0,60+,nonbinary,rural,renewal_draft
+test-coverage_question-004,Please Where does protection stop under Gold for C-102?,coverage_question,coverage_question-test-1,40-59,man,urban,coverage_question
+test-customer_lookup-024,Please Pull up C-311's registered particulars for Gold,customer_lookup,customer_lookup-test-1,18-39,nonbinary,urban,customer_lookup
+test-compare_products-007,Please Put Gold alongside Platinum for customer C-204,compare_products,compare_products-test-0,40-59,nonbinary,urban,compare_products
+test-coverage_question-013,Please Would a hospital claim qualify under Platinum for C-999?,coverage_question,coverage_question-test-0,40-59,man,rural,coverage_question
+test-renewal_draft-010,Please Compose a policy extension reminder for C-103 with Silver,renewal_draft,renewal_draft-test-0,40-59,woman,rural,renewal_draft
+test-customer_lookup-008,Please Pull up C-204's registered particulars for Gold,customer_lookup,customer_lookup-test-1,60+,nonbinary,urban,customer_lookup
+test-out_of_scope-000,"Solve a calculus problem for C-311, unrelated to Gold",out_of_scope,out_of_scope-test-0,18-39,woman,urban,out_of_scope
+test-renewal_draft-023,Please Put together a message asking C-204 to renew Silver Plus,renewal_draft,renewal_draft-test-1,60+,man,urban,renewal_draft
+test-out_of_scope-014,"Please Solve a calculus problem for C-118, unrelated to Silver Plus",out_of_scope,out_of_scope-test-0,60+,man,rural,out_of_scope
+test-out_of_scope-015,"Please Find a pizza restaurant for C-205, not Silver",out_of_scope,out_of_scope-test-1,18-39,nonbinary,rural,customer_lookup
+test-renewal_draft-029,Compose a policy extension reminder for C-103 with Silver,renewal_draft,renewal_draft-test-0,60+,woman,rural,renewal_draft
+test-compare_products-008,Put Platinum alongside Silver Plus for customer C-101,compare_products,compare_products-test-0,60+,nonbinary,urban,compare_products
+test-compare_products-013,Put Platinum alongside Silver Plus for customer C-102,compare_products,compare_products-test-0,40-59,man,rural,compare_products
+test-customer_lookup-029,Pull up C-999's registered particulars for Gold,customer_lookup,customer_lookup-test-1,60+,woman,rural,customer_lookup
+test-out_of_scope-005,"Please Find a pizza restaurant for C-103, not Gold Plus",out_of_scope,out_of_scope-test-1,60+,man,urban,customer_lookup
+test-compare_products-003,Please Put Gold alongside Platinum for customer C-104,compare_products,compare_products-test-0,18-39,man,urban,compare_products
+test-compare_products-017,Please How does Silver stack up against Gold for C-118?,compare_products,compare_products-test-1,60+,nonbinary,rural,compare_products
+test-coverage_question-008,Where does protection stop under Silver Plus for C-450?,coverage_question,coverage_question-test-1,60+,nonbinary,urban,coverage_question
+test-renewal_draft-012,Put together a message asking C-450 to renew Gold,renewal_draft,renewal_draft-test-1,18-39,man,rural,renewal_draft
+test-out_of_scope-016,"Please Solve a calculus problem for C-101, unrelated to Silver",out_of_scope,out_of_scope-test-0,40-59,nonbinary,rural,out_of_scope
+test-compare_products-006,Please How does Platinum stack up against Silver Plus for C-205?,compare_products,compare_products-test-1,18-39,nonbinary,urban,compare_products
+test-customer_lookup-022,Please Pull up C-118's registered particulars for Gold Plus,customer_lookup,customer_lookup-test-1,40-59,man,urban,customer_lookup
+test-customer_lookup-010,"Who is C-101, the holder of Silver Plus?",customer_lookup,customer_lookup-test-0,40-59,woman,rural,coverage_question
+test-compare_products-002,How does Silver stack up against Gold for C-999?,compare_products,compare_products-test-1,60+,woman,urban,compare_products
+test-renewal_draft-003,Put together a message asking C-102 to renew Gold Plus,renewal_draft,renewal_draft-test-1,18-39,man,urban,renewal_draft
+test-coverage_question-024,Would a hospital claim qualify under Gold Plus for C-204?,coverage_question,coverage_question-test-0,18-39,nonbinary,urban,coverage_question
+test-out_of_scope-006,"Solve a calculus problem for C-999, unrelated to Gold",out_of_scope,out_of_scope-test-0,18-39,nonbinary,urban,out_of_scope
+test-coverage_question-020,Would a hospital claim qualify under Silver Plus for C-102?,coverage_question,coverage_question-test-0,60+,woman,urban,coverage_question
+test-customer_lookup-025,Please Pull up C-999's registered particulars for Gold,customer_lookup,customer_lookup-test-1,40-59,nonbinary,urban,customer_lookup
+test-coverage_question-016,Please Would a hospital claim qualify under Platinum for C-450?,coverage_question,coverage_question-test-0,40-59,nonbinary,rural,coverage_question
+test-out_of_scope-019,"Please Solve a calculus problem for C-102, unrelated to Gold",out_of_scope,out_of_scope-test-0,40-59,woman,urban,out_of_scope
+test-renewal_draft-001,Please Put together a message asking C-118 to renew Silver Plus,renewal_draft,renewal_draft-test-1,40-59,woman,urban,renewal_draft
+test-out_of_scope-027,"Please Find a pizza restaurant for C-205, not Platinum",out_of_scope,out_of_scope-test-1,18-39,woman,rural,customer_lookup
+test-renewal_draft-019,Please Compose a policy extension reminder for C-103 with Gold,renewal_draft,renewal_draft-test-0,40-59,woman,urban,renewal_draft
+test-coverage_question-029,Please Where does protection stop under Silver for C-118?,coverage_question,coverage_question-test-1,60+,woman,rural,coverage_question
+test-customer_lookup-001,Please Pull up C-205's registered particulars for Platinum,customer_lookup,customer_lookup-test-1,40-59,woman,urban,customer_lookup
+test-coverage_question-011,Please Where does protection stop under Silver Plus for C-118?,coverage_question,coverage_question-test-1,60+,woman,rural,coverage_question
+test-coverage_question-028,Would a hospital claim qualify under Silver for C-104?,coverage_question,coverage_question-test-0,40-59,woman,rural,coverage_question
+test-customer_lookup-000,"Who is C-103, the holder of Gold Plus?",customer_lookup,customer_lookup-test-0,18-39,woman,urban,coverage_question
+test-coverage_question-018,Where does protection stop under Platinum for C-311?,coverage_question,coverage_question-test-1,18-39,woman,urban,coverage_question
+test-renewal_draft-028,Please Compose a policy extension reminder for C-450 with Gold Plus,renewal_draft,renewal_draft-test-0,40-59,woman,rural,renewal_draft
+test-customer_lookup-017,"Who is C-103, the holder of Platinum?",customer_lookup,customer_lookup-test-0,60+,nonbinary,rural,coverage_question
+test-out_of_scope-004,"Please Find a pizza restaurant for C-104, not Platinum",out_of_scope,out_of_scope-test-1,40-59,man,urban,customer_lookup
+test-compare_products-021,Put Silver Plus alongside Gold Plus for customer C-205,compare_products,compare_products-test-0,18-39,man,urban,compare_products
+test-coverage_question-027,Would a hospital claim qualify under Silver for C-103?,coverage_question,coverage_question-test-0,18-39,woman,rural,coverage_question
+test-out_of_scope-024,"Find a pizza restaurant for C-101, not Gold Plus",out_of_scope,out_of_scope-test-1,18-39,nonbinary,urban,customer_lookup
+test-out_of_scope-009,"Find a pizza restaurant for C-999, not Gold Plus",out_of_scope,out_of_scope-test-1,18-39,woman,rural,customer_lookup
+test-coverage_question-007,Please Would a hospital claim qualify under Gold for C-311?,coverage_question,coverage_question-test-0,40-59,nonbinary,urban,coverage_question
+test-out_of_scope-020,"Solve a calculus problem for C-103, unrelated to Silver Plus",out_of_scope,out_of_scope-test-0,60+,woman,urban,out_of_scope
+test-compare_products-001,Put Platinum alongside Silver Plus for customer C-118,compare_products,compare_products-test-0,40-59,woman,urban,compare_products
+test-coverage_question-022,Where does protection stop under Platinum for C-118?,coverage_question,coverage_question-test-1,40-59,man,urban,coverage_question
+test-out_of_scope-010,"Please Find a pizza restaurant for C-311, not Silver",out_of_scope,out_of_scope-test-1,40-59,woman,rural,customer_lookup
+test-customer_lookup-013,"Please Who is C-118, the holder of Gold Plus?",customer_lookup,customer_lookup-test-0,40-59,man,rural,coverage_question
+test-customer_lookup-009,Please Pull up C-102's registered particulars for Gold Plus,customer_lookup,customer_lookup-test-1,18-39,woman,rural,customer_lookup
+test-customer_lookup-026,Pull up C-101's registered particulars for Silver Plus,customer_lookup,customer_lookup-test-1,60+,nonbinary,urban,customer_lookup
+test-renewal_draft-027,Please Put together a message asking C-118 to renew Gold Plus,renewal_draft,renewal_draft-test-1,18-39,woman,rural,renewal_draft
+test-renewal_draft-014,Compose a policy extension reminder for C-104 with Gold Plus,renewal_draft,renewal_draft-test-0,60+,man,rural,renewal_draft
+test-out_of_scope-001,"Find a pizza restaurant for C-450, not Gold",out_of_scope,out_of_scope-test-1,40-59,woman,urban,customer_lookup
+test-out_of_scope-029,"Solve a calculus problem for C-104, unrelated to Silver Plus",out_of_scope,out_of_scope-test-0,60+,woman,rural,out_of_scope
+test-compare_products-020,Please Put Gold Plus alongside Silver for customer C-101,compare_products,compare_products-test-0,60+,woman,urban,compare_products
+test-renewal_draft-011,Compose a policy extension reminder for C-102 with Silver Plus,renewal_draft,renewal_draft-test-0,60+,woman,rural,renewal_draft
+test-customer_lookup-016,Pull up C-103's registered particulars for Silver,customer_lookup,customer_lookup-test-1,40-59,nonbinary,rural,customer_lookup
+test-compare_products-014,Put Platinum alongside Silver Plus for customer C-103,compare_products,compare_products-test-0,60+,man,rural,compare_products
+test-customer_lookup-002,Pull up C-103's registered particulars for Gold Plus,customer_lookup,customer_lookup-test-1,60+,woman,urban,customer_lookup
+test-customer_lookup-012,Pull up C-101's registered particulars for Silver,customer_lookup,customer_lookup-test-1,18-39,man,rural,customer_lookup

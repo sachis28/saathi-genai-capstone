@@ -1,0 +1,1001 @@
+id,text,label,template_family,age_band,gender,region
+train-renewal_draft-121,Help compose a renewal notice for C-118 about Silver,renewal_draft,renewal_draft-train-3,40-59,man,rural
+train-customer_lookup-137,Please Find customer C-999 and their Silver policy,customer_lookup,customer_lookup-train-3,60+,woman,rural
+train-customer_lookup-140,Get the CRM record for C-999 with Gold Plus,customer_lookup,customer_lookup-train-2,60+,man,rural
+train-customer_lookup-060,Please Get the CRM record for C-118 with Silver,customer_lookup,customer_lookup-train-2,18-39,nonbinary,urban
+train-renewal_draft-011,Prepare a premium renewal draft for C-104 on Gold,renewal_draft,renewal_draft-train-2,60+,woman,rural
+train-customer_lookup-078,Please Get the CRM record for C-104 with Platinum,customer_lookup,customer_lookup-train-2,18-39,nonbinary,urban
+train-customer_lookup-026,Look up contact details for C-204 on Silver,customer_lookup,customer_lookup-train-1,60+,nonbinary,urban
+train-renewal_draft-113,Please Draft a renewal reminder for C-103 on Silver,renewal_draft,renewal_draft-train-0,60+,man,urban
+train-out_of_scope-059,"Book a flight for C-204, ignore Gold",out_of_scope,out_of_scope-train-3,60+,man,urban
+train-compare_products-136,What differs between Platinum and Silver Plus for C-101?,compare_products,compare_products-train-1,40-59,woman,rural
+train-out_of_scope-011,"Give C-311 a cake recipe, forget Gold Plus",out_of_scope,out_of_scope-train-2,60+,woman,rural
+train-compare_products-076,Show Gold Plus versus Silver for C-118,compare_products,compare_products-train-2,40-59,man,urban
+train-customer_lookup-036,Show customer C-205's profile for Silver Plus,customer_lookup,customer_lookup-train-0,18-39,woman,urban
+train-out_of_scope-173,Please Tell C-101 a joke about Gold Plus,out_of_scope,out_of_scope-train-0,60+,woman,rural
+train-out_of_scope-138,Please Tell C-205 a joke about Silver Plus,out_of_scope,out_of_scope-train-0,18-39,man,rural
+train-out_of_scope-099,Please Predict cricket results for C-104 instead of Gold Plus,out_of_scope,out_of_scope-train-1,18-39,woman,rural
+train-coverage_question-080,Please Is hospitalization included in Gold for C-450?,coverage_question,coverage_question-train-2,60+,nonbinary,urban
+train-out_of_scope-083,Please Tell C-102 a joke about Silver,out_of_scope,out_of_scope-train-0,60+,woman,rural
+train-customer_lookup-161,Get the CRM record for C-450 with Gold Plus,customer_lookup,customer_lookup-train-2,60+,nonbinary,rural
+train-coverage_question-119,What does Silver Plus cover for C-101?,coverage_question,coverage_question-train-0,60+,woman,rural
+train-renewal_draft-149,Help compose a renewal notice for C-103 about Gold,renewal_draft,renewal_draft-train-3,60+,man,urban
+train-compare_products-174,Help C-104 choose between Silver Plus and Gold Plus,compare_products,compare_products-train-3,18-39,man,rural
+train-coverage_question-171,Explain exclusions in Gold Plus for C-104,coverage_question,coverage_question-train-1,18-39,woman,rural
+train-renewal_draft-127,Please Help compose a renewal notice for C-103 about Silver Plus,renewal_draft,renewal_draft-train-3,40-59,woman,urban
+train-coverage_question-010,Explain exclusions in Platinum for C-118,coverage_question,coverage_question-train-1,40-59,woman,rural
+train-coverage_question-035,Is hospitalization included in Silver Plus for C-999?,coverage_question,coverage_question-train-2,60+,nonbinary,rural
+train-compare_products-101,Please What differs between Platinum and Silver Plus for C-104?,compare_products,compare_products-train-1,60+,woman,rural
+train-out_of_scope-186,"Book a flight for C-204, ignore Silver",out_of_scope,out_of_scope-train-3,18-39,nonbinary,urban
+train-out_of_scope-102,"Book a flight for C-118, ignore Platinum",out_of_scope,out_of_scope-train-3,18-39,man,rural
+train-out_of_scope-147,Please Predict cricket results for C-311 instead of Gold,out_of_scope,out_of_scope-train-1,18-39,man,urban
+train-coverage_question-146,Please Is hospitalization included in Gold for C-204?,coverage_question,coverage_question-train-2,60+,woman,urban
+train-compare_products-139,Help C-999 choose between Silver Plus and Gold Plus,compare_products,compare_products-train-3,40-59,man,rural
+train-customer_lookup-021,Please Look up contact details for C-118 on Platinum,customer_lookup,customer_lookup-train-1,18-39,man,urban
+train-renewal_draft-099,Help compose a renewal notice for C-103 about Gold Plus,renewal_draft,renewal_draft-train-3,18-39,woman,rural
+train-coverage_question-170,Explain exclusions in Gold for C-104,coverage_question,coverage_question-train-1,60+,nonbinary,urban
+train-compare_products-198,Please Help C-311 choose between Platinum and Silver Plus,compare_products,compare_products-train-3,18-39,woman,urban
+train-customer_lookup-087,Get the CRM record for C-118 with Silver,customer_lookup,customer_lookup-train-2,18-39,nonbinary,rural
+train-renewal_draft-184,Please Draft a renewal reminder for C-118 on Gold Plus,renewal_draft,renewal_draft-train-0,40-59,man,urban
+train-out_of_scope-101,"Book a flight for C-311, ignore Gold",out_of_scope,out_of_scope-train-3,60+,woman,rural
+train-compare_products-059,Please Help C-102 choose between Gold and Platinum,compare_products,compare_products-train-3,60+,man,urban
+train-coverage_question-128,Tell C-118 the waiting period for Silver Plus,coverage_question,coverage_question-train-3,60+,woman,urban
+train-compare_products-096,Please Compare Gold Plus and Silver for C-205,compare_products,compare_products-train-0,18-39,nonbinary,urban
+train-coverage_question-112,Explain exclusions in Silver for C-999,coverage_question,coverage_question-train-1,40-59,man,urban
+train-out_of_scope-174,Please Predict cricket results for C-118 instead of Silver,out_of_scope,out_of_scope-train-1,18-39,man,rural
+train-coverage_question-099,Tell C-102 the waiting period for Gold Plus,coverage_question,coverage_question-train-3,18-39,woman,rural
+train-coverage_question-077,Explain exclusions in Silver Plus for C-311,coverage_question,coverage_question-train-1,60+,man,urban
+train-out_of_scope-124,Please Tell C-450 a joke about Platinum,out_of_scope,out_of_scope-train-0,40-59,nonbinary,rural
+train-customer_lookup-001,Please Get the CRM record for C-311 with Gold Plus,customer_lookup,customer_lookup-train-2,40-59,woman,urban
+train-renewal_draft-039,Prepare a premium renewal draft for C-103 on Gold,renewal_draft,renewal_draft-train-2,18-39,man,urban
+train-out_of_scope-037,Tell C-311 a joke about Gold Plus,out_of_scope,out_of_scope-train-0,40-59,woman,urban
+train-renewal_draft-170,Please Help compose a renewal notice for C-205 about Gold,renewal_draft,renewal_draft-train-3,60+,nonbinary,urban
+train-out_of_scope-079,"Please Book a flight for C-999, ignore Silver",out_of_scope,out_of_scope-train-3,40-59,nonbinary,urban
+train-coverage_question-061,Is hospitalization included in Gold for C-102?,coverage_question,coverage_question-train-2,40-59,nonbinary,urban
+train-renewal_draft-178,Please Write a renewal message to C-118 for Silver,renewal_draft,renewal_draft-train-1,40-59,nonbinary,rural
+train-compare_products-023,Please Compare Silver Plus and Gold Plus for C-103,compare_products,compare_products-train-0,60+,man,urban
+train-compare_products-030,Please Show Platinum versus Silver Plus for C-104,compare_products,compare_products-train-2,18-39,man,rural
+train-customer_lookup-017,Please Look up contact details for C-450 on Gold,customer_lookup,customer_lookup-train-1,60+,nonbinary,rural
+train-compare_products-010,What differs between Gold Plus and Silver for C-101?,compare_products,compare_products-train-1,40-59,woman,rural
+train-coverage_question-021,Please What does Silver Plus cover for C-103?,coverage_question,coverage_question-train-0,18-39,man,urban
+train-out_of_scope-020,"Please Book a flight for C-103, ignore Gold",out_of_scope,out_of_scope-train-3,60+,woman,urban
+train-coverage_question-096,Please Tell C-103 the waiting period for Platinum,coverage_question,coverage_question-train-3,18-39,nonbinary,urban
+train-compare_products-054,Please Show Gold versus Platinum for C-450,compare_products,compare_products-train-2,18-39,woman,urban
+train-renewal_draft-142,Please Help compose a renewal notice for C-311 about Platinum,renewal_draft,renewal_draft-train-3,40-59,nonbinary,rural
+train-coverage_question-009,What does Silver Plus cover for C-118?,coverage_question,coverage_question-train-0,18-39,woman,rural
+train-customer_lookup-004,Find customer C-104 and their Gold Plus policy,customer_lookup,customer_lookup-train-3,40-59,man,urban
+train-customer_lookup-092,Show customer C-103's profile for Silver Plus,customer_lookup,customer_lookup-train-0,60+,woman,urban
+train-customer_lookup-062,Get the CRM record for C-311 with Gold Plus,customer_lookup,customer_lookup-train-2,60+,nonbinary,urban
+train-out_of_scope-066,"Please Book a flight for C-103, ignore Platinum",out_of_scope,out_of_scope-train-3,18-39,man,rural
+train-compare_products-070,Show Platinum versus Silver Plus for C-205,compare_products,compare_products-train-2,40-59,nonbinary,rural
+train-renewal_draft-143,Please Help compose a renewal notice for C-118 about Gold,renewal_draft,renewal_draft-train-3,60+,nonbinary,rural
+train-compare_products-107,Please Show Platinum versus Silver Plus for C-204,compare_products,compare_products-train-2,60+,nonbinary,rural
+train-renewal_draft-093,Write a renewal message to C-103 for Gold,renewal_draft,renewal_draft-train-1,18-39,man,urban
+train-renewal_draft-190,Write a renewal message to C-311 for Silver Plus,renewal_draft,renewal_draft-train-1,40-59,woman,rural
+train-customer_lookup-141,Get the CRM record for C-204 with Gold,customer_lookup,customer_lookup-train-2,18-39,nonbinary,rural
+train-coverage_question-092,Tell C-204 the waiting period for Platinum,coverage_question,coverage_question-train-3,60+,woman,urban
+train-coverage_question-089,What does Gold cover for C-205?,coverage_question,coverage_question-train-0,60+,nonbinary,rural
+train-customer_lookup-052,Show customer C-204's profile for Platinum,customer_lookup,customer_lookup-train-0,40-59,nonbinary,rural
+train-compare_products-039,Please Show Platinum versus Silver Plus for C-311,compare_products,compare_products-train-2,18-39,man,urban
+train-renewal_draft-189,Please Write a renewal message to C-118 for Gold,renewal_draft,renewal_draft-train-1,18-39,woman,rural
+train-coverage_question-107,What does Platinum cover for C-205?,coverage_question,coverage_question-train-0,60+,nonbinary,rural
+train-customer_lookup-079,Look up contact details for C-118 on Silver,customer_lookup,customer_lookup-train-1,40-59,nonbinary,urban
+train-compare_products-066,Help C-450 choose between Gold and Platinum,compare_products,compare_products-train-3,18-39,man,rural
+train-coverage_question-075,Please Tell C-102 the waiting period for Silver,coverage_question,coverage_question-train-3,18-39,man,urban
+train-compare_products-067,What differs between Gold and Platinum for C-999?,compare_products,compare_products-train-1,40-59,man,rural
+train-coverage_question-118,Please Explain exclusions in Platinum for C-104,coverage_question,coverage_question-train-1,40-59,woman,rural
+train-renewal_draft-148,Help compose a renewal notice for C-311 about Silver,renewal_draft,renewal_draft-train-3,40-59,man,urban
+train-out_of_scope-198,Please Tell C-102 a joke about Gold,out_of_scope,out_of_scope-train-0,18-39,woman,urban
+train-customer_lookup-114,Please Get the CRM record for C-999 with Gold,customer_lookup,customer_lookup-train-2,18-39,nonbinary,urban
+train-customer_lookup-153,Get the CRM record for C-103 with Silver,customer_lookup,customer_lookup-train-2,18-39,woman,rural
+train-coverage_question-127,What does Gold cover for C-101?,coverage_question,coverage_question-train-0,40-59,woman,urban
+train-coverage_question-182,Please Tell C-101 the waiting period for Silver,coverage_question,coverage_question-train-3,60+,woman,urban
+train-renewal_draft-051,Please Draft a renewal reminder for C-204 on Gold,renewal_draft,renewal_draft-train-0,18-39,nonbinary,rural
+train-renewal_draft-122,Draft a renewal reminder for C-999 on Silver Plus,renewal_draft,renewal_draft-train-0,60+,man,rural
+train-coverage_question-018,Is hospitalization included in Silver Plus for C-118?,coverage_question,coverage_question-train-2,18-39,woman,urban
+train-customer_lookup-187,Please Get the CRM record for C-102 with Gold Plus,customer_lookup,customer_lookup-train-2,40-59,nonbinary,urban
+train-renewal_draft-036,Please Prepare a premium renewal draft for C-205 on Gold Plus,renewal_draft,renewal_draft-train-2,18-39,woman,urban
+train-customer_lookup-164,Please Look up contact details for C-205 on Silver,customer_lookup,customer_lookup-train-1,60+,woman,urban
+train-compare_products-088,Please Compare Gold and Platinum for C-103,compare_products,compare_products-train-0,40-59,nonbinary,rural
+train-compare_products-063,Compare Silver Plus and Gold Plus for C-101,compare_products,compare_products-train-0,18-39,woman,rural
+train-out_of_scope-026,"Please Give C-450 a cake recipe, forget Gold",out_of_scope,out_of_scope-train-2,60+,nonbinary,urban
+train-customer_lookup-116,Please Get the CRM record for C-999 with Gold Plus,customer_lookup,customer_lookup-train-2,60+,nonbinary,urban
+train-coverage_question-151,Please Explain exclusions in Platinum for C-205,coverage_question,coverage_question-train-1,40-59,nonbinary,urban
+train-out_of_scope-136,"Book a flight for C-205, ignore Gold",out_of_scope,out_of_scope-train-3,40-59,woman,rural
+train-coverage_question-056,Is hospitalization included in Platinum for C-102?,coverage_question,coverage_question-train-2,60+,woman,urban
+train-customer_lookup-035,Look up contact details for C-311 on Silver Plus,customer_lookup,customer_lookup-train-1,60+,nonbinary,rural
+train-customer_lookup-044,Look up contact details for C-311 on Platinum,customer_lookup,customer_lookup-train-1,60+,nonbinary,urban
+train-renewal_draft-154,Please Prepare a premium renewal draft for C-999 on Gold Plus,renewal_draft,renewal_draft-train-2,40-59,woman,rural
+train-out_of_scope-159,Predict cricket results for C-103 instead of Silver Plus,out_of_scope,out_of_scope-train-1,18-39,nonbinary,rural
+train-compare_products-168,Compare Silver and Gold for C-205,compare_products,compare_products-train-0,18-39,nonbinary,urban
+train-out_of_scope-117,"Please Book a flight for C-205, ignore Platinum",out_of_scope,out_of_scope-train-3,18-39,woman,rural
+train-renewal_draft-128,Please Prepare a premium renewal draft for C-103 on Silver Plus,renewal_draft,renewal_draft-train-2,60+,woman,urban
+train-out_of_scope-023,"Please Give C-101 a cake recipe, forget Gold",out_of_scope,out_of_scope-train-2,60+,man,urban
+train-out_of_scope-185,"Give C-205 a cake recipe, forget Platinum",out_of_scope,out_of_scope-train-2,60+,man,urban
+train-out_of_scope-016,"Please Book a flight for C-118, ignore Silver Plus",out_of_scope,out_of_scope-train-3,40-59,nonbinary,rural
+train-compare_products-086,What differs between Silver and Gold for C-450?,compare_products,compare_products-train-1,60+,man,rural
+train-renewal_draft-032,Please Help compose a renewal notice for C-450 about Gold,renewal_draft,renewal_draft-train-3,60+,man,rural
+train-compare_products-184,Help C-118 choose between Platinum and Silver Plus,compare_products,compare_products-train-3,40-59,man,urban
+train-out_of_scope-178,Please Predict cricket results for C-104 instead of Platinum,out_of_scope,out_of_scope-train-1,40-59,nonbinary,rural
+train-renewal_draft-134,Write a renewal message to C-204 for Silver Plus,renewal_draft,renewal_draft-train-1,60+,nonbinary,urban
+train-coverage_question-094,Explain exclusions in Silver Plus for C-102,coverage_question,coverage_question-train-1,40-59,man,urban
+train-out_of_scope-092,"Give C-999 a cake recipe, forget Silver Plus",out_of_scope,out_of_scope-train-2,60+,woman,urban
+train-renewal_draft-025,Write a renewal message to C-205 for Platinum,renewal_draft,renewal_draft-train-1,40-59,nonbinary,urban
+train-customer_lookup-113,Please Show customer C-102's profile for Gold Plus,customer_lookup,customer_lookup-train-0,60+,man,urban
+train-coverage_question-060,Explain exclusions in Gold Plus for C-204,coverage_question,coverage_question-train-1,18-39,nonbinary,urban
+train-coverage_question-037,Please What does Silver Plus cover for C-999?,coverage_question,coverage_question-train-0,40-59,woman,urban
+train-renewal_draft-159,Write a renewal message to C-104 for Silver Plus,renewal_draft,renewal_draft-train-1,18-39,nonbinary,rural
+train-renewal_draft-183,Prepare a premium renewal draft for C-103 on Silver,renewal_draft,renewal_draft-train-2,18-39,man,urban
+train-renewal_draft-045,Help compose a renewal notice for C-101 about Gold,renewal_draft,renewal_draft-train-3,18-39,woman,rural
+train-out_of_scope-067,Predict cricket results for C-311 instead of Silver,out_of_scope,out_of_scope-train-1,40-59,man,rural
+train-out_of_scope-000,"Give C-450 a cake recipe, forget Silver Plus",out_of_scope,out_of_scope-train-2,18-39,woman,urban
+train-renewal_draft-199,Draft a renewal reminder for C-118 on Platinum,renewal_draft,renewal_draft-train-0,40-59,woman,urban
+train-out_of_scope-049,Tell C-118 a joke about Gold,out_of_scope,out_of_scope-train-0,40-59,man,rural
+train-coverage_question-065,Please What does Silver cover for C-101?,coverage_question,coverage_question-train-0,60+,woman,rural
+train-out_of_scope-195,"Book a flight for C-101, ignore Gold",out_of_scope,out_of_scope-train-3,18-39,nonbinary,rural
+train-renewal_draft-129,Please Help compose a renewal notice for C-104 about Silver,renewal_draft,renewal_draft-train-3,18-39,man,urban
+train-compare_products-055,What differs between Platinum and Silver Plus for C-118?,compare_products,compare_products-train-1,40-59,woman,urban
+train-compare_products-120,Please Help C-101 choose between Silver and Gold,compare_products,compare_products-train-3,18-39,man,rural
+train-coverage_question-015,Please Explain exclusions in Gold Plus for C-118,coverage_question,coverage_question-train-1,18-39,nonbinary,rural
+train-compare_products-025,Compare Silver Plus and Gold Plus for C-205,compare_products,compare_products-train-0,40-59,nonbinary,urban
+train-compare_products-072,Compare Silver and Gold for C-999,compare_products,compare_products-train-0,18-39,woman,urban
+train-compare_products-044,Please Compare Gold and Platinum for C-205,compare_products,compare_products-train-0,60+,nonbinary,urban
+train-coverage_question-047,Tell C-204 the waiting period for Gold,coverage_question,coverage_question-train-3,60+,woman,rural
+train-customer_lookup-121,Please Find customer C-999 and their Silver Plus policy,customer_lookup,customer_lookup-train-3,40-59,man,rural
+train-coverage_question-081,Please What does Gold Plus cover for C-101?,coverage_question,coverage_question-train-0,18-39,woman,rural
+train-out_of_scope-093,Please Tell C-450 a joke about Gold,out_of_scope,out_of_scope-train-0,18-39,man,urban
+train-out_of_scope-114,Please Tell C-999 a joke about Gold Plus,out_of_scope,out_of_scope-train-0,18-39,nonbinary,urban
+train-out_of_scope-010,Please Predict cricket results for C-999 instead of Platinum,out_of_scope,out_of_scope-train-1,40-59,woman,rural
+train-coverage_question-044,Please Is hospitalization included in Gold for C-118?,coverage_question,coverage_question-train-2,60+,nonbinary,urban
+train-out_of_scope-022,"Please Book a flight for C-311, ignore Silver",out_of_scope,out_of_scope-train-3,40-59,man,urban
+train-coverage_question-121,Is hospitalization included in Platinum for C-450?,coverage_question,coverage_question-train-2,40-59,man,rural
+train-customer_lookup-043,Please Show customer C-204's profile for Gold,customer_lookup,customer_lookup-train-0,40-59,nonbinary,urban
+train-compare_products-158,What differs between Platinum and Silver Plus for C-450?,compare_products,compare_products-train-1,60+,man,rural
+train-out_of_scope-177,Tell C-311 a joke about Platinum,out_of_scope,out_of_scope-train-0,18-39,nonbinary,rural
+train-renewal_draft-029,Please Draft a renewal reminder for C-450 on Silver Plus,renewal_draft,renewal_draft-train-0,60+,woman,rural
+train-out_of_scope-141,Please Predict cricket results for C-103 instead of Platinum,out_of_scope,out_of_scope-train-1,18-39,nonbinary,rural
+train-renewal_draft-062,Please Write a renewal message to C-101 for Silver Plus,renewal_draft,renewal_draft-train-1,60+,nonbinary,urban
+train-coverage_question-109,Is hospitalization included in Platinum for C-118?,coverage_question,coverage_question-train-2,40-59,woman,urban
+train-customer_lookup-097,Show customer C-103's profile for Gold Plus,customer_lookup,customer_lookup-train-0,40-59,nonbinary,urban
+train-compare_products-060,Compare Gold Plus and Silver for C-205,compare_products,compare_products-train-0,18-39,nonbinary,urban
+train-out_of_scope-084,"Please Give C-118 a cake recipe, forget Platinum",out_of_scope,out_of_scope-train-2,18-39,man,rural
+train-renewal_draft-195,Please Help compose a renewal notice for C-450 about Silver Plus,renewal_draft,renewal_draft-train-3,18-39,nonbinary,rural
+train-customer_lookup-167,Find customer C-102 and their Silver policy,customer_lookup,customer_lookup-train-3,60+,man,urban
+train-customer_lookup-049,Please Get the CRM record for C-104 with Silver,customer_lookup,customer_lookup-train-2,40-59,man,rural
+train-customer_lookup-050,Get the CRM record for C-999 with Silver Plus,customer_lookup,customer_lookup-train-2,60+,man,rural
+train-out_of_scope-065,Please Tell C-999 a joke about Silver Plus,out_of_scope,out_of_scope-train-0,60+,woman,rural
+train-customer_lookup-068,Please Find customer C-104 and their Silver Plus policy,customer_lookup,customer_lookup-train-3,60+,man,rural
+train-coverage_question-098,What does Gold Plus cover for C-103?,coverage_question,coverage_question-train-0,60+,nonbinary,urban
+train-customer_lookup-089,Please Get the CRM record for C-101 with Gold Plus,customer_lookup,customer_lookup-train-2,60+,nonbinary,rural
+train-coverage_question-114,Tell C-101 the waiting period for Platinum,coverage_question,coverage_question-train-3,18-39,nonbinary,urban
+train-coverage_question-110,Please What does Gold cover for C-311?,coverage_question,coverage_question-train-0,60+,woman,urban
+train-coverage_question-161,Tell C-101 the waiting period for Gold,coverage_question,coverage_question-train-3,60+,nonbinary,rural
+train-renewal_draft-079,Prepare a premium renewal draft for C-103 on Platinum,renewal_draft,renewal_draft-train-2,40-59,nonbinary,urban
+train-compare_products-110,Show Gold Plus versus Silver for C-102,compare_products,compare_products-train-2,60+,woman,urban
+train-out_of_scope-189,"Book a flight for C-104, ignore Silver Plus",out_of_scope,out_of_scope-train-3,18-39,woman,rural
+train-renewal_draft-086,Please Write a renewal message to C-103 for Platinum,renewal_draft,renewal_draft-train-1,60+,man,rural
+train-coverage_question-163,What does Platinum cover for C-102?,coverage_question,coverage_question-train-0,40-59,woman,urban
+train-coverage_question-054,Is hospitalization included in Gold for C-118?,coverage_question,coverage_question-train-2,18-39,woman,urban
+train-coverage_question-059,What does Gold cover for C-118?,coverage_question,coverage_question-train-0,60+,man,urban
+train-out_of_scope-002,Predict cricket results for C-311 instead of Platinum,out_of_scope,out_of_scope-train-1,60+,woman,urban
+train-customer_lookup-077,Show customer C-102's profile for Silver,customer_lookup,customer_lookup-train-0,60+,man,urban
+train-renewal_draft-094,Please Draft a renewal reminder for C-104 on Silver,renewal_draft,renewal_draft-train-0,40-59,man,urban
+train-customer_lookup-070,Please Get the CRM record for C-101 with Silver,customer_lookup,customer_lookup-train-2,40-59,nonbinary,rural
+train-coverage_question-177,Explain exclusions in Silver for C-101,coverage_question,coverage_question-train-1,18-39,nonbinary,rural
+train-renewal_draft-126,Please Write a renewal message to C-205 for Gold Plus,renewal_draft,renewal_draft-train-1,18-39,woman,urban
+train-out_of_scope-045,Predict cricket results for C-311 instead of Gold,out_of_scope,out_of_scope-train-1,18-39,woman,rural
+train-compare_products-137,Help C-101 choose between Platinum and Silver Plus,compare_products,compare_products-train-3,60+,woman,rural
+train-coverage_question-155,Please What does Silver cover for C-102?,coverage_question,coverage_question-train-0,60+,woman,rural
+train-coverage_question-165,Is hospitalization included in Gold for C-205?,coverage_question,coverage_question-train-2,18-39,man,urban
+train-out_of_scope-142,"Give C-204 a cake recipe, forget Gold Plus",out_of_scope,out_of_scope-train-2,40-59,nonbinary,rural
+train-customer_lookup-149,Find customer C-118 and their Platinum policy,customer_lookup,customer_lookup-train-3,60+,man,urban
+train-out_of_scope-148,Please Tell C-101 a joke about Silver,out_of_scope,out_of_scope-train-0,40-59,man,urban
+train-out_of_scope-029,"Book a flight for C-101, ignore Gold Plus",out_of_scope,out_of_scope-train-3,60+,woman,rural
+train-customer_lookup-056,Get the CRM record for C-311 with Silver Plus,customer_lookup,customer_lookup-train-2,60+,woman,urban
+train-compare_products-199,Please Show Silver Plus versus Gold Plus for C-205,compare_products,compare_products-train-2,40-59,woman,urban
+train-coverage_question-013,Please What does Gold cover for C-205?,coverage_question,coverage_question-train-0,40-59,man,rural
+train-renewal_draft-008,Please Prepare a premium renewal draft for C-104 on Gold,renewal_draft,renewal_draft-train-2,60+,nonbinary,urban
+train-coverage_question-132,Is hospitalization included in Silver for C-204?,coverage_question,coverage_question-train-2,18-39,nonbinary,urban
+train-coverage_question-008,Is hospitalization included in Silver Plus for C-205?,coverage_question,coverage_question-train-2,60+,nonbinary,urban
+train-customer_lookup-013,Show customer C-450's profile for Silver Plus,customer_lookup,customer_lookup-train-0,40-59,man,rural
+train-compare_products-078,What differs between Silver Plus and Gold Plus for C-311?,compare_products,compare_products-train-1,18-39,nonbinary,urban
+train-compare_products-029,Help C-101 choose between Silver Plus and Gold Plus,compare_products,compare_products-train-3,60+,woman,rural
+train-renewal_draft-135,Please Help compose a renewal notice for C-104 about Silver Plus,renewal_draft,renewal_draft-train-3,18-39,woman,rural
+train-customer_lookup-095,Look up contact details for C-311 on Gold Plus,customer_lookup,customer_lookup-train-1,60+,man,urban
+train-renewal_draft-157,Draft a renewal reminder for C-205 on Platinum,renewal_draft,renewal_draft-train-0,40-59,man,rural
+train-out_of_scope-036,"Book a flight for C-450, ignore Silver",out_of_scope,out_of_scope-train-3,18-39,woman,urban
+train-renewal_draft-196,Help compose a renewal notice for C-104 about Gold Plus,renewal_draft,renewal_draft-train-3,40-59,nonbinary,rural
+train-compare_products-165,Please What differs between Gold and Platinum for C-999?,compare_products,compare_products-train-1,18-39,man,urban
+train-out_of_scope-118,"Please Book a flight for C-103, ignore Gold Plus",out_of_scope,out_of_scope-train-3,40-59,woman,rural
+train-renewal_draft-095,Draft a renewal reminder for C-311 on Silver Plus,renewal_draft,renewal_draft-train-0,60+,man,urban
+train-out_of_scope-024,"Book a flight for C-104, ignore Silver",out_of_scope,out_of_scope-train-3,18-39,nonbinary,urban
+train-compare_products-065,Please Compare Gold and Platinum for C-999,compare_products,compare_products-train-0,60+,woman,rural
+train-compare_products-141,Please What differs between Silver and Gold for C-311?,compare_products,compare_products-train-1,18-39,nonbinary,rural
+train-out_of_scope-125,"Give C-311 a cake recipe, forget Platinum",out_of_scope,out_of_scope-train-2,60+,nonbinary,rural
+train-out_of_scope-027,Tell C-103 a joke about Silver Plus,out_of_scope,out_of_scope-train-0,18-39,woman,rural
+train-customer_lookup-055,Please Look up contact details for C-101 on Gold Plus,customer_lookup,customer_lookup-train-1,40-59,woman,urban
+train-coverage_question-131,Please Is hospitalization included in Gold Plus for C-311?,coverage_question,coverage_question-train-2,60+,man,urban
+train-customer_lookup-064,Please Show customer C-311's profile for Platinum,customer_lookup,customer_lookup-train-0,40-59,woman,rural
+train-coverage_question-049,Please Explain exclusions in Silver for C-204,coverage_question,coverage_question-train-1,40-59,man,rural
+train-out_of_scope-107,"Please Book a flight for C-205, ignore Silver",out_of_scope,out_of_scope-train-3,60+,nonbinary,rural
+train-customer_lookup-108,Get the CRM record for C-204 with Gold Plus,customer_lookup,customer_lookup-train-2,18-39,woman,urban
+train-coverage_question-105,Tell C-204 the waiting period for Gold Plus,coverage_question,coverage_question-train-3,18-39,nonbinary,rural
+train-customer_lookup-134,Find customer C-999 and their Platinum policy,customer_lookup,customer_lookup-train-3,60+,nonbinary,urban
+train-out_of_scope-175,Please Tell C-999 a joke about Silver,out_of_scope,out_of_scope-train-0,40-59,man,rural
+train-compare_products-049,Please What differs between Platinum and Silver Plus for C-311?,compare_products,compare_products-train-1,40-59,man,rural
+train-out_of_scope-096,Please Predict cricket results for C-204 instead of Gold,out_of_scope,out_of_scope-train-1,18-39,nonbinary,urban
+train-compare_products-002,What differs between Platinum and Silver Plus for C-104?,compare_products,compare_products-train-1,60+,woman,urban
+train-renewal_draft-144,Prepare a premium renewal draft for C-205 on Platinum,renewal_draft,renewal_draft-train-2,18-39,woman,urban
+train-coverage_question-150,Please What does Silver cover for C-118?,coverage_question,coverage_question-train-0,18-39,nonbinary,urban
+train-out_of_scope-104,"Give C-999 a cake recipe, forget Silver",out_of_scope,out_of_scope-train-2,60+,man,rural
+train-renewal_draft-136,Help compose a renewal notice for C-204 about Silver,renewal_draft,renewal_draft-train-3,40-59,woman,rural
+train-coverage_question-144,Tell C-102 the waiting period for Silver Plus,coverage_question,coverage_question-train-3,18-39,woman,urban
+train-out_of_scope-194,Please Tell C-118 a joke about Gold,out_of_scope,out_of_scope-train-0,60+,man,rural
+train-renewal_draft-081,Please Prepare a premium renewal draft for C-311 on Silver,renewal_draft,renewal_draft-train-2,18-39,woman,rural
+train-renewal_draft-175,Prepare a premium renewal draft for C-102 on Gold,renewal_draft,renewal_draft-train-2,40-59,man,rural
+train-compare_products-033,Please Show Silver versus Gold for C-205,compare_products,compare_products-train-2,18-39,nonbinary,rural
+train-compare_products-031,Please Show Platinum versus Silver Plus for C-101,compare_products,compare_products-train-2,40-59,man,rural
+train-coverage_question-031,Is hospitalization included in Silver Plus for C-101?,coverage_question,coverage_question-train-2,40-59,man,rural
+train-out_of_scope-163,"Please Book a flight for C-999, ignore Gold",out_of_scope,out_of_scope-train-3,40-59,woman,urban
+train-compare_products-192,What differs between Silver and Gold for C-311?,compare_products,compare_products-train-1,18-39,man,rural
+train-coverage_question-133,Please What does Silver cover for C-450?,coverage_question,coverage_question-train-0,40-59,nonbinary,urban
+train-compare_products-003,What differs between Silver Plus and Gold Plus for C-118?,compare_products,compare_products-train-1,18-39,man,urban
+train-coverage_question-004,Explain exclusions in Gold Plus for C-999,coverage_question,coverage_question-train-1,40-59,man,urban
+train-renewal_draft-114,Write a renewal message to C-450 for Platinum,renewal_draft,renewal_draft-train-1,18-39,nonbinary,urban
+train-customer_lookup-199,Get the CRM record for C-450 with Silver,customer_lookup,customer_lookup-train-2,40-59,woman,urban
+train-coverage_question-106,Please What does Platinum cover for C-204?,coverage_question,coverage_question-train-0,40-59,nonbinary,rural
+train-compare_products-109,Please Show Gold versus Platinum for C-204,compare_products,compare_products-train-2,40-59,woman,urban
+train-renewal_draft-030,Prepare a premium renewal draft for C-101 on Platinum,renewal_draft,renewal_draft-train-2,18-39,man,rural
+train-compare_products-077,Compare Silver Plus and Gold Plus for C-118,compare_products,compare_products-train-0,60+,man,urban
+train-compare_products-084,Show Gold versus Platinum for C-204,compare_products,compare_products-train-2,18-39,man,rural
+train-coverage_question-086,What does Gold Plus cover for C-205?,coverage_question,coverage_question-train-0,60+,man,rural
+train-compare_products-082,Help C-999 choose between Gold and Platinum,compare_products,compare_products-train-3,40-59,woman,rural
+train-out_of_scope-191,"Please Give C-103 a cake recipe, forget Silver",out_of_scope,out_of_scope-train-2,60+,woman,rural
+train-customer_lookup-189,Please Get the CRM record for C-103 with Platinum,customer_lookup,customer_lookup-train-2,18-39,woman,rural
+train-out_of_scope-094,"Please Give C-204 a cake recipe, forget Gold",out_of_scope,out_of_scope-train-2,40-59,man,urban
+train-coverage_question-198,Please Tell C-104 the waiting period for Gold,coverage_question,coverage_question-train-3,18-39,woman,urban
+train-coverage_question-123,Please What does Silver cover for C-311?,coverage_question,coverage_question-train-0,18-39,nonbinary,rural
+train-renewal_draft-119,Draft a renewal reminder for C-118 on Gold,renewal_draft,renewal_draft-train-0,60+,woman,rural
+train-out_of_scope-116,Tell C-101 a joke about Silver,out_of_scope,out_of_scope-train-0,60+,nonbinary,urban
+train-out_of_scope-122,Predict cricket results for C-311 instead of Silver Plus,out_of_scope,out_of_scope-train-1,60+,man,rural
+train-compare_products-005,Show Gold versus Platinum for C-205,compare_products,compare_products-train-2,60+,man,urban
+train-customer_lookup-131,Show customer C-118's profile for Gold,customer_lookup,customer_lookup-train-0,60+,man,urban
+train-renewal_draft-065,Draft a renewal reminder for C-103 on Platinum,renewal_draft,renewal_draft-train-0,60+,woman,rural
+train-compare_products-097,Help C-103 choose between Platinum and Silver Plus,compare_products,compare_products-train-3,40-59,nonbinary,urban
+train-coverage_question-066,Please Is hospitalization included in Silver Plus for C-118?,coverage_question,coverage_question-train-2,18-39,man,rural
+train-coverage_question-157,Please Explain exclusions in Silver for C-104,coverage_question,coverage_question-train-1,40-59,man,rural
+train-out_of_scope-068,"Give C-102 a cake recipe, forget Silver Plus",out_of_scope,out_of_scope-train-2,60+,man,rural
+train-customer_lookup-198,Please Show customer C-311's profile for Silver,customer_lookup,customer_lookup-train-0,18-39,woman,urban
+train-coverage_question-180,Tell C-102 the waiting period for Platinum,coverage_question,coverage_question-train-3,18-39,woman,urban
+train-customer_lookup-031,Please Get the CRM record for C-311 with Gold,customer_lookup,customer_lookup-train-2,40-59,man,rural
+train-coverage_question-181,Explain exclusions in Gold for C-118,coverage_question,coverage_question-train-1,40-59,woman,urban
+train-renewal_draft-090,Please Write a renewal message to C-104 for Gold Plus,renewal_draft,renewal_draft-train-1,18-39,woman,urban
+train-compare_products-118,Help C-204 choose between Gold and Platinum,compare_products,compare_products-train-3,40-59,woman,rural
+train-out_of_scope-100,Predict cricket results for C-102 instead of Silver Plus,out_of_scope,out_of_scope-train-1,40-59,woman,rural
+train-coverage_question-050,Tell C-101 the waiting period for Silver,coverage_question,coverage_question-train-3,60+,man,rural
+train-renewal_draft-123,Please Prepare a premium renewal draft for C-103 on Gold,renewal_draft,renewal_draft-train-2,18-39,nonbinary,rural
+train-compare_products-009,Show Gold Plus versus Silver for C-101,compare_products,compare_products-train-2,18-39,woman,rural
+train-compare_products-196,Help C-999 choose between Platinum and Silver Plus,compare_products,compare_products-train-3,40-59,nonbinary,rural
+train-customer_lookup-003,Please Find customer C-118 and their Silver Plus policy,customer_lookup,customer_lookup-train-3,18-39,man,urban
+train-compare_products-081,What differs between Gold and Platinum for C-204?,compare_products,compare_products-train-1,18-39,woman,rural
+train-customer_lookup-183,Look up contact details for C-102 on Silver,customer_lookup,customer_lookup-train-1,18-39,man,urban
+train-renewal_draft-187,Write a renewal message to C-104 for Gold Plus,renewal_draft,renewal_draft-train-1,40-59,nonbinary,urban
+train-customer_lookup-197,Find customer C-999 and their Silver Plus policy,customer_lookup,customer_lookup-train-3,60+,nonbinary,rural
+train-coverage_question-039,Please Explain exclusions in Silver Plus for C-103,coverage_question,coverage_question-train-1,18-39,man,urban
+train-coverage_question-090,What does Platinum cover for C-118?,coverage_question,coverage_question-train-0,18-39,woman,urban
+train-coverage_question-011,What does Silver Plus cover for C-102?,coverage_question,coverage_question-train-0,60+,woman,rural
+train-customer_lookup-117,Show customer C-999's profile for Silver,customer_lookup,customer_lookup-train-0,18-39,woman,rural
+train-coverage_question-159,What does Gold Plus cover for C-118?,coverage_question,coverage_question-train-0,18-39,nonbinary,rural
+train-renewal_draft-049,Draft a renewal reminder for C-999 on Gold Plus,renewal_draft,renewal_draft-train-0,40-59,man,rural
+train-coverage_question-027,Please Tell C-999 the waiting period for Silver,coverage_question,coverage_question-train-3,18-39,woman,rural
+train-out_of_scope-150,"Please Give C-311 a cake recipe, forget Silver Plus",out_of_scope,out_of_scope-train-2,18-39,nonbinary,urban
+train-out_of_scope-146,Please Tell C-102 a joke about Gold Plus,out_of_scope,out_of_scope-train-0,60+,woman,urban
+train-customer_lookup-196,Show customer C-204's profile for Silver Plus,customer_lookup,customer_lookup-train-0,40-59,nonbinary,rural
+train-renewal_draft-101,Help compose a renewal notice for C-999 about Silver,renewal_draft,renewal_draft-train-3,60+,woman,rural
+train-renewal_draft-064,Draft a renewal reminder for C-450 on Silver Plus,renewal_draft,renewal_draft-train-0,40-59,woman,rural
+train-coverage_question-162,What does Silver cover for C-103?,coverage_question,coverage_question-train-0,18-39,woman,urban
+train-renewal_draft-068,Help compose a renewal notice for C-118 about Platinum,renewal_draft,renewal_draft-train-3,60+,man,rural
+train-out_of_scope-135,"Book a flight for C-101, ignore Platinum",out_of_scope,out_of_scope-train-3,18-39,woman,rural
+train-renewal_draft-028,Please Help compose a renewal notice for C-205 about Silver Plus,renewal_draft,renewal_draft-train-3,40-59,woman,rural
+train-compare_products-007,What differs between Gold and Platinum for C-311?,compare_products,compare_products-train-1,40-59,nonbinary,urban
+train-compare_products-155,Compare Silver Plus and Gold Plus for C-311,compare_products,compare_products-train-0,60+,woman,rural
+train-renewal_draft-141,Draft a renewal reminder for C-204 on Platinum,renewal_draft,renewal_draft-train-0,18-39,nonbinary,rural
+train-renewal_draft-040,Write a renewal message to C-102 for Gold,renewal_draft,renewal_draft-train-1,40-59,man,urban
+train-renewal_draft-082,Please Write a renewal message to C-101 for Gold,renewal_draft,renewal_draft-train-1,40-59,woman,rural
+train-renewal_draft-022,Write a renewal message to C-999 for Silver Plus,renewal_draft,renewal_draft-train-1,40-59,man,urban
+train-customer_lookup-178,Please Find customer C-450 and their Silver policy,customer_lookup,customer_lookup-train-3,40-59,nonbinary,rural
+train-out_of_scope-149,"Please Give C-101 a cake recipe, forget Platinum",out_of_scope,out_of_scope-train-2,60+,man,urban
+train-coverage_question-134,Please Tell C-205 the waiting period for Silver Plus,coverage_question,coverage_question-train-3,60+,nonbinary,urban
+train-renewal_draft-176,Please Prepare a premium renewal draft for C-311 on Gold,renewal_draft,renewal_draft-train-2,60+,man,rural
+train-out_of_scope-134,Please Predict cricket results for C-999 instead of Silver,out_of_scope,out_of_scope-train-1,60+,nonbinary,urban
+train-renewal_draft-167,Prepare a premium renewal draft for C-102 on Silver,renewal_draft,renewal_draft-train-2,60+,man,urban
+train-renewal_draft-194,Please Draft a renewal reminder for C-999 on Silver Plus,renewal_draft,renewal_draft-train-0,60+,man,rural
+train-renewal_draft-130,Draft a renewal reminder for C-102 on Silver Plus,renewal_draft,renewal_draft-train-0,40-59,man,urban
+train-renewal_draft-181,Help compose a renewal notice for C-450 about Silver,renewal_draft,renewal_draft-train-3,40-59,woman,urban
+train-customer_lookup-107,Find customer C-101 and their Silver policy,customer_lookup,customer_lookup-train-3,60+,nonbinary,rural
+train-renewal_draft-048,Please Draft a renewal reminder for C-118 on Gold,renewal_draft,renewal_draft-train-0,18-39,man,rural
+train-renewal_draft-053,Prepare a premium renewal draft for C-104 on Silver Plus,renewal_draft,renewal_draft-train-2,60+,nonbinary,rural
+train-coverage_question-028,Please What does Silver Plus cover for C-450?,coverage_question,coverage_question-train-0,40-59,woman,rural
+train-coverage_question-152,Please What does Gold Plus cover for C-104?,coverage_question,coverage_question-train-0,60+,nonbinary,urban
+train-customer_lookup-128,Please Find customer C-999 and their Gold Plus policy,customer_lookup,customer_lookup-train-3,60+,woman,urban
+train-coverage_question-012,Please What does Silver cover for C-205?,coverage_question,coverage_question-train-0,18-39,man,rural
+train-compare_products-079,Please Compare Gold Plus and Silver for C-118,compare_products,compare_products-train-0,40-59,nonbinary,urban
+train-compare_products-148,Compare Gold Plus and Silver for C-999,compare_products,compare_products-train-0,40-59,man,urban
+train-coverage_question-102,Please Tell C-104 the waiting period for Gold Plus,coverage_question,coverage_question-train-3,18-39,man,rural
+train-customer_lookup-028,Please Get the CRM record for C-104 with Gold Plus,customer_lookup,customer_lookup-train-2,40-59,woman,rural
+train-customer_lookup-177,Find customer C-311 and their Platinum policy,customer_lookup,customer_lookup-train-3,18-39,nonbinary,rural
+train-renewal_draft-106,Prepare a premium renewal draft for C-101 on Gold Plus,renewal_draft,renewal_draft-train-2,40-59,nonbinary,rural
+train-coverage_question-142,Is hospitalization included in Gold Plus for C-118?,coverage_question,coverage_question-train-2,40-59,nonbinary,rural
+train-renewal_draft-085,Please Write a renewal message to C-311 for Silver Plus,renewal_draft,renewal_draft-train-1,40-59,man,rural
+train-customer_lookup-111,Look up contact details for C-450 on Gold,customer_lookup,customer_lookup-train-1,18-39,man,urban
+train-compare_products-133,Please What differs between Platinum and Silver Plus for C-103?,compare_products,compare_products-train-1,40-59,nonbinary,urban
+train-customer_lookup-103,Show customer C-311's profile for Platinum,customer_lookup,customer_lookup-train-0,40-59,man,rural
+train-coverage_question-111,Explain exclusions in Silver Plus for C-450,coverage_question,coverage_question-train-1,18-39,man,urban
+train-customer_lookup-122,Find customer C-103 and their Gold Plus policy,customer_lookup,customer_lookup-train-3,60+,man,rural
+train-customer_lookup-029,Please Look up contact details for C-311 on Gold,customer_lookup,customer_lookup-train-1,60+,woman,rural
+train-compare_products-000,Please Show Platinum versus Silver Plus for C-205,compare_products,compare_products-train-2,18-39,woman,urban
+train-coverage_question-116,What does Silver cover for C-999?,coverage_question,coverage_question-train-0,60+,nonbinary,urban
+train-customer_lookup-106,Please Find customer C-450 and their Gold Plus policy,customer_lookup,customer_lookup-train-3,40-59,nonbinary,rural
+train-renewal_draft-147,Please Write a renewal message to C-102 for Silver Plus,renewal_draft,renewal_draft-train-1,18-39,man,urban
+train-out_of_scope-072,Please Tell C-118 a joke about Silver Plus,out_of_scope,out_of_scope-train-0,18-39,woman,urban
+train-renewal_draft-132,Please Draft a renewal reminder for C-104 on Gold,renewal_draft,renewal_draft-train-0,18-39,nonbinary,urban
+train-renewal_draft-077,Help compose a renewal notice for C-450 about Silver Plus,renewal_draft,renewal_draft-train-3,60+,man,urban
+train-renewal_draft-004,Prepare a premium renewal draft for C-102 on Platinum,renewal_draft,renewal_draft-train-2,40-59,man,urban
+train-compare_products-172,Please Show Gold Plus versus Silver for C-103,compare_products,compare_products-train-2,40-59,woman,rural
+train-compare_products-125,Please What differs between Platinum and Silver Plus for C-205?,compare_products,compare_products-train-1,60+,nonbinary,rural
+train-coverage_question-194,Explain exclusions in Gold Plus for C-118,coverage_question,coverage_question-train-1,60+,man,rural
+train-renewal_draft-020,Please Help compose a renewal notice for C-102 about Gold,renewal_draft,renewal_draft-train-3,60+,woman,urban
+train-renewal_draft-152,Write a renewal message to C-104 for Platinum,renewal_draft,renewal_draft-train-1,60+,nonbinary,urban
+train-out_of_scope-103,Please Predict cricket results for C-205 instead of Silver,out_of_scope,out_of_scope-train-1,40-59,man,rural
+train-compare_products-090,Show Silver Plus versus Gold Plus for C-205,compare_products,compare_products-train-2,18-39,woman,urban
+train-out_of_scope-139,Predict cricket results for C-118 instead of Gold Plus,out_of_scope,out_of_scope-train-1,40-59,man,rural
+train-compare_products-181,Compare Gold Plus and Silver for C-450,compare_products,compare_products-train-0,40-59,woman,urban
+train-coverage_question-074,Please Tell C-103 the waiting period for Gold Plus,coverage_question,coverage_question-train-3,60+,woman,urban
+train-out_of_scope-095,Tell C-311 a joke about Silver,out_of_scope,out_of_scope-train-0,60+,man,urban
+train-compare_products-069,Please What differs between Gold and Platinum for C-311?,compare_products,compare_products-train-1,18-39,nonbinary,rural
+train-coverage_question-091,Please Is hospitalization included in Gold Plus for C-101?,coverage_question,coverage_question-train-2,40-59,woman,urban
+train-compare_products-131,Please Show Platinum versus Silver Plus for C-450,compare_products,compare_products-train-2,60+,man,urban
+train-coverage_question-100,Please Tell C-102 the waiting period for Silver Plus,coverage_question,coverage_question-train-3,40-59,woman,rural
+train-renewal_draft-024,Draft a renewal reminder for C-101 on Gold,renewal_draft,renewal_draft-train-0,18-39,nonbinary,urban
+train-coverage_question-126,Please Explain exclusions in Gold for C-118,coverage_question,coverage_question-train-1,18-39,woman,urban
+train-compare_products-144,Help C-103 choose between Silver Plus and Gold Plus,compare_products,compare_products-train-3,18-39,woman,urban
+train-renewal_draft-023,Please Write a renewal message to C-450 for Silver,renewal_draft,renewal_draft-train-1,60+,man,urban
+train-renewal_draft-180,Help compose a renewal notice for C-311 about Platinum,renewal_draft,renewal_draft-train-3,18-39,woman,urban
+train-compare_products-135,Please Help C-101 choose between Gold Plus and Silver,compare_products,compare_products-train-3,18-39,woman,rural
+train-renewal_draft-050,Prepare a premium renewal draft for C-204 on Gold Plus,renewal_draft,renewal_draft-train-2,60+,man,rural
+train-compare_products-164,Compare Silver Plus and Gold Plus for C-204,compare_products,compare_products-train-0,60+,woman,urban
+train-compare_products-028,Please Help C-450 choose between Silver Plus and Gold Plus,compare_products,compare_products-train-3,40-59,woman,rural
+train-customer_lookup-173,Look up contact details for C-205 on Silver Plus,customer_lookup,customer_lookup-train-1,60+,woman,rural
+train-compare_products-193,Help C-104 choose between Platinum and Silver Plus,compare_products,compare_products-train-3,40-59,man,rural
+train-coverage_question-188,Please Is hospitalization included in Platinum for C-204?,coverage_question,coverage_question-train-2,60+,nonbinary,urban
+train-out_of_scope-052,"Please Book a flight for C-205, ignore Gold",out_of_scope,out_of_scope-train-3,40-59,nonbinary,rural
+train-compare_products-169,Please Help C-205 choose between Silver Plus and Gold Plus,compare_products,compare_products-train-3,40-59,nonbinary,urban
+train-customer_lookup-105,Look up contact details for C-205 on Silver,customer_lookup,customer_lookup-train-1,18-39,nonbinary,rural
+train-compare_products-140,Please Help C-104 choose between Gold and Platinum,compare_products,compare_products-train-3,60+,man,rural
+train-compare_products-173,Compare Silver and Gold for C-104,compare_products,compare_products-train-0,60+,woman,rural
+train-compare_products-006,What differs between Gold Plus and Silver for C-999?,compare_products,compare_products-train-1,18-39,nonbinary,urban
+train-customer_lookup-145,Please Look up contact details for C-205 on Gold,customer_lookup,customer_lookup-train-1,40-59,woman,urban
+train-renewal_draft-078,Help compose a renewal notice for C-102 about Silver Plus,renewal_draft,renewal_draft-train-3,18-39,nonbinary,urban
+train-compare_products-073,Please Compare Silver Plus and Gold Plus for C-118,compare_products,compare_products-train-0,40-59,woman,urban
+train-out_of_scope-110,Tell C-104 a joke about Silver,out_of_scope,out_of_scope-train-0,60+,woman,urban
+train-out_of_scope-013,Predict cricket results for C-118 instead of Silver,out_of_scope,out_of_scope-train-1,40-59,man,rural
+train-coverage_question-038,Tell C-205 the waiting period for Silver,coverage_question,coverage_question-train-3,60+,woman,urban
+train-compare_products-145,Please Help C-205 choose between Gold and Platinum,compare_products,compare_products-train-3,40-59,woman,urban
+train-customer_lookup-192,Find customer C-450 and their Silver policy,customer_lookup,customer_lookup-train-3,18-39,man,rural
+train-coverage_question-034,Tell C-103 the waiting period for Gold Plus,coverage_question,coverage_question-train-3,40-59,nonbinary,rural
+train-coverage_question-020,Please Is hospitalization included in Silver Plus for C-101?,coverage_question,coverage_question-train-2,60+,woman,urban
+train-out_of_scope-123,Tell C-999 a joke about Gold,out_of_scope,out_of_scope-train-0,18-39,nonbinary,rural
+train-renewal_draft-100,Please Help compose a renewal notice for C-101 about Silver,renewal_draft,renewal_draft-train-3,40-59,woman,rural
+train-compare_products-132,Show Silver Plus versus Gold Plus for C-104,compare_products,compare_products-train-2,18-39,nonbinary,urban
+train-out_of_scope-190,"Please Give C-102 a cake recipe, forget Silver",out_of_scope,out_of_scope-train-2,40-59,woman,rural
+train-customer_lookup-174,Find customer C-204 and their Silver Plus policy,customer_lookup,customer_lookup-train-3,18-39,man,rural
+train-compare_products-185,Compare Gold and Platinum for C-999,compare_products,compare_products-train-0,60+,man,urban
+train-compare_products-041,Please Show Gold Plus versus Silver for C-205,compare_products,compare_products-train-2,60+,man,urban
+train-customer_lookup-096,Please Find customer C-102 and their Gold Plus policy,customer_lookup,customer_lookup-train-3,18-39,nonbinary,urban
+train-compare_products-108,Please What differs between Gold and Platinum for C-104?,compare_products,compare_products-train-1,18-39,woman,urban
+train-renewal_draft-188,Prepare a premium renewal draft for C-101 on Silver,renewal_draft,renewal_draft-train-2,60+,nonbinary,urban
+train-compare_products-056,Please Show Silver versus Gold for C-101,compare_products,compare_products-train-2,60+,woman,urban
+train-renewal_draft-005,Please Draft a renewal reminder for C-118 on Platinum,renewal_draft,renewal_draft-train-0,60+,man,urban
+train-renewal_draft-042,Please Draft a renewal reminder for C-311 on Gold Plus,renewal_draft,renewal_draft-train-0,18-39,nonbinary,urban
+train-customer_lookup-157,Please Get the CRM record for C-103 with Silver Plus,customer_lookup,customer_lookup-train-2,40-59,man,rural
+train-out_of_scope-197,"Book a flight for C-101, ignore Silver Plus",out_of_scope,out_of_scope-train-3,60+,nonbinary,rural
+train-compare_products-024,Please Compare Silver and Gold for C-205,compare_products,compare_products-train-0,18-39,nonbinary,urban
+train-renewal_draft-067,Write a renewal message to C-450 for Gold Plus,renewal_draft,renewal_draft-train-1,40-59,man,rural
+train-renewal_draft-139,Please Draft a renewal reminder for C-311 on Silver,renewal_draft,renewal_draft-train-0,40-59,man,rural
+train-renewal_draft-131,Please Prepare a premium renewal draft for C-102 on Silver,renewal_draft,renewal_draft-train-2,60+,man,urban
+train-customer_lookup-018,Please Find customer C-311 and their Silver policy,customer_lookup,customer_lookup-train-3,18-39,woman,urban
+train-customer_lookup-094,Get the CRM record for C-204 with Silver,customer_lookup,customer_lookup-train-2,40-59,man,urban
+train-out_of_scope-126,Tell C-999 a joke about Platinum,out_of_scope,out_of_scope-train-0,18-39,woman,urban
+train-coverage_question-138,Please Tell C-102 the waiting period for Platinum,coverage_question,coverage_question-train-3,18-39,man,rural
+train-compare_products-051,Compare Silver Plus and Gold Plus for C-450,compare_products,compare_products-train-0,18-39,nonbinary,rural
+train-renewal_draft-107,Please Draft a renewal reminder for C-101 on Platinum,renewal_draft,renewal_draft-train-0,60+,nonbinary,rural
+train-renewal_draft-116,Please Draft a renewal reminder for C-118 on Silver Plus,renewal_draft,renewal_draft-train-0,60+,nonbinary,urban
+train-out_of_scope-120,"Please Give C-204 a cake recipe, forget Silver",out_of_scope,out_of_scope-train-2,18-39,man,rural
+train-customer_lookup-181,Please Find customer C-102 and their Silver policy,customer_lookup,customer_lookup-train-3,40-59,woman,urban
+train-coverage_question-064,Please Is hospitalization included in Silver for C-311?,coverage_question,coverage_question-train-2,40-59,woman,rural
+train-out_of_scope-017,Predict cricket results for C-101 instead of Gold Plus,out_of_scope,out_of_scope-train-1,60+,nonbinary,rural
+train-customer_lookup-110,Please Look up contact details for C-311 on Silver,customer_lookup,customer_lookup-train-1,60+,woman,urban
+train-customer_lookup-082,Find customer C-311 and their Silver policy,customer_lookup,customer_lookup-train-3,40-59,woman,rural
+train-out_of_scope-032,Please Predict cricket results for C-450 instead of Gold Plus,out_of_scope,out_of_scope-train-1,60+,man,rural
+train-renewal_draft-118,Please Write a renewal message to C-103 for Silver,renewal_draft,renewal_draft-train-1,40-59,woman,rural
+train-renewal_draft-047,Please Help compose a renewal notice for C-103 about Gold Plus,renewal_draft,renewal_draft-train-3,60+,woman,rural
+train-compare_products-018,Please Compare Gold Plus and Silver for C-104,compare_products,compare_products-train-0,18-39,woman,urban
+train-customer_lookup-115,Please Find customer C-450 and their Platinum policy,customer_lookup,customer_lookup-train-3,40-59,nonbinary,urban
+train-renewal_draft-083,Please Prepare a premium renewal draft for C-999 on Gold,renewal_draft,renewal_draft-train-2,60+,woman,rural
+train-renewal_draft-168,Please Prepare a premium renewal draft for C-205 on Silver Plus,renewal_draft,renewal_draft-train-2,18-39,nonbinary,urban
+train-renewal_draft-033,Draft a renewal reminder for C-102 on Silver,renewal_draft,renewal_draft-train-0,18-39,nonbinary,rural
+train-coverage_question-167,Tell C-103 the waiting period for Silver Plus,coverage_question,coverage_question-train-3,60+,man,urban
+train-compare_products-083,Please Show Gold versus Platinum for C-118,compare_products,compare_products-train-2,60+,woman,rural
+train-compare_products-061,Please Help C-118 choose between Gold Plus and Silver,compare_products,compare_products-train-3,40-59,nonbinary,urban
+train-customer_lookup-038,Please Look up contact details for C-103 on Gold,customer_lookup,customer_lookup-train-1,60+,woman,urban
+train-coverage_question-072,Please Is hospitalization included in Silver for C-204?,coverage_question,coverage_question-train-2,18-39,woman,urban
+train-coverage_question-085,Explain exclusions in Platinum for C-999,coverage_question,coverage_question-train-1,40-59,man,rural
+train-coverage_question-160,Explain exclusions in Silver for C-118,coverage_question,coverage_question-train-1,40-59,nonbinary,rural
+train-coverage_question-154,Tell C-103 the waiting period for Platinum,coverage_question,coverage_question-train-3,40-59,woman,rural
+train-renewal_draft-056,Please Write a renewal message to C-205 for Silver,renewal_draft,renewal_draft-train-1,60+,woman,urban
+train-coverage_question-078,What does Gold cover for C-999?,coverage_question,coverage_question-train-0,18-39,nonbinary,urban
+train-compare_products-012,Compare Gold and Platinum for C-104,compare_products,compare_products-train-0,18-39,man,rural
+train-compare_products-182,Help C-118 choose between Silver and Gold,compare_products,compare_products-train-3,60+,woman,urban
+train-coverage_question-168,Is hospitalization included in Gold Plus for C-205?,coverage_question,coverage_question-train-2,18-39,nonbinary,urban
+train-out_of_scope-081,"Give C-118 a cake recipe, forget Platinum",out_of_scope,out_of_scope-train-2,18-39,woman,rural
+train-customer_lookup-015,Look up contact details for C-205 on Platinum,customer_lookup,customer_lookup-train-1,18-39,nonbinary,rural
+train-coverage_question-023,Please Is hospitalization included in Silver Plus for C-103?,coverage_question,coverage_question-train-2,60+,man,urban
+train-renewal_draft-172,Help compose a renewal notice for C-311 about Gold,renewal_draft,renewal_draft-train-3,40-59,woman,rural
+train-out_of_scope-170,Predict cricket results for C-103 instead of Platinum,out_of_scope,out_of_scope-train-1,60+,nonbinary,urban
+train-customer_lookup-053,Show customer C-104's profile for Silver Plus,customer_lookup,customer_lookup-train-0,60+,nonbinary,rural
+train-renewal_draft-145,Please Help compose a renewal notice for C-101 about Silver Plus,renewal_draft,renewal_draft-train-3,40-59,woman,urban
+train-renewal_draft-182,Please Write a renewal message to C-999 for Silver Plus,renewal_draft,renewal_draft-train-1,60+,woman,urban
+train-customer_lookup-033,Please Find customer C-205 and their Silver policy,customer_lookup,customer_lookup-train-3,18-39,nonbinary,rural
+train-compare_products-176,Please What differs between Silver Plus and Gold Plus for C-104?,compare_products,compare_products-train-1,60+,man,rural
+train-customer_lookup-065,Please Look up contact details for C-103 on Gold Plus,customer_lookup,customer_lookup-train-1,60+,woman,rural
+train-customer_lookup-073,Get the CRM record for C-204 with Platinum,customer_lookup,customer_lookup-train-2,40-59,woman,urban
+train-renewal_draft-185,Write a renewal message to C-118 for Silver,renewal_draft,renewal_draft-train-1,60+,man,urban
+train-out_of_scope-073,"Please Book a flight for C-102, ignore Silver Plus",out_of_scope,out_of_scope-train-3,40-59,woman,urban
+train-coverage_question-193,Please Explain exclusions in Gold for C-205,coverage_question,coverage_question-train-1,40-59,man,rural
+train-compare_products-163,Show Gold Plus versus Silver for C-104,compare_products,compare_products-train-2,40-59,woman,urban
+train-coverage_question-048,What does Gold Plus cover for C-204?,coverage_question,coverage_question-train-0,18-39,man,rural
+train-customer_lookup-034,Please Show customer C-103's profile for Platinum,customer_lookup,customer_lookup-train-0,40-59,nonbinary,rural
+train-out_of_scope-085,Please Predict cricket results for C-450 instead of Platinum,out_of_scope,out_of_scope-train-1,40-59,man,rural
+train-customer_lookup-069,Show customer C-102's profile for Gold,customer_lookup,customer_lookup-train-0,18-39,nonbinary,rural
+train-coverage_question-175,Please What does Silver Plus cover for C-101?,coverage_question,coverage_question-train-0,40-59,man,rural
+train-renewal_draft-012,Please Draft a renewal reminder for C-104 on Platinum,renewal_draft,renewal_draft-train-0,18-39,man,rural
+train-compare_products-074,Please Help C-118 choose between Platinum and Silver Plus,compare_products,compare_products-train-3,60+,woman,urban
+train-compare_products-113,Please Show Gold Plus versus Silver for C-311,compare_products,compare_products-train-2,60+,man,urban
+train-renewal_draft-198,Write a renewal message to C-204 for Gold,renewal_draft,renewal_draft-train-1,18-39,woman,urban
+train-out_of_scope-161,Tell C-102 a joke about Gold Plus,out_of_scope,out_of_scope-train-0,60+,nonbinary,rural
+train-coverage_question-190,Tell C-205 the waiting period for Gold,coverage_question,coverage_question-train-3,40-59,woman,rural
+train-compare_products-104,Show Gold versus Platinum for C-450,compare_products,compare_products-train-2,60+,man,rural
+train-compare_products-114,Please What differs between Gold and Platinum for C-101?,compare_products,compare_products-train-1,18-39,nonbinary,urban
+train-renewal_draft-017,Please Write a renewal message to C-103 for Gold,renewal_draft,renewal_draft-train-1,60+,nonbinary,rural
+train-renewal_draft-125,Prepare a premium renewal draft for C-999 on Gold Plus,renewal_draft,renewal_draft-train-2,60+,nonbinary,rural
+train-renewal_draft-057,Draft a renewal reminder for C-103 on Gold Plus,renewal_draft,renewal_draft-train-0,18-39,man,urban
+train-renewal_draft-009,Prepare a premium renewal draft for C-204 on Gold,renewal_draft,renewal_draft-train-2,18-39,woman,rural
+train-compare_products-092,Help C-103 choose between Gold and Platinum,compare_products,compare_products-train-3,60+,woman,urban
+train-out_of_scope-130,"Give C-104 a cake recipe, forget Gold",out_of_scope,out_of_scope-train-2,40-59,man,urban
+train-compare_products-089,Please Show Silver versus Gold for C-999,compare_products,compare_products-train-2,60+,nonbinary,rural
+train-coverage_question-136,Please Explain exclusions in Silver Plus for C-101,coverage_question,coverage_question-train-1,40-59,woman,rural
+train-out_of_scope-188,"Please Give C-104 a cake recipe, forget Gold",out_of_scope,out_of_scope-train-2,60+,nonbinary,urban
+train-out_of_scope-121,"Book a flight for C-118, ignore Silver Plus",out_of_scope,out_of_scope-train-3,40-59,man,rural
+train-out_of_scope-133,"Give C-102 a cake recipe, forget Silver",out_of_scope,out_of_scope-train-2,40-59,nonbinary,urban
+train-customer_lookup-005,Show customer C-311's profile for Silver,customer_lookup,customer_lookup-train-0,60+,man,urban
+train-renewal_draft-193,Draft a renewal reminder for C-450 on Platinum,renewal_draft,renewal_draft-train-0,40-59,man,rural
+train-customer_lookup-011,Get the CRM record for C-205 with Gold,customer_lookup,customer_lookup-train-2,60+,woman,rural
+train-compare_products-094,Please What differs between Silver Plus and Gold Plus for C-118?,compare_products,compare_products-train-1,40-59,man,urban
+train-compare_products-011,Please Help C-118 choose between Silver and Gold,compare_products,compare_products-train-3,60+,woman,rural
+train-coverage_question-196,Tell C-102 the waiting period for Gold,coverage_question,coverage_question-train-3,40-59,nonbinary,rural
+train-renewal_draft-133,Please Prepare a premium renewal draft for C-104 on Silver Plus,renewal_draft,renewal_draft-train-2,40-59,nonbinary,urban
+train-compare_products-043,Help C-204 choose between Gold Plus and Silver,compare_products,compare_products-train-3,40-59,nonbinary,urban
+train-compare_products-042,Show Gold versus Platinum for C-999,compare_products,compare_products-train-2,18-39,nonbinary,urban
+train-coverage_question-129,What does Platinum cover for C-311?,coverage_question,coverage_question-train-0,18-39,man,urban
+train-compare_products-167,Compare Gold Plus and Silver for C-118,compare_products,compare_products-train-0,60+,man,urban
+train-renewal_draft-097,Write a renewal message to C-999 for Gold,renewal_draft,renewal_draft-train-1,40-59,nonbinary,urban
+train-out_of_scope-076,"Please Book a flight for C-102, ignore Gold Plus",out_of_scope,out_of_scope-train-3,40-59,man,urban
+train-renewal_draft-197,Please Help compose a renewal notice for C-101 about Gold Plus,renewal_draft,renewal_draft-train-3,60+,nonbinary,rural
+train-customer_lookup-156,Please Get the CRM record for C-450 with Silver,customer_lookup,customer_lookup-train-2,18-39,man,rural
+train-compare_products-100,What differs between Silver and Gold for C-204?,compare_products,compare_products-train-1,40-59,woman,rural
+train-renewal_draft-026,Draft a renewal reminder for C-102 on Platinum,renewal_draft,renewal_draft-train-0,60+,nonbinary,urban
+train-compare_products-178,Please What differs between Platinum and Silver Plus for C-204?,compare_products,compare_products-train-1,40-59,nonbinary,rural
+train-renewal_draft-044,Please Help compose a renewal notice for C-205 about Silver,renewal_draft,renewal_draft-train-3,60+,nonbinary,urban
+train-renewal_draft-016,Please Draft a renewal reminder for C-999 on Silver,renewal_draft,renewal_draft-train-0,40-59,nonbinary,rural
+train-out_of_scope-070,Predict cricket results for C-999 instead of Silver,out_of_scope,out_of_scope-train-1,40-59,nonbinary,rural
+train-out_of_scope-082,Please Predict cricket results for C-101 instead of Gold Plus,out_of_scope,out_of_scope-train-1,40-59,woman,rural
+train-customer_lookup-080,Look up contact details for C-101 on Gold Plus,customer_lookup,customer_lookup-train-1,60+,nonbinary,urban
+train-compare_products-177,Show Silver Plus versus Gold Plus for C-450,compare_products,compare_products-train-2,18-39,nonbinary,rural
+train-coverage_question-195,Please Tell C-102 the waiting period for Gold,coverage_question,coverage_question-train-3,18-39,nonbinary,rural
+train-out_of_scope-111,"Please Book a flight for C-205, ignore Silver Plus",out_of_scope,out_of_scope-train-3,18-39,man,urban
+train-customer_lookup-193,Find customer C-103 and their Platinum policy,customer_lookup,customer_lookup-train-3,40-59,man,rural
+train-out_of_scope-160,"Book a flight for C-102, ignore Silver Plus",out_of_scope,out_of_scope-train-3,40-59,nonbinary,rural
+train-customer_lookup-084,Get the CRM record for C-205 with Silver Plus,customer_lookup,customer_lookup-train-2,18-39,man,rural
+train-coverage_question-183,What does Silver Plus cover for C-999?,coverage_question,coverage_question-train-0,18-39,man,urban
+train-out_of_scope-156,Please Tell C-103 a joke about Gold Plus,out_of_scope,out_of_scope-train-0,18-39,man,rural
+train-customer_lookup-151,Please Find customer C-103 and their Platinum policy,customer_lookup,customer_lookup-train-3,40-59,nonbinary,urban
+train-coverage_question-057,Is hospitalization included in Silver for C-102?,coverage_question,coverage_question-train-2,18-39,man,urban
+train-renewal_draft-138,Please Write a renewal message to C-118 for Gold Plus,renewal_draft,renewal_draft-train-1,18-39,man,rural
+train-coverage_question-135,Please Explain exclusions in Silver for C-999,coverage_question,coverage_question-train-1,18-39,woman,rural
+train-compare_products-015,Help C-118 choose between Silver Plus and Gold Plus,compare_products,compare_products-train-3,18-39,nonbinary,rural
+train-coverage_question-124,What does Silver Plus cover for C-205?,coverage_question,coverage_question-train-0,40-59,nonbinary,rural
+train-customer_lookup-158,Look up contact details for C-102 on Gold Plus,customer_lookup,customer_lookup-train-1,60+,man,rural
+train-coverage_question-022,Tell C-104 the waiting period for Gold Plus,coverage_question,coverage_question-train-3,40-59,man,urban
+train-compare_products-179,Show Silver Plus versus Gold Plus for C-311,compare_products,compare_products-train-2,60+,nonbinary,rural
+train-out_of_scope-183,"Please Book a flight for C-118, ignore Gold",out_of_scope,out_of_scope-train-3,18-39,man,urban
+train-compare_products-022,Please Show Platinum versus Silver Plus for C-999,compare_products,compare_products-train-2,40-59,man,urban
+train-coverage_question-156,Please Is hospitalization included in Gold for C-101?,coverage_question,coverage_question-train-2,18-39,man,rural
+train-customer_lookup-066,Get the CRM record for C-101 with Silver Plus,customer_lookup,customer_lookup-train-2,18-39,man,rural
+train-out_of_scope-061,Tell C-311 a joke about Silver Plus,out_of_scope,out_of_scope-train-0,40-59,nonbinary,urban
+train-coverage_question-140,Please Explain exclusions in Gold for C-104,coverage_question,coverage_question-train-1,60+,man,rural
+train-renewal_draft-031,Please Help compose a renewal notice for C-204 about Silver Plus,renewal_draft,renewal_draft-train-3,40-59,man,rural
+train-renewal_draft-151,Please Help compose a renewal notice for C-102 about Silver,renewal_draft,renewal_draft-train-3,40-59,nonbinary,urban
+train-out_of_scope-033,Predict cricket results for C-311 instead of Gold Plus,out_of_scope,out_of_scope-train-1,18-39,nonbinary,rural
+train-coverage_question-003,Is hospitalization included in Platinum for C-205?,coverage_question,coverage_question-train-2,18-39,man,urban
+train-customer_lookup-030,Please Look up contact details for C-999 on Silver Plus,customer_lookup,customer_lookup-train-1,18-39,man,rural
+train-compare_products-093,Please What differs between Silver Plus and Gold Plus for C-450?,compare_products,compare_products-train-1,18-39,man,urban
+train-renewal_draft-158,Please Draft a renewal reminder for C-101 on Silver,renewal_draft,renewal_draft-train-0,60+,man,rural
+train-compare_products-068,Please What differs between Gold and Platinum for C-450?,compare_products,compare_products-train-1,60+,man,rural
+train-customer_lookup-022,Find customer C-450 and their Gold Plus policy,customer_lookup,customer_lookup-train-3,40-59,man,urban
+train-coverage_question-084,Please Explain exclusions in Silver for C-103,coverage_question,coverage_question-train-1,18-39,man,rural
+train-out_of_scope-044,Tell C-104 a joke about Gold Plus,out_of_scope,out_of_scope-train-0,60+,nonbinary,urban
+train-renewal_draft-034,Please Write a renewal message to C-204 for Gold,renewal_draft,renewal_draft-train-1,40-59,nonbinary,rural
+train-compare_products-153,What differs between Silver and Gold for C-118?,compare_products,compare_products-train-1,18-39,woman,rural
+train-compare_products-075,Please Help C-205 choose between Platinum and Silver Plus,compare_products,compare_products-train-3,18-39,man,urban
+train-customer_lookup-130,Find customer C-118 and their Gold Plus policy,customer_lookup,customer_lookup-train-3,40-59,man,urban
+train-renewal_draft-046,Please Help compose a renewal notice for C-999 about Silver Plus,renewal_draft,renewal_draft-train-3,40-59,woman,rural
+train-compare_products-188,Please Help C-204 choose between Platinum and Silver Plus,compare_products,compare_products-train-3,60+,nonbinary,urban
+train-coverage_question-071,Please Explain exclusions in Silver Plus for C-118,coverage_question,coverage_question-train-1,60+,nonbinary,rural
+train-coverage_question-036,What does Gold Plus cover for C-101?,coverage_question,coverage_question-train-0,18-39,woman,urban
+train-renewal_draft-087,Help compose a renewal notice for C-102 about Gold,renewal_draft,renewal_draft-train-3,18-39,nonbinary,rural
+train-compare_products-117,Show Silver Plus versus Gold Plus for C-118,compare_products,compare_products-train-2,18-39,woman,rural
+train-out_of_scope-143,Predict cricket results for C-101 instead of Gold,out_of_scope,out_of_scope-train-1,60+,nonbinary,rural
+train-renewal_draft-112,Prepare a premium renewal draft for C-104 on Silver,renewal_draft,renewal_draft-train-2,40-59,man,urban
+train-out_of_scope-025,"Please Give C-205 a cake recipe, forget Platinum",out_of_scope,out_of_scope-train-2,40-59,nonbinary,urban
+train-renewal_draft-191,Please Write a renewal message to C-999 for Silver,renewal_draft,renewal_draft-train-1,60+,woman,rural
+train-compare_products-126,What differs between Silver Plus and Gold Plus for C-104?,compare_products,compare_products-train-1,18-39,woman,urban
+train-compare_products-116,Please Compare Silver and Gold for C-999,compare_products,compare_products-train-0,60+,nonbinary,urban
+train-renewal_draft-073,Write a renewal message to C-205 for Silver Plus,renewal_draft,renewal_draft-train-1,40-59,woman,urban
+train-customer_lookup-093,Show customer C-103's profile for Gold,customer_lookup,customer_lookup-train-0,18-39,man,urban
+train-compare_products-057,Please Compare Silver Plus and Gold Plus for C-102,compare_products,compare_products-train-0,18-39,man,urban
+train-out_of_scope-063,Please Predict cricket results for C-101 instead of Gold,out_of_scope,out_of_scope-train-1,18-39,woman,rural
+train-out_of_scope-112,"Please Book a flight for C-101, ignore Silver Plus",out_of_scope,out_of_scope-train-3,40-59,man,urban
+train-coverage_question-169,Tell C-311 the waiting period for Silver Plus,coverage_question,coverage_question-train-3,40-59,nonbinary,urban
+train-coverage_question-068,Explain exclusions in Gold for C-204,coverage_question,coverage_question-train-1,60+,man,rural
+train-compare_products-046,Show Platinum versus Silver Plus for C-204,compare_products,compare_products-train-2,40-59,woman,rural
+train-coverage_question-149,Is hospitalization included in Gold for C-101?,coverage_question,coverage_question-train-2,60+,man,urban
+train-compare_products-195,Help C-205 choose between Gold and Platinum,compare_products,compare_products-train-3,18-39,nonbinary,rural
+train-out_of_scope-199,Please Tell C-103 a joke about Platinum,out_of_scope,out_of_scope-train-0,40-59,woman,urban
+train-out_of_scope-034,Please Predict cricket results for C-311 instead of Silver Plus,out_of_scope,out_of_scope-train-1,40-59,nonbinary,rural
+train-customer_lookup-136,Please Look up contact details for C-118 on Silver,customer_lookup,customer_lookup-train-1,40-59,woman,rural
+train-coverage_question-063,Is hospitalization included in Gold Plus for C-999?,coverage_question,coverage_question-train-2,18-39,woman,rural
+train-renewal_draft-043,Write a renewal message to C-118 for Silver Plus,renewal_draft,renewal_draft-train-1,40-59,nonbinary,urban
+train-customer_lookup-075,Show customer C-205's profile for Gold Plus,customer_lookup,customer_lookup-train-0,18-39,man,urban
+train-coverage_question-104,What does Platinum cover for C-104?,coverage_question,coverage_question-train-0,60+,man,rural
+train-coverage_question-141,Please Explain exclusions in Gold for C-103,coverage_question,coverage_question-train-1,18-39,nonbinary,rural
+train-out_of_scope-166,Predict cricket results for C-103 instead of Gold,out_of_scope,out_of_scope-train-1,40-59,man,urban
+train-compare_products-149,Help C-311 choose between Silver Plus and Gold Plus,compare_products,compare_products-train-3,60+,man,urban
+train-compare_products-124,Please What differs between Silver and Gold for C-205?,compare_products,compare_products-train-1,40-59,nonbinary,rural
+train-customer_lookup-186,Please Show customer C-205's profile for Gold,customer_lookup,customer_lookup-train-0,18-39,nonbinary,urban
+train-compare_products-050,Please What differs between Silver Plus and Gold Plus for C-102?,compare_products,compare_products-train-1,60+,man,rural
+train-coverage_question-153,Please Is hospitalization included in Silver Plus for C-450?,coverage_question,coverage_question-train-2,18-39,woman,rural
+train-out_of_scope-127,"Please Book a flight for C-450, ignore Silver Plus",out_of_scope,out_of_scope-train-3,40-59,woman,urban
+train-compare_products-142,Please What differs between Gold Plus and Silver for C-999?,compare_products,compare_products-train-1,40-59,nonbinary,rural
+train-renewal_draft-070,Draft a renewal reminder for C-118 on Silver,renewal_draft,renewal_draft-train-0,40-59,nonbinary,rural
+train-coverage_question-199,Explain exclusions in Platinum for C-101,coverage_question,coverage_question-train-1,40-59,woman,urban
+train-customer_lookup-025,Show customer C-999's profile for Gold,customer_lookup,customer_lookup-train-0,40-59,nonbinary,urban
+train-coverage_question-120,Tell C-205 the waiting period for Silver Plus,coverage_question,coverage_question-train-3,18-39,man,rural
+train-compare_products-019,Please Compare Platinum and Silver Plus for C-101,compare_products,compare_products-train-0,40-59,woman,urban
+train-out_of_scope-009,"Please Book a flight for C-999, ignore Gold Plus",out_of_scope,out_of_scope-train-3,18-39,woman,rural
+train-customer_lookup-190,Please Show customer C-101's profile for Silver,customer_lookup,customer_lookup-train-0,40-59,woman,rural
+train-out_of_scope-008,Please Predict cricket results for C-311 instead of Gold Plus,out_of_scope,out_of_scope-train-1,60+,nonbinary,urban
+train-renewal_draft-007,Write a renewal message to C-102 for Silver,renewal_draft,renewal_draft-train-1,40-59,nonbinary,urban
+train-renewal_draft-137,Please Help compose a renewal notice for C-102 about Platinum,renewal_draft,renewal_draft-train-3,60+,woman,rural
+train-customer_lookup-020,Please Get the CRM record for C-311 with Platinum,customer_lookup,customer_lookup-train-2,60+,woman,urban
+train-compare_products-038,Please Compare Platinum and Silver Plus for C-104,compare_products,compare_products-train-0,60+,woman,urban
+train-compare_products-175,Show Silver Plus versus Gold Plus for C-103,compare_products,compare_products-train-2,40-59,man,rural
+train-coverage_question-045,Explain exclusions in Gold Plus for C-311,coverage_question,coverage_question-train-1,18-39,woman,rural
+train-out_of_scope-028,"Give C-104 a cake recipe, forget Silver Plus",out_of_scope,out_of_scope-train-2,40-59,woman,rural
+train-customer_lookup-067,Find customer C-205 and their Gold Plus policy,customer_lookup,customer_lookup-train-3,40-59,man,rural
+train-customer_lookup-154,Get the CRM record for C-204 with Silver Plus,customer_lookup,customer_lookup-train-2,40-59,woman,rural
+train-out_of_scope-058,Please Predict cricket results for C-102 instead of Gold Plus,out_of_scope,out_of_scope-train-1,40-59,man,urban
+train-compare_products-154,What differs between Platinum and Silver Plus for C-103?,compare_products,compare_products-train-1,40-59,woman,rural
+train-coverage_question-087,What does Silver cover for C-205?,coverage_question,coverage_question-train-0,18-39,nonbinary,rural
+train-customer_lookup-002,Look up contact details for C-204 on Silver Plus,customer_lookup,customer_lookup-train-1,60+,woman,urban
+train-renewal_draft-169,Draft a renewal reminder for C-311 on Gold,renewal_draft,renewal_draft-train-0,40-59,nonbinary,urban
+train-customer_lookup-143,Find customer C-102 and their Platinum policy,customer_lookup,customer_lookup-train-3,60+,nonbinary,rural
+train-compare_products-017,Please Show Silver versus Gold for C-103,compare_products,compare_products-train-2,60+,nonbinary,rural
+train-compare_products-127,Please What differs between Silver and Gold for C-101?,compare_products,compare_products-train-1,40-59,woman,urban
+train-coverage_question-122,Please Is hospitalization included in Silver for C-101?,coverage_question,coverage_question-train-2,60+,man,rural
+train-coverage_question-055,Tell C-104 the waiting period for Silver Plus,coverage_question,coverage_question-train-3,40-59,woman,urban
+train-customer_lookup-057,Get the CRM record for C-118 with Silver Plus,customer_lookup,customer_lookup-train-2,18-39,man,urban
+train-out_of_scope-164,"Give C-450 a cake recipe, forget Silver",out_of_scope,out_of_scope-train-2,60+,woman,urban
+train-compare_products-190,Please Help C-450 choose between Silver and Gold,compare_products,compare_products-train-3,40-59,woman,rural
+train-compare_products-115,Compare Gold Plus and Silver for C-103,compare_products,compare_products-train-0,40-59,nonbinary,urban
+train-customer_lookup-016,Please Look up contact details for C-204 on Silver Plus,customer_lookup,customer_lookup-train-1,40-59,nonbinary,rural
+train-customer_lookup-006,Please Show customer C-999's profile for Platinum,customer_lookup,customer_lookup-train-0,18-39,nonbinary,urban
+train-compare_products-180,Please Show Silver Plus versus Gold Plus for C-450,compare_products,compare_products-train-2,18-39,woman,urban
+train-coverage_question-101,Explain exclusions in Platinum for C-205,coverage_question,coverage_question-train-1,60+,woman,rural
+train-customer_lookup-159,Please Find customer C-102 and their Gold policy,customer_lookup,customer_lookup-train-3,18-39,nonbinary,rural
+train-customer_lookup-112,Please Get the CRM record for C-101 with Platinum,customer_lookup,customer_lookup-train-2,40-59,man,urban
+train-customer_lookup-123,Please Show customer C-450's profile for Gold Plus,customer_lookup,customer_lookup-train-0,18-39,nonbinary,rural
+train-customer_lookup-085,Look up contact details for C-118 on Gold,customer_lookup,customer_lookup-train-1,40-59,man,rural
+train-out_of_scope-179,Please Predict cricket results for C-103 instead of Silver Plus,out_of_scope,out_of_scope-train-1,60+,nonbinary,rural
+train-renewal_draft-117,Prepare a premium renewal draft for C-104 on Gold Plus,renewal_draft,renewal_draft-train-2,18-39,woman,rural
+train-out_of_scope-184,"Give C-104 a cake recipe, forget Gold Plus",out_of_scope,out_of_scope-train-2,40-59,man,urban
+train-compare_products-045,Please Help C-999 choose between Gold and Platinum,compare_products,compare_products-train-3,18-39,woman,rural
+train-out_of_scope-109,Please Tell C-103 a joke about Silver,out_of_scope,out_of_scope-train-0,40-59,woman,urban
+train-compare_products-157,Please What differs between Platinum and Silver Plus for C-450?,compare_products,compare_products-train-1,40-59,man,rural
+train-out_of_scope-051,Predict cricket results for C-999 instead of Platinum,out_of_scope,out_of_scope-train-1,18-39,nonbinary,rural
+train-compare_products-171,Help C-311 choose between Gold Plus and Silver,compare_products,compare_products-train-3,18-39,woman,rural
+train-compare_products-016,Please Compare Platinum and Silver Plus for C-311,compare_products,compare_products-train-0,40-59,nonbinary,rural
+train-renewal_draft-111,Help compose a renewal notice for C-999 about Silver Plus,renewal_draft,renewal_draft-train-3,18-39,man,urban
+train-compare_products-048,Help C-311 choose between Gold and Platinum,compare_products,compare_products-train-3,18-39,man,rural
+train-out_of_scope-171,"Please Book a flight for C-118, ignore Platinum",out_of_scope,out_of_scope-train-3,18-39,woman,rural
+train-out_of_scope-140,"Please Book a flight for C-204, ignore Silver Plus",out_of_scope,out_of_scope-train-3,60+,man,rural
+train-renewal_draft-115,Please Draft a renewal reminder for C-102 on Gold Plus,renewal_draft,renewal_draft-train-0,40-59,nonbinary,urban
+train-out_of_scope-152,"Please Give C-104 a cake recipe, forget Silver Plus",out_of_scope,out_of_scope-train-2,60+,nonbinary,urban
+train-renewal_draft-080,Please Write a renewal message to C-450 for Gold Plus,renewal_draft,renewal_draft-train-1,60+,nonbinary,urban
+train-coverage_question-083,Please Is hospitalization included in Platinum for C-450?,coverage_question,coverage_question-train-2,60+,woman,rural
+train-customer_lookup-118,Look up contact details for C-101 on Gold,customer_lookup,customer_lookup-train-1,40-59,woman,rural
+train-out_of_scope-077,Tell C-205 a joke about Silver,out_of_scope,out_of_scope-train-0,60+,man,urban
+train-coverage_question-025,Please Is hospitalization included in Silver for C-104?,coverage_question,coverage_question-train-2,40-59,nonbinary,urban
+train-compare_products-026,What differs between Gold Plus and Silver for C-104?,compare_products,compare_products-train-1,60+,nonbinary,urban
+train-out_of_scope-154,Please Predict cricket results for C-102 instead of Gold,out_of_scope,out_of_scope-train-1,40-59,woman,rural
+train-renewal_draft-037,Draft a renewal reminder for C-311 on Silver,renewal_draft,renewal_draft-train-0,40-59,woman,urban
+train-out_of_scope-151,Please Tell C-999 a joke about Platinum,out_of_scope,out_of_scope-train-0,40-59,nonbinary,urban
+train-coverage_question-164,Please What does Gold cover for C-104?,coverage_question,coverage_question-train-0,60+,woman,urban
+train-coverage_question-029,Please Is hospitalization included in Platinum for C-101?,coverage_question,coverage_question-train-2,60+,woman,rural
+train-compare_products-037,Show Gold Plus versus Silver for C-204,compare_products,compare_products-train-2,40-59,woman,urban
+train-out_of_scope-165,"Book a flight for C-104, ignore Gold Plus",out_of_scope,out_of_scope-train-3,18-39,man,urban
+train-coverage_question-174,Please Is hospitalization included in Platinum for C-999?,coverage_question,coverage_question-train-2,18-39,man,rural
+train-renewal_draft-069,Please Prepare a premium renewal draft for C-311 on Silver Plus,renewal_draft,renewal_draft-train-2,18-39,nonbinary,rural
+train-out_of_scope-167,Please Tell C-104 a joke about Platinum,out_of_scope,out_of_scope-train-0,60+,man,urban
+train-out_of_scope-050,Please Tell C-204 a joke about Silver,out_of_scope,out_of_scope-train-0,60+,man,rural
+train-customer_lookup-104,Look up contact details for C-103 on Gold,customer_lookup,customer_lookup-train-1,60+,man,rural
+train-out_of_scope-041,Tell C-311 a joke about Gold,out_of_scope,out_of_scope-train-0,60+,man,urban
+train-compare_products-194,What differs between Gold Plus and Silver for C-311?,compare_products,compare_products-train-1,60+,man,rural
+train-out_of_scope-054,"Please Book a flight for C-101, ignore Silver",out_of_scope,out_of_scope-train-3,18-39,woman,urban
+train-out_of_scope-064,Tell C-204 a joke about Gold Plus,out_of_scope,out_of_scope-train-0,40-59,woman,rural
+train-renewal_draft-103,Draft a renewal reminder for C-102 on Gold,renewal_draft,renewal_draft-train-0,40-59,man,rural
+train-out_of_scope-169,"Book a flight for C-103, ignore Gold Plus",out_of_scope,out_of_scope-train-3,40-59,nonbinary,urban
+train-out_of_scope-030,"Give C-118 a cake recipe, forget Silver Plus",out_of_scope,out_of_scope-train-2,18-39,man,rural
+train-renewal_draft-179,Draft a renewal reminder for C-118 on Gold Plus,renewal_draft,renewal_draft-train-0,60+,nonbinary,rural
+train-out_of_scope-168,Predict cricket results for C-102 instead of Silver,out_of_scope,out_of_scope-train-1,18-39,nonbinary,urban
+train-compare_products-162,Please Help C-102 choose between Silver and Gold,compare_products,compare_products-train-3,18-39,woman,urban
+train-out_of_scope-108,"Give C-311 a cake recipe, forget Gold",out_of_scope,out_of_scope-train-2,18-39,woman,urban
+train-compare_products-152,Compare Platinum and Silver Plus for C-205,compare_products,compare_products-train-0,60+,nonbinary,urban
+train-out_of_scope-001,Predict cricket results for C-103 instead of Silver,out_of_scope,out_of_scope-train-1,40-59,woman,urban
+train-out_of_scope-193,Please Predict cricket results for C-205 instead of Gold,out_of_scope,out_of_scope-train-1,40-59,man,rural
+train-customer_lookup-155,Please Get the CRM record for C-102 with Platinum,customer_lookup,customer_lookup-train-2,60+,woman,rural
+train-compare_products-111,Please Help C-102 choose between Platinum and Silver Plus,compare_products,compare_products-train-3,18-39,man,urban
+train-coverage_question-026,Tell C-450 the waiting period for Gold Plus,coverage_question,coverage_question-train-3,60+,nonbinary,urban
+train-customer_lookup-088,Please Find customer C-103 and their Gold Plus policy,customer_lookup,customer_lookup-train-3,40-59,nonbinary,rural
+train-compare_products-103,Please Show Gold Plus versus Silver for C-101,compare_products,compare_products-train-2,40-59,man,rural
+train-renewal_draft-021,Please Prepare a premium renewal draft for C-450 on Gold Plus,renewal_draft,renewal_draft-train-2,18-39,man,urban
+train-renewal_draft-019,Please Prepare a premium renewal draft for C-204 on Platinum,renewal_draft,renewal_draft-train-2,40-59,woman,urban
+train-customer_lookup-150,Please Show customer C-311's profile for Gold Plus,customer_lookup,customer_lookup-train-0,18-39,nonbinary,urban
+train-renewal_draft-186,Please Draft a renewal reminder for C-205 on Gold Plus,renewal_draft,renewal_draft-train-0,18-39,nonbinary,urban
+train-customer_lookup-180,Please Find customer C-101 and their Silver policy,customer_lookup,customer_lookup-train-3,18-39,woman,urban
+train-customer_lookup-072,Please Get the CRM record for C-450 with Silver Plus,customer_lookup,customer_lookup-train-2,18-39,woman,urban
+train-compare_products-119,Please Compare Silver Plus and Gold Plus for C-205,compare_products,compare_products-train-0,60+,woman,rural
+train-compare_products-053,Please Compare Platinum and Silver Plus for C-118,compare_products,compare_products-train-0,60+,nonbinary,rural
+train-compare_products-151,Please Show Silver Plus versus Gold Plus for C-103,compare_products,compare_products-train-2,40-59,nonbinary,urban
+train-renewal_draft-003,Please Write a renewal message to C-104 for Platinum,renewal_draft,renewal_draft-train-1,18-39,man,urban
+train-out_of_scope-145,Please Predict cricket results for C-204 instead of Platinum,out_of_scope,out_of_scope-train-1,40-59,woman,urban
+train-coverage_question-007,Please Is hospitalization included in Gold for C-999?,coverage_question,coverage_question-train-2,40-59,nonbinary,urban
+train-customer_lookup-058,Please Show customer C-101's profile for Gold Plus,customer_lookup,customer_lookup-train-0,40-59,man,urban
+train-out_of_scope-043,Tell C-103 a joke about Silver,out_of_scope,out_of_scope-train-0,40-59,nonbinary,urban
+train-customer_lookup-162,Please Look up contact details for C-118 on Gold,customer_lookup,customer_lookup-train-1,18-39,woman,urban
+train-compare_products-008,Please Show Platinum versus Silver Plus for C-103,compare_products,compare_products-train-2,60+,nonbinary,urban
+train-out_of_scope-007,Please Tell C-450 a joke about Silver,out_of_scope,out_of_scope-train-0,40-59,nonbinary,urban
+train-compare_products-036,Help C-102 choose between Platinum and Silver Plus,compare_products,compare_products-train-3,18-39,woman,urban
+train-renewal_draft-052,Please Draft a renewal reminder for C-450 on Gold Plus,renewal_draft,renewal_draft-train-0,40-59,nonbinary,rural
+train-customer_lookup-051,Please Show customer C-204's profile for Silver,customer_lookup,customer_lookup-train-0,18-39,nonbinary,rural
+train-coverage_question-053,Please Is hospitalization included in Platinum for C-103?,coverage_question,coverage_question-train-2,60+,nonbinary,rural
+train-coverage_question-103,Please Tell C-103 the waiting period for Gold,coverage_question,coverage_question-train-3,40-59,man,rural
+train-customer_lookup-146,Find customer C-205 and their Platinum policy,customer_lookup,customer_lookup-train-3,60+,woman,urban
+train-renewal_draft-171,Please Draft a renewal reminder for C-205 on Silver,renewal_draft,renewal_draft-train-0,18-39,woman,rural
+train-customer_lookup-023,Find customer C-104 and their Silver policy,customer_lookup,customer_lookup-train-3,60+,man,urban
+train-customer_lookup-132,Look up contact details for C-450 on Silver,customer_lookup,customer_lookup-train-1,18-39,nonbinary,urban
+train-out_of_scope-091,Tell C-999 a joke about Silver Plus,out_of_scope,out_of_scope-train-0,40-59,woman,urban
+train-coverage_question-062,What does Gold cover for C-103?,coverage_question,coverage_question-train-0,60+,nonbinary,urban
+train-customer_lookup-010,Get the CRM record for C-311 with Platinum,customer_lookup,customer_lookup-train-2,40-59,woman,rural
+train-coverage_question-097,Please What does Platinum cover for C-101?,coverage_question,coverage_question-train-0,40-59,nonbinary,urban
+train-renewal_draft-014,Prepare a premium renewal draft for C-102 on Gold Plus,renewal_draft,renewal_draft-train-2,60+,man,rural
+train-compare_products-150,Please What differs between Platinum and Silver Plus for C-999?,compare_products,compare_products-train-1,18-39,nonbinary,urban
+train-customer_lookup-188,Please Look up contact details for C-450 on Silver,customer_lookup,customer_lookup-train-1,60+,nonbinary,urban
+train-customer_lookup-040,Show customer C-104's profile for Gold Plus,customer_lookup,customer_lookup-train-0,40-59,man,urban
+train-out_of_scope-089,Please Tell C-450 a joke about Silver Plus,out_of_scope,out_of_scope-train-0,60+,nonbinary,rural
+train-renewal_draft-150,Prepare a premium renewal draft for C-118 on Silver,renewal_draft,renewal_draft-train-2,18-39,nonbinary,urban
+train-out_of_scope-086,"Book a flight for C-999, ignore Silver Plus",out_of_scope,out_of_scope-train-3,60+,man,rural
+train-renewal_draft-088,Prepare a premium renewal draft for C-101 on Silver Plus,renewal_draft,renewal_draft-train-2,40-59,nonbinary,rural
+train-compare_products-147,Please Show Silver versus Gold for C-204,compare_products,compare_products-train-2,18-39,man,urban
+train-compare_products-146,Please What differs between Silver and Gold for C-118?,compare_products,compare_products-train-1,60+,woman,urban
+train-customer_lookup-120,Show customer C-205's profile for Silver,customer_lookup,customer_lookup-train-0,18-39,man,rural
+train-out_of_scope-131,Please Predict cricket results for C-103 instead of Gold,out_of_scope,out_of_scope-train-1,60+,man,urban
+train-customer_lookup-139,Please Find customer C-101 and their Gold policy,customer_lookup,customer_lookup-train-3,40-59,man,rural
+train-customer_lookup-059,Please Show customer C-205's profile for Silver,customer_lookup,customer_lookup-train-0,60+,man,urban
+train-coverage_question-148,Tell C-999 the waiting period for Silver Plus,coverage_question,coverage_question-train-3,40-59,man,urban
+train-renewal_draft-063,Help compose a renewal notice for C-205 about Gold,renewal_draft,renewal_draft-train-3,18-39,woman,rural
+train-coverage_question-125,Please Is hospitalization included in Platinum for C-205?,coverage_question,coverage_question-train-2,60+,nonbinary,rural
+train-compare_products-186,Please What differs between Silver and Gold for C-102?,compare_products,compare_products-train-1,18-39,nonbinary,urban
+train-compare_products-123,Please Show Gold Plus versus Silver for C-204,compare_products,compare_products-train-2,18-39,nonbinary,rural
+train-out_of_scope-053,"Book a flight for C-999, ignore Gold Plus",out_of_scope,out_of_scope-train-3,60+,nonbinary,rural
+train-customer_lookup-008,Show customer C-999's profile for Gold Plus,customer_lookup,customer_lookup-train-0,60+,nonbinary,urban
+train-compare_products-143,Please Compare Gold and Platinum for C-118,compare_products,compare_products-train-0,60+,nonbinary,rural
+train-out_of_scope-158,Predict cricket results for C-104 instead of Silver,out_of_scope,out_of_scope-train-1,60+,man,rural
+train-compare_products-197,Help C-118 choose between Gold and Platinum,compare_products,compare_products-train-3,60+,nonbinary,rural
+train-customer_lookup-009,Show customer C-311's profile for Gold,customer_lookup,customer_lookup-train-0,18-39,woman,rural
+train-coverage_question-079,Tell C-450 the waiting period for Silver,coverage_question,coverage_question-train-3,40-59,nonbinary,urban
+train-coverage_question-093,What does Silver cover for C-311?,coverage_question,coverage_question-train-0,18-39,man,urban
+train-renewal_draft-000,Draft a renewal reminder for C-101 on Silver Plus,renewal_draft,renewal_draft-train-0,18-39,woman,urban
+train-compare_products-122,Please Help C-103 choose between Gold Plus and Silver,compare_products,compare_products-train-3,60+,man,rural
+train-compare_products-183,Please Show Silver Plus versus Gold Plus for C-311,compare_products,compare_products-train-2,18-39,man,urban
+train-coverage_question-002,Please What does Gold Plus cover for C-102?,coverage_question,coverage_question-train-0,60+,woman,urban
+train-renewal_draft-038,Please Draft a renewal reminder for C-204 on Gold Plus,renewal_draft,renewal_draft-train-0,60+,woman,urban
+train-coverage_question-046,Please Is hospitalization included in Gold Plus for C-104?,coverage_question,coverage_question-train-2,40-59,woman,rural
+train-renewal_draft-015,Please Prepare a premium renewal draft for C-118 on Silver Plus,renewal_draft,renewal_draft-train-2,18-39,nonbinary,rural
+train-out_of_scope-132,Tell C-103 a joke about Platinum,out_of_scope,out_of_scope-train-0,18-39,nonbinary,urban
+train-customer_lookup-165,Please Find customer C-311 and their Gold policy,customer_lookup,customer_lookup-train-3,18-39,man,urban
+train-out_of_scope-106,"Please Book a flight for C-450, ignore Silver",out_of_scope,out_of_scope-train-3,40-59,nonbinary,rural
+train-out_of_scope-035,"Please Give C-118 a cake recipe, forget Silver Plus",out_of_scope,out_of_scope-train-2,60+,nonbinary,rural
+train-out_of_scope-087,Tell C-102 a joke about Silver,out_of_scope,out_of_scope-train-0,18-39,nonbinary,rural
+train-compare_products-129,Show Platinum versus Silver Plus for C-999,compare_products,compare_products-train-2,18-39,man,urban
+train-customer_lookup-037,Please Get the CRM record for C-118 with Silver Plus,customer_lookup,customer_lookup-train-2,40-59,woman,urban
+train-renewal_draft-002,Please Help compose a renewal notice for C-999 about Gold Plus,renewal_draft,renewal_draft-train-3,60+,woman,urban
+train-customer_lookup-184,Find customer C-205 and their Silver Plus policy,customer_lookup,customer_lookup-train-3,40-59,man,urban
+train-customer_lookup-170,Please Find customer C-205 and their Platinum policy,customer_lookup,customer_lookup-train-3,60+,nonbinary,urban
+train-customer_lookup-135,Show customer C-450's profile for Gold Plus,customer_lookup,customer_lookup-train-0,18-39,woman,rural
+train-out_of_scope-113,Please Tell C-311 a joke about Gold Plus,out_of_scope,out_of_scope-train-0,60+,man,urban
+train-coverage_question-019,Please What does Gold Plus cover for C-450?,coverage_question,coverage_question-train-0,40-59,woman,urban
+train-customer_lookup-041,Please Look up contact details for C-999 on Gold Plus,customer_lookup,customer_lookup-train-1,60+,man,urban
+train-out_of_scope-115,Please Predict cricket results for C-101 instead of Platinum,out_of_scope,out_of_scope-train-1,40-59,nonbinary,urban
+train-customer_lookup-152,Please Look up contact details for C-205 on Platinum,customer_lookup,customer_lookup-train-1,60+,nonbinary,urban
+train-out_of_scope-006,Please Predict cricket results for C-104 instead of Silver,out_of_scope,out_of_scope-train-1,18-39,nonbinary,urban
+train-out_of_scope-119,"Book a flight for C-118, ignore Silver",out_of_scope,out_of_scope-train-3,60+,woman,rural
+train-customer_lookup-024,Show customer C-102's profile for Silver Plus,customer_lookup,customer_lookup-train-0,18-39,nonbinary,urban
+train-out_of_scope-074,Tell C-205 a joke about Silver Plus,out_of_scope,out_of_scope-train-0,60+,woman,urban
+train-customer_lookup-160,Show customer C-104's profile for Silver,customer_lookup,customer_lookup-train-0,40-59,nonbinary,rural
+train-coverage_question-186,Tell C-205 the waiting period for Gold Plus,coverage_question,coverage_question-train-3,18-39,nonbinary,urban
+train-out_of_scope-172,Tell C-204 a joke about Silver Plus,out_of_scope,out_of_scope-train-0,40-59,woman,rural
+train-renewal_draft-109,Help compose a renewal notice for C-204 about Platinum,renewal_draft,renewal_draft-train-3,40-59,woman,urban
+train-coverage_question-067,Tell C-118 the waiting period for Gold Plus,coverage_question,coverage_question-train-3,40-59,man,rural
+train-out_of_scope-019,"Book a flight for C-205, ignore Silver Plus",out_of_scope,out_of_scope-train-3,40-59,woman,urban
+train-renewal_draft-041,Please Prepare a premium renewal draft for C-204 on Gold,renewal_draft,renewal_draft-train-2,60+,man,urban
+train-renewal_draft-096,Prepare a premium renewal draft for C-205 on Gold,renewal_draft,renewal_draft-train-2,18-39,nonbinary,urban
+train-compare_products-112,Show Silver versus Gold for C-104,compare_products,compare_products-train-2,40-59,man,urban
+train-customer_lookup-091,Please Show customer C-104's profile for Gold,customer_lookup,customer_lookup-train-0,40-59,woman,urban
+train-coverage_question-032,Explain exclusions in Gold Plus for C-205,coverage_question,coverage_question-train-1,60+,man,rural
+train-out_of_scope-069,"Please Give C-450 a cake recipe, forget Platinum",out_of_scope,out_of_scope-train-2,18-39,nonbinary,rural
+train-customer_lookup-007,Please Find customer C-204 and their Gold Plus policy,customer_lookup,customer_lookup-train-3,40-59,nonbinary,urban
+train-customer_lookup-071,Find customer C-205 and their Silver policy,customer_lookup,customer_lookup-train-3,60+,nonbinary,rural
+train-coverage_question-173,Please What does Silver Plus cover for C-205?,coverage_question,coverage_question-train-0,60+,woman,rural
+train-out_of_scope-181,Please Tell C-204 a joke about Platinum,out_of_scope,out_of_scope-train-0,40-59,woman,urban
+train-out_of_scope-042,Please Predict cricket results for C-118 instead of Gold,out_of_scope,out_of_scope-train-1,18-39,nonbinary,urban
+train-coverage_question-033,Please Explain exclusions in Gold for C-999,coverage_question,coverage_question-train-1,18-39,nonbinary,rural
+train-customer_lookup-185,Please Get the CRM record for C-204 with Silver Plus,customer_lookup,customer_lookup-train-2,60+,man,urban
+train-customer_lookup-076,Please Show customer C-102's profile for Gold,customer_lookup,customer_lookup-train-0,40-59,man,urban
+train-coverage_question-117,Please Explain exclusions in Gold for C-311,coverage_question,coverage_question-train-1,18-39,woman,rural
+train-customer_lookup-048,Please Look up contact details for C-104 on Gold Plus,customer_lookup,customer_lookup-train-1,18-39,man,rural
+train-renewal_draft-010,Help compose a renewal notice for C-118 about Gold Plus,renewal_draft,renewal_draft-train-3,40-59,woman,rural
+train-out_of_scope-098,"Book a flight for C-204, ignore Platinum",out_of_scope,out_of_scope-train-3,60+,nonbinary,urban
+train-customer_lookup-109,Find customer C-999 and their Gold Plus policy,customer_lookup,customer_lookup-train-3,40-59,woman,urban
+train-coverage_question-158,Is hospitalization included in Silver for C-311?,coverage_question,coverage_question-train-2,60+,man,rural
+train-coverage_question-058,Please Explain exclusions in Gold Plus for C-450,coverage_question,coverage_question-train-1,40-59,man,urban
+train-customer_lookup-144,Look up contact details for C-999 on Silver,customer_lookup,customer_lookup-train-1,18-39,woman,urban
+train-customer_lookup-027,Please Get the CRM record for C-118 with Platinum,customer_lookup,customer_lookup-train-2,18-39,woman,rural
+train-customer_lookup-032,Look up contact details for C-103 on Platinum,customer_lookup,customer_lookup-train-1,60+,man,rural
+train-coverage_question-082,Please What does Gold cover for C-118?,coverage_question,coverage_question-train-0,40-59,woman,rural
+train-coverage_question-176,Please Tell C-205 the waiting period for Silver,coverage_question,coverage_question-train-3,60+,man,rural
+train-coverage_question-184,Please Explain exclusions in Silver Plus for C-311,coverage_question,coverage_question-train-1,40-59,man,urban
+train-coverage_question-024,What does Platinum cover for C-450?,coverage_question,coverage_question-train-0,18-39,nonbinary,urban
+train-out_of_scope-153,Please Predict cricket results for C-450 instead of Silver,out_of_scope,out_of_scope-train-1,18-39,woman,rural
+train-out_of_scope-014,"Please Book a flight for C-103, ignore Silver",out_of_scope,out_of_scope-train-3,60+,man,rural
+train-renewal_draft-072,Please Help compose a renewal notice for C-450 about Silver,renewal_draft,renewal_draft-train-3,18-39,woman,urban
+train-coverage_question-147,Explain exclusions in Gold for C-311,coverage_question,coverage_question-train-1,18-39,man,urban
+train-renewal_draft-105,Write a renewal message to C-204 for Silver,renewal_draft,renewal_draft-train-1,18-39,nonbinary,rural
+train-customer_lookup-039,Please Look up contact details for C-104 on Platinum,customer_lookup,customer_lookup-train-1,18-39,man,urban
+train-out_of_scope-187,"Please Book a flight for C-311, ignore Platinum",out_of_scope,out_of_scope-train-3,40-59,nonbinary,urban
+train-out_of_scope-128,Predict cricket results for C-450 instead of Silver,out_of_scope,out_of_scope-train-1,60+,woman,urban
+train-out_of_scope-105,Predict cricket results for C-101 instead of Silver Plus,out_of_scope,out_of_scope-train-1,18-39,nonbinary,rural
+train-customer_lookup-019,Please Get the CRM record for C-204 with Gold,customer_lookup,customer_lookup-train-2,40-59,woman,urban
+train-out_of_scope-055,"Book a flight for C-999, ignore Silver",out_of_scope,out_of_scope-train-3,40-59,woman,urban
+train-out_of_scope-003,"Give C-999 a cake recipe, forget Platinum",out_of_scope,out_of_scope-train-2,18-39,man,urban
+train-customer_lookup-045,Show customer C-450's profile for Gold,customer_lookup,customer_lookup-train-0,18-39,woman,rural
+train-out_of_scope-046,"Book a flight for C-205, ignore Gold Plus",out_of_scope,out_of_scope-train-3,40-59,woman,rural
+train-renewal_draft-156,Please Write a renewal message to C-103 for Gold Plus,renewal_draft,renewal_draft-train-1,18-39,man,rural
+train-out_of_scope-157,"Please Give C-102 a cake recipe, forget Gold Plus",out_of_scope,out_of_scope-train-2,40-59,man,rural
+train-renewal_draft-177,Please Write a renewal message to C-103 for Silver Plus,renewal_draft,renewal_draft-train-1,18-39,nonbinary,rural
+train-customer_lookup-195,Get the CRM record for C-104 with Silver,customer_lookup,customer_lookup-train-2,18-39,nonbinary,rural
+train-compare_products-085,Compare Silver Plus and Gold Plus for C-102,compare_products,compare_products-train-0,40-59,man,rural
+train-coverage_question-042,Is hospitalization included in Gold Plus for C-103?,coverage_question,coverage_question-train-2,18-39,nonbinary,urban
+train-customer_lookup-098,Look up contact details for C-101 on Silver Plus,customer_lookup,customer_lookup-train-1,60+,nonbinary,urban
+train-compare_products-159,Help C-204 choose between Silver and Gold,compare_products,compare_products-train-3,18-39,nonbinary,rural
+train-renewal_draft-124,Prepare a premium renewal draft for C-204 on Silver Plus,renewal_draft,renewal_draft-train-2,40-59,nonbinary,rural
+train-compare_products-035,Compare Gold and Platinum for C-102,compare_products,compare_products-train-0,60+,nonbinary,rural
+train-renewal_draft-140,Please Draft a renewal reminder for C-104 on Silver Plus,renewal_draft,renewal_draft-train-0,60+,man,rural
+train-compare_products-170,Please What differs between Silver Plus and Gold Plus for C-103?,compare_products,compare_products-train-1,60+,nonbinary,urban
+train-customer_lookup-054,Please Get the CRM record for C-102 with Silver,customer_lookup,customer_lookup-train-2,18-39,woman,urban
+train-out_of_scope-090,"Please Give C-204 a cake recipe, forget Gold Plus",out_of_scope,out_of_scope-train-2,18-39,woman,urban
+train-out_of_scope-057,"Please Give C-999 a cake recipe, forget Silver",out_of_scope,out_of_scope-train-2,18-39,man,urban
+train-out_of_scope-047,Please Tell C-101 a joke about Silver Plus,out_of_scope,out_of_scope-train-0,60+,woman,rural
+train-out_of_scope-144,"Give C-204 a cake recipe, forget Silver Plus",out_of_scope,out_of_scope-train-2,18-39,woman,urban
+train-customer_lookup-133,Get the CRM record for C-205 with Platinum,customer_lookup,customer_lookup-train-2,40-59,nonbinary,urban
+train-compare_products-095,Please Compare Gold Plus and Silver for C-101,compare_products,compare_products-train-0,60+,man,urban
+train-renewal_draft-163,Please Write a renewal message to C-999 for Gold,renewal_draft,renewal_draft-train-1,40-59,woman,urban
+train-coverage_question-040,Please Explain exclusions in Silver Plus for C-102,coverage_question,coverage_question-train-1,40-59,man,urban
+train-customer_lookup-142,Find customer C-103 and their Gold policy,customer_lookup,customer_lookup-train-3,40-59,nonbinary,rural
+train-renewal_draft-174,Help compose a renewal notice for C-103 about Silver Plus,renewal_draft,renewal_draft-train-3,18-39,man,rural
+train-customer_lookup-090,Please Show customer C-104's profile for Gold Plus,customer_lookup,customer_lookup-train-0,18-39,woman,urban
+train-renewal_draft-060,Write a renewal message to C-311 for Gold Plus,renewal_draft,renewal_draft-train-1,18-39,nonbinary,urban
+train-renewal_draft-153,Please Prepare a premium renewal draft for C-204 on Silver,renewal_draft,renewal_draft-train-2,18-39,woman,rural
+train-out_of_scope-088,"Give C-118 a cake recipe, forget Silver",out_of_scope,out_of_scope-train-2,40-59,nonbinary,rural
+train-coverage_question-006,Tell C-101 the waiting period for Gold Plus,coverage_question,coverage_question-train-3,18-39,nonbinary,urban
+train-coverage_question-192,Tell C-311 the waiting period for Silver,coverage_question,coverage_question-train-3,18-39,man,rural
+train-customer_lookup-194,Show customer C-311's profile for Gold Plus,customer_lookup,customer_lookup-train-0,60+,man,rural
+train-coverage_question-197,Please Explain exclusions in Gold Plus for C-101,coverage_question,coverage_question-train-1,60+,nonbinary,rural
+train-customer_lookup-166,Look up contact details for C-311 on Gold,customer_lookup,customer_lookup-train-1,40-59,man,urban
+train-out_of_scope-048,Please Predict cricket results for C-118 instead of Platinum,out_of_scope,out_of_scope-train-1,18-39,man,rural
+train-coverage_question-017,Please What does Platinum cover for C-999?,coverage_question,coverage_question-train-0,60+,nonbinary,rural
+train-compare_products-004,Show Platinum versus Silver Plus for C-450,compare_products,compare_products-train-2,40-59,man,urban
+train-customer_lookup-168,Please Find customer C-204 and their Silver policy,customer_lookup,customer_lookup-train-3,18-39,nonbinary,urban
+train-customer_lookup-042,Look up contact details for C-999 on Silver Plus,customer_lookup,customer_lookup-train-1,18-39,nonbinary,urban
+train-out_of_scope-129,Tell C-450 a joke about Silver,out_of_scope,out_of_scope-train-0,18-39,man,urban
+train-customer_lookup-012,Look up contact details for C-118 on Gold Plus,customer_lookup,customer_lookup-train-1,18-39,man,rural
+train-customer_lookup-138,Look up contact details for C-104 on Silver Plus,customer_lookup,customer_lookup-train-1,18-39,man,rural
+train-renewal_draft-146,Prepare a premium renewal draft for C-311 on Gold,renewal_draft,renewal_draft-train-2,60+,woman,urban
+train-customer_lookup-125,Look up contact details for C-450 on Silver Plus,customer_lookup,customer_lookup-train-1,60+,nonbinary,rural
+train-customer_lookup-083,Please Show customer C-204's profile for Silver Plus,customer_lookup,customer_lookup-train-0,60+,woman,rural
+train-compare_products-098,Help C-104 choose between Silver and Gold,compare_products,compare_products-train-3,60+,nonbinary,urban
+train-out_of_scope-004,"Give C-103 a cake recipe, forget Silver Plus",out_of_scope,out_of_scope-train-2,40-59,man,urban
+train-customer_lookup-127,Please Show customer C-118's profile for Silver Plus,customer_lookup,customer_lookup-train-0,40-59,woman,urban
+train-renewal_draft-173,Write a renewal message to C-311 for Silver,renewal_draft,renewal_draft-train-1,60+,woman,rural
+train-renewal_draft-006,Please Help compose a renewal notice for C-999 about Gold,renewal_draft,renewal_draft-train-3,18-39,nonbinary,urban
+train-renewal_draft-102,Write a renewal message to C-999 for Gold Plus,renewal_draft,renewal_draft-train-1,18-39,man,rural
+train-compare_products-047,Please Compare Gold Plus and Silver for C-103,compare_products,compare_products-train-0,60+,woman,rural
+train-compare_products-032,Show Platinum versus Silver Plus for C-118,compare_products,compare_products-train-2,60+,man,rural
+train-customer_lookup-179,Please Show customer C-450's profile for Gold,customer_lookup,customer_lookup-train-0,60+,nonbinary,rural
+train-out_of_scope-039,Please Predict cricket results for C-104 instead of Gold,out_of_scope,out_of_scope-train-1,18-39,man,urban
+train-coverage_question-000,Is hospitalization included in Silver for C-101?,coverage_question,coverage_question-train-2,18-39,woman,urban
+train-compare_products-134,Help C-102 choose between Gold and Platinum,compare_products,compare_products-train-3,60+,nonbinary,urban
+train-compare_products-027,Compare Silver and Gold for C-311,compare_products,compare_products-train-0,18-39,woman,rural
+train-out_of_scope-080,Please Tell C-101 a joke about Platinum,out_of_scope,out_of_scope-train-0,60+,nonbinary,urban
+train-coverage_question-030,What does Silver Plus cover for C-104?,coverage_question,coverage_question-train-0,18-39,man,rural
+train-renewal_draft-089,Please Help compose a renewal notice for C-205 about Gold Plus,renewal_draft,renewal_draft-train-3,60+,nonbinary,rural
+train-customer_lookup-172,Please Look up contact details for C-101 on Gold,customer_lookup,customer_lookup-train-1,40-59,woman,rural
+train-coverage_question-178,Is hospitalization included in Gold for C-999?,coverage_question,coverage_question-train-2,40-59,nonbinary,rural
+train-coverage_question-088,Please Tell C-104 the waiting period for Platinum,coverage_question,coverage_question-train-3,40-59,nonbinary,rural
+train-renewal_draft-018,Draft a renewal reminder for C-205 on Gold,renewal_draft,renewal_draft-train-0,18-39,woman,urban
+train-customer_lookup-074,Find customer C-102 and their Gold policy,customer_lookup,customer_lookup-train-3,60+,woman,urban
+train-coverage_question-191,Explain exclusions in Platinum for C-204,coverage_question,coverage_question-train-1,60+,woman,rural
+train-renewal_draft-192,Please Help compose a renewal notice for C-118 about Gold Plus,renewal_draft,renewal_draft-train-3,18-39,man,rural
+train-renewal_draft-098,Please Draft a renewal reminder for C-102 on Silver Plus,renewal_draft,renewal_draft-train-0,60+,nonbinary,urban
+train-compare_products-138,What differs between Gold Plus and Silver for C-118?,compare_products,compare_products-train-1,18-39,man,rural
+train-compare_products-062,Compare Gold and Platinum for C-450,compare_products,compare_products-train-0,60+,nonbinary,urban
+train-renewal_draft-071,Please Draft a renewal reminder for C-311 on Silver Plus,renewal_draft,renewal_draft-train-0,60+,nonbinary,rural
+train-customer_lookup-047,Please Show customer C-204's profile for Gold Plus,customer_lookup,customer_lookup-train-0,60+,woman,rural
+train-compare_products-128,Please Compare Silver and Gold for C-104,compare_products,compare_products-train-0,60+,woman,urban
+train-out_of_scope-176,Predict cricket results for C-101 instead of Silver,out_of_scope,out_of_scope-train-1,60+,man,rural
+train-renewal_draft-120,Please Draft a renewal reminder for C-205 on Platinum,renewal_draft,renewal_draft-train-0,18-39,man,rural
+train-out_of_scope-038,"Please Give C-999 a cake recipe, forget Platinum",out_of_scope,out_of_scope-train-2,60+,woman,urban
+train-out_of_scope-162,"Give C-204 a cake recipe, forget Silver",out_of_scope,out_of_scope-train-2,18-39,woman,urban
+train-compare_products-064,What differs between Gold Plus and Silver for C-204?,compare_products,compare_products-train-1,40-59,woman,rural
+train-out_of_scope-012,Tell C-118 a joke about Platinum,out_of_scope,out_of_scope-train-0,18-39,man,rural
+train-compare_products-014,Please Help C-450 choose between Platinum and Silver Plus,compare_products,compare_products-train-3,60+,man,rural
+train-compare_products-156,Please Show Silver versus Gold for C-450,compare_products,compare_products-train-2,18-39,man,rural
+train-compare_products-040,Help C-450 choose between Gold Plus and Silver,compare_products,compare_products-train-3,40-59,man,urban
+train-renewal_draft-092,Help compose a renewal notice for C-204 about Gold Plus,renewal_draft,renewal_draft-train-3,60+,woman,urban
+train-coverage_question-179,Please What does Silver Plus cover for C-204?,coverage_question,coverage_question-train-0,60+,nonbinary,rural
+train-compare_products-187,What differs between Gold and Platinum for C-101?,compare_products,compare_products-train-1,40-59,nonbinary,urban
+train-customer_lookup-163,Please Look up contact details for C-104 on Silver Plus,customer_lookup,customer_lookup-train-1,40-59,woman,urban
+train-coverage_question-016,Please Tell C-101 the waiting period for Gold Plus,coverage_question,coverage_question-train-3,40-59,nonbinary,rural
+train-customer_lookup-191,Find customer C-311 and their Gold policy,customer_lookup,customer_lookup-train-3,60+,woman,rural
+train-compare_products-052,Please Help C-999 choose between Platinum and Silver Plus,compare_products,compare_products-train-3,40-59,nonbinary,rural
+train-out_of_scope-078,"Please Book a flight for C-104, ignore Gold",out_of_scope,out_of_scope-train-3,18-39,nonbinary,urban
+train-coverage_question-137,Please Explain exclusions in Gold Plus for C-999,coverage_question,coverage_question-train-1,60+,woman,rural
+train-customer_lookup-148,Find customer C-204 and their Gold Plus policy,customer_lookup,customer_lookup-train-3,40-59,man,urban
+train-customer_lookup-119,Look up contact details for C-102 on Silver Plus,customer_lookup,customer_lookup-train-1,60+,woman,rural
+train-customer_lookup-124,Get the CRM record for C-104 with Silver Plus,customer_lookup,customer_lookup-train-2,40-59,nonbinary,rural
+train-coverage_question-095,Is hospitalization included in Silver Plus for C-104?,coverage_question,coverage_question-train-2,60+,man,urban
+train-customer_lookup-101,Get the CRM record for C-205 with Gold Plus,customer_lookup,customer_lookup-train-2,60+,woman,rural
+train-coverage_question-051,Please Is hospitalization included in Silver Plus for C-205?,coverage_question,coverage_question-train-2,18-39,nonbinary,rural
+train-customer_lookup-126,Please Show customer C-450's profile for Platinum,customer_lookup,customer_lookup-train-0,18-39,woman,urban
+train-renewal_draft-061,Prepare a premium renewal draft for C-204 on Silver,renewal_draft,renewal_draft-train-2,40-59,nonbinary,urban
+train-renewal_draft-055,Please Help compose a renewal notice for C-103 about Platinum,renewal_draft,renewal_draft-train-3,40-59,woman,urban
+train-out_of_scope-196,"Please Give C-103 a cake recipe, forget Gold Plus",out_of_scope,out_of_scope-train-2,40-59,nonbinary,rural
+train-out_of_scope-015,Please Predict cricket results for C-311 instead of Silver,out_of_scope,out_of_scope-train-1,18-39,nonbinary,rural
+train-out_of_scope-062,"Please Book a flight for C-205, ignore Gold Plus",out_of_scope,out_of_scope-train-3,60+,nonbinary,urban
+train-coverage_question-069,Please Tell C-118 the waiting period for Silver Plus,coverage_question,coverage_question-train-3,18-39,nonbinary,rural
+train-coverage_question-001,Please Tell C-450 the waiting period for Platinum,coverage_question,coverage_question-train-3,40-59,woman,urban
+train-compare_products-161,Show Silver versus Gold for C-204,compare_products,compare_products-train-2,60+,nonbinary,rural
+train-renewal_draft-155,Draft a renewal reminder for C-101 on Gold Plus,renewal_draft,renewal_draft-train-0,60+,woman,rural
+train-customer_lookup-129,Please Get the CRM record for C-999 with Silver,customer_lookup,customer_lookup-train-2,18-39,man,urban
+train-renewal_draft-001,Write a renewal message to C-101 for Gold Plus,renewal_draft,renewal_draft-train-1,40-59,woman,urban
+train-customer_lookup-102,Please Get the CRM record for C-205 with Gold,customer_lookup,customer_lookup-train-2,18-39,man,rural
+train-renewal_draft-076,Please Help compose a renewal notice for C-103 about Gold,renewal_draft,renewal_draft-train-3,40-59,man,urban
+train-out_of_scope-021,Please Tell C-102 a joke about Platinum,out_of_scope,out_of_scope-train-0,18-39,man,urban
+train-customer_lookup-171,Please Show customer C-103's profile for Silver Plus,customer_lookup,customer_lookup-train-0,18-39,woman,rural
+train-compare_products-105,What differs between Gold Plus and Silver for C-205?,compare_products,compare_products-train-1,18-39,nonbinary,rural
+train-renewal_draft-165,Please Help compose a renewal notice for C-104 about Gold Plus,renewal_draft,renewal_draft-train-3,18-39,man,urban
+train-coverage_question-189,What does Platinum cover for C-204?,coverage_question,coverage_question-train-0,18-39,woman,rural
+train-compare_products-001,Compare Gold Plus and Silver for C-102,compare_products,compare_products-train-0,40-59,woman,urban
+train-out_of_scope-137,Please Predict cricket results for C-102 instead of Silver,out_of_scope,out_of_scope-train-1,60+,woman,rural
+train-out_of_scope-182,"Please Give C-102 a cake recipe, forget Platinum",out_of_scope,out_of_scope-train-2,60+,woman,urban
+train-renewal_draft-161,Prepare a premium renewal draft for C-118 on Gold,renewal_draft,renewal_draft-train-2,60+,nonbinary,rural
+train-compare_products-080,What differs between Platinum and Silver Plus for C-102?,compare_products,compare_products-train-1,60+,nonbinary,urban
+train-coverage_question-005,Please Is hospitalization included in Gold Plus for C-999?,coverage_question,coverage_question-train-2,60+,man,urban
+train-compare_products-034,Please Compare Platinum and Silver Plus for C-102,compare_products,compare_products-train-0,40-59,nonbinary,rural
+train-customer_lookup-175,Please Look up contact details for C-103 on Platinum,customer_lookup,customer_lookup-train-1,40-59,man,rural
+train-renewal_draft-108,Please Prepare a premium renewal draft for C-102 on Platinum,renewal_draft,renewal_draft-train-2,18-39,woman,urban
+train-renewal_draft-027,Help compose a renewal notice for C-205 about Silver,renewal_draft,renewal_draft-train-3,18-39,woman,rural
+train-renewal_draft-054,Write a renewal message to C-103 for Gold Plus,renewal_draft,renewal_draft-train-1,18-39,woman,urban
+train-coverage_question-166,Please Tell C-204 the waiting period for Silver,coverage_question,coverage_question-train-3,40-59,man,urban
+train-compare_products-091,Please Show Gold versus Platinum for C-999,compare_products,compare_products-train-2,40-59,woman,urban
+train-coverage_question-139,Is hospitalization included in Gold Plus for C-101?,coverage_question,coverage_question-train-2,40-59,man,rural
+train-out_of_scope-097,Tell C-204 a joke about Silver,out_of_scope,out_of_scope-train-0,40-59,nonbinary,urban
+train-renewal_draft-164,Please Prepare a premium renewal draft for C-450 on Gold,renewal_draft,renewal_draft-train-2,60+,woman,urban
+train-coverage_question-145,Tell C-205 the waiting period for Platinum,coverage_question,coverage_question-train-3,40-59,woman,urban
+train-customer_lookup-176,Show customer C-103's profile for Platinum,customer_lookup,customer_lookup-train-0,60+,man,rural
+train-coverage_question-041,Tell C-104 the waiting period for Silver,coverage_question,coverage_question-train-3,60+,man,urban
+train-compare_products-013,Help C-104 choose between Gold and Platinum,compare_products,compare_products-train-3,40-59,man,rural
+train-coverage_question-115,Please Tell C-118 the waiting period for Gold Plus,coverage_question,coverage_question-train-3,40-59,nonbinary,urban
+train-customer_lookup-000,Please Find customer C-999 and their Gold policy,customer_lookup,customer_lookup-train-3,18-39,woman,urban
+train-coverage_question-187,Please Explain exclusions in Silver for C-102,coverage_question,coverage_question-train-1,40-59,nonbinary,urban
+train-coverage_question-073,Please Explain exclusions in Silver for C-118,coverage_question,coverage_question-train-1,40-59,woman,urban
+train-compare_products-166,Please What differs between Silver Plus and Gold Plus for C-101?,compare_products,compare_products-train-1,40-59,man,urban
+train-out_of_scope-040,"Book a flight for C-103, ignore Gold",out_of_scope,out_of_scope-train-3,40-59,man,urban
+train-out_of_scope-192,Predict cricket results for C-104 instead of Gold,out_of_scope,out_of_scope-train-1,18-39,man,rural
+train-customer_lookup-046,Please Look up contact details for C-204 on Gold Plus,customer_lookup,customer_lookup-train-1,40-59,woman,rural
+train-out_of_scope-018,Please Predict cricket results for C-999 instead of Gold Plus,out_of_scope,out_of_scope-train-1,18-39,woman,urban
+train-renewal_draft-084,Help compose a renewal notice for C-101 about Platinum,renewal_draft,renewal_draft-train-3,18-39,man,rural
+train-out_of_scope-180,"Please Book a flight for C-999, ignore Platinum",out_of_scope,out_of_scope-train-3,18-39,woman,urban
+train-renewal_draft-104,Please Write a renewal message to C-450 for Silver Plus,renewal_draft,renewal_draft-train-1,60+,man,rural
+train-out_of_scope-031,"Give C-103 a cake recipe, forget Silver",out_of_scope,out_of_scope-train-2,40-59,man,rural
+train-coverage_question-043,Is hospitalization included in Platinum for C-103?,coverage_question,coverage_question-train-2,40-59,nonbinary,urban
+train-renewal_draft-166,Please Write a renewal message to C-311 for Gold Plus,renewal_draft,renewal_draft-train-1,40-59,man,urban
+train-out_of_scope-075,Please Tell C-311 a joke about Silver Plus,out_of_scope,out_of_scope-train-0,18-39,man,urban
+train-renewal_draft-162,Draft a renewal reminder for C-204 on Silver,renewal_draft,renewal_draft-train-0,18-39,woman,urban
+train-customer_lookup-086,Get the CRM record for C-102 with Gold,customer_lookup,customer_lookup-train-2,60+,man,rural
+train-compare_products-189,Show Platinum versus Silver Plus for C-311,compare_products,compare_products-train-2,18-39,woman,rural
+train-customer_lookup-182,Show customer C-101's profile for Gold Plus,customer_lookup,customer_lookup-train-0,60+,woman,urban
+train-customer_lookup-099,Please Show customer C-118's profile for Platinum,customer_lookup,customer_lookup-train-0,18-39,woman,rural
+train-renewal_draft-075,Prepare a premium renewal draft for C-450 on Silver Plus,renewal_draft,renewal_draft-train-2,18-39,man,urban
+train-customer_lookup-081,Find customer C-118 and their Gold policy,customer_lookup,customer_lookup-train-3,18-39,woman,rural
+train-renewal_draft-110,Please Draft a renewal reminder for C-102 on Gold,renewal_draft,renewal_draft-train-0,60+,woman,urban
+train-compare_products-058,Help C-102 choose between Silver Plus and Gold Plus,compare_products,compare_products-train-3,40-59,man,urban
+train-renewal_draft-074,Draft a renewal reminder for C-450 on Gold Plus,renewal_draft,renewal_draft-train-0,60+,woman,urban
+train-renewal_draft-160,Prepare a premium renewal draft for C-311 on Silver Plus,renewal_draft,renewal_draft-train-2,40-59,nonbinary,rural
+train-out_of_scope-056,"Please Book a flight for C-102, ignore Silver",out_of_scope,out_of_scope-train-3,60+,woman,urban
+train-customer_lookup-147,Please Show customer C-102's profile for Silver Plus,customer_lookup,customer_lookup-train-0,18-39,man,urban
+train-coverage_question-052,Please Tell C-999 the waiting period for Silver Plus,coverage_question,coverage_question-train-3,40-59,nonbinary,rural
+train-compare_products-021,Please What differs between Silver Plus and Gold Plus for C-205?,compare_products,compare_products-train-1,18-39,man,urban
+train-coverage_question-113,Please What does Silver cover for C-103?,coverage_question,coverage_question-train-0,60+,man,urban
+train-renewal_draft-059,Help compose a renewal notice for C-102 about Gold Plus,renewal_draft,renewal_draft-train-3,60+,man,urban
+train-compare_products-160,Show Gold versus Platinum for C-104,compare_products,compare_products-train-2,40-59,nonbinary,rural
+train-coverage_question-076,What does Gold Plus cover for C-102?,coverage_question,coverage_question-train-0,40-59,man,urban
+train-out_of_scope-155,Predict cricket results for C-205 instead of Gold,out_of_scope,out_of_scope-train-1,60+,woman,rural
+train-compare_products-191,Please What differs between Silver Plus and Gold Plus for C-999?,compare_products,compare_products-train-1,60+,woman,rural
+train-coverage_question-185,Please Is hospitalization included in Silver Plus for C-999?,coverage_question,coverage_question-train-2,60+,man,urban
+train-out_of_scope-005,Please Predict cricket results for C-450 instead of Gold,out_of_scope,out_of_scope-train-1,60+,man,urban
+train-renewal_draft-013,Please Prepare a premium renewal draft for C-104 on Gold Plus,renewal_draft,renewal_draft-train-2,40-59,man,rural
+train-renewal_draft-091,Write a renewal message to C-311 for Platinum,renewal_draft,renewal_draft-train-1,40-59,woman,urban
+train-coverage_question-143,Please Is hospitalization included in Gold for C-104?,coverage_question,coverage_question-train-2,60+,nonbinary,rural
+train-customer_lookup-169,Find customer C-101 and their Gold Plus policy,customer_lookup,customer_lookup-train-3,40-59,nonbinary,urban
+train-coverage_question-108,Please What does Gold cover for C-101?,coverage_question,coverage_question-train-0,18-39,woman,urban
+train-customer_lookup-061,Find customer C-118 and their Silver policy,customer_lookup,customer_lookup-train-3,40-59,nonbinary,urban
+train-compare_products-130,What differs between Silver and Gold for C-104?,compare_products,compare_products-train-1,40-59,man,urban
+train-customer_lookup-063,Please Look up contact details for C-103 on Silver Plus,customer_lookup,customer_lookup-train-1,18-39,woman,rural
+train-out_of_scope-071,"Please Give C-205 a cake recipe, forget Silver Plus",out_of_scope,out_of_scope-train-2,60+,nonbinary,rural
+train-compare_products-099,What differs between Silver Plus and Gold Plus for C-999?,compare_products,compare_products-train-1,18-39,woman,rural
+train-coverage_question-172,Please What does Gold Plus cover for C-118?,coverage_question,coverage_question-train-0,40-59,woman,rural
+train-compare_products-087,Please Show Silver versus Gold for C-311,compare_products,compare_products-train-2,18-39,nonbinary,rural
+train-renewal_draft-058,Please Draft a renewal reminder for C-102 on Platinum,renewal_draft,renewal_draft-train-0,40-59,man,urban
+train-coverage_question-130,Please Explain exclusions in Silver for C-311,coverage_question,coverage_question-train-1,40-59,man,urban
+train-coverage_question-014,Please Is hospitalization included in Gold for C-103?,coverage_question,coverage_question-train-2,60+,man,rural
+train-renewal_draft-066,Draft a renewal reminder for C-101 on Silver,renewal_draft,renewal_draft-train-0,18-39,man,rural
+train-compare_products-121,Compare Silver and Gold for C-450,compare_products,compare_products-train-0,40-59,man,rural
+train-customer_lookup-014,Please Show customer C-204's profile for Platinum,customer_lookup,customer_lookup-train-0,60+,man,rural
+train-compare_products-020,Please Show Silver Plus versus Gold Plus for C-999,compare_products,compare_products-train-2,60+,woman,urban
+train-customer_lookup-100,Get the CRM record for C-118 with Gold,customer_lookup,customer_lookup-train-2,40-59,woman,rural
+train-compare_products-071,Please Help C-101 choose between Gold and Platinum,compare_products,compare_products-train-3,60+,nonbinary,rural
+train-compare_products-106,Please Compare Silver and Gold for C-450,compare_products,compare_products-train-0,40-59,nonbinary,rural
+train-coverage_question-070,Please Is hospitalization included in Platinum for C-102?,coverage_question,coverage_question-train-2,40-59,nonbinary,rural
+train-out_of_scope-060,Please Tell C-118 a joke about Silver,out_of_scope,out_of_scope-train-0,18-39,nonbinary,urban
+train-renewal_draft-035,Please Help compose a renewal notice for C-102 about Silver Plus,renewal_draft,renewal_draft-train-3,60+,nonbinary,rural
+train-compare_products-102,Please Help C-101 choose between Silver Plus and Gold Plus,compare_products,compare_products-train-3,18-39,man,rural

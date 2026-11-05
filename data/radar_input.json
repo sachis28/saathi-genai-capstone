@@ -17,7 +17,7 @@
   },
   {
     "customer_id": "C-118",
-    "days_to_renewal": 60,
+    "days_to_renewal": -31,
     "interaction_count_90d": 3,
     "sentiment_score": 0.34,
     "annual_premium_inr": 14476.44,
