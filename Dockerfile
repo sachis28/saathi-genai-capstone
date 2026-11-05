@@ -15,7 +15,8 @@ RUN pip install -r api/requirements.txt && pip install -r ml/azureml/requirement
 COPY . .
 # Train the small TF-IDF intent model and the Radar model into /app/artifacts (seconds, deterministic),
 # and cache MiniLM so a RETRIEVER=local fallback starts without a download.
-RUN python -m ml.train_intent && python -m ml.radar \
+# Build the 5,000 generated customers (C-10001..C-15000) into the image; the file is gitignored but deterministic.
+RUN python api/scripts/generate_bulk_customers.py && python -m ml.train_intent && python -m ml.radar \
  && python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')"
 
 ENV LLM_PROVIDER=mock RETRIEVER=local INTENT_PROVIDER=tfidf_lr ML_PROVIDER=local
