@@ -1,0 +1,24 @@
+[
+ {
+  "file": "endorsement_health_gold_air_ambulance.png",
+  "source_id": "SCAN-HEALTH-GOLD-END-17",
+  "clause_id": "CL-AIR-01",
+  "product": "Health",
+  "tier": "Gold",
+  "version": "v1",
+  "title": "POLICY ENDORSEMENT E-17  |  HEALTH GOLD",
+  "text": "Air ambulance transfer to the nearest network hospital is covered up to INR 2.5 lakh per policy year when the treating doctor advises it in writing.",
+  "question": "Is air ambulance covered for Health Gold?"
+ },
+ {
+  "file": "endorsement_motor_gold_key_replacement.png",
+  "source_id": "SCAN-MOTOR-GOLD-END-22",
+  "clause_id": "CL-KEY-01",
+  "product": "Motor",
+  "tier": "Gold",
+  "version": "v1",
+  "title": "POLICY ENDORSEMENT E-22  |  MOTOR GOLD",
+  "text": "Replacement of lost or stolen car keys, including the lock reset, is covered up to INR 15,000 once per policy year. A police report is required for stolen keys.",
+  "question": "Is car key replacement covered for Motor Gold?"
+ }
+]
