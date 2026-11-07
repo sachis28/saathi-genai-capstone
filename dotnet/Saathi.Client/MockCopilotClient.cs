@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace Saathi.Client;
 
 public class MockCopilotClient : ICopilotClient
@@ -33,6 +35,19 @@ public class MockCopilotClient : ICopilotClient
 
         AnswerReceived?.Invoke(this, resp);
         return Task.FromResult(ApiResult<ChatResponse>.Ok(resp));
+    }
+
+    public Task<ApiResult<AgentChatResponse>> AgentChatAsync(ChatRequest request)
+    {
+        JsonElement J(string v) => JsonSerializer.SerializeToElement(v);
+        var trace = new List<AgentToolCall>
+        {
+            new("lookup_customer", new() { ["customer_id"] = J(request.CustomerId) }, true),
+            new("search_knowledge_base", new() { ["query"] = J(request.Question), ["product"] = J(""), ["tier"] = J("") }, true),
+        };
+        var resp = new AgentChatResponse("Mock agent answer",
+            new List<Citation> { new("MOCK-DOC", "CL-0", "v0") }, trace, "semantic-kernel");
+        return Task.FromResult(ApiResult<AgentChatResponse>.Ok(resp));
     }
 
     public Task<ApiResult<Draft>> CreateDraftAsync(string customerId)

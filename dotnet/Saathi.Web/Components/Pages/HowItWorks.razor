@@ -1,0 +1,468 @@
+@page "/how-it-works"
+@rendermode InteractiveServer
+@implements IDisposable
+
+<PageTitle>Saathi - How it works</PageTitle>
+
+<div class="ph">
+    <div>
+        <div class="crumb">How it works</div>
+        <h1>Follow one request through Saathi</h1>
+        <p>Pick a scenario and press Play. Each service lights up as the request reaches it, and the panel on the right explains the step and where it lives in the code.</p>
+    </div>
+    <span class="badge a">Simulation with sample data. Scores and timings are illustrative.</span>
+</div>
+
+<div class="tabs" role="tablist">
+    @for (var i = 0; i < scenarios.Count; i++)
+    {
+        var idx = i;
+        <button type="button" role="tab" class="@(idx == current ? "on" : "")" @onclick="() => Select(idx)">@scenarios[idx].Tab</button>
+    }
+</div>
+
+@{ var sc = scenarios[current]; var step = pos >= 0 && pos < sc.Steps.Count ? sc.Steps[pos] : null; }
+
+<div class="sim">
+    <section class="card" aria-label="Simulation">
+        <div class="card-h">
+            <div>
+                <h2>@sc.Title</h2>
+                <div class="sub">@sc.Subtitle</div>
+            </div>
+            <div class="controls">
+                <span class="progress">@(Math.Max(pos + 1, 0))/@sc.Steps.Count</span>
+                @if (playing)
+                {
+                    <button type="button" class="sec small" @onclick="Pause">Pause</button>
+                }
+                else
+                {
+                    <button type="button" class="small" @onclick="PlayAsync">@(pos >= sc.Steps.Count - 1 ? "Replay" : pos < 0 ? "Play" : "Resume")</button>
+                }
+                <button type="button" class="sec small" @onclick="NextAsync" disabled="@(pos >= sc.Steps.Count - 1)">Next step</button>
+                <button type="button" class="sec small" @onclick="Reset">Reset</button>
+                <label class="muted" style="display:inline-flex;gap:4px;align-items:center"><input type="checkbox" @bind="expandAll" /> Keep all details open</label>
+                <div class="seg" role="group" aria-label="Speed">
+                    <button type="button" class="@(slow ? "" : "on")" @onclick="() => slow = false">1x</button>
+                    <button type="button" class="@(slow ? "on" : "")" @onclick="() => slow = true">0.5x</button>
+                </div>
+            </div>
+        </div>
+        <div class="trace">
+            <div class="q-banner">@sc.InputLabel: <b>@sc.Input</b></div>
+            <PathMap Nodes="@sc.Nodes" Lit="@(step?.Node ?? (pos >= sc.Steps.Count ? sc.Nodes.Count - 1 : -1))"
+                     Stopped="@(step?.Final == "stop")" Caption="@sc.PathCaption" Route="@sc.Route" />
+            <ol class="steps">
+                @for (var i = 0; i < sc.Steps.Count; i++)
+                {
+                    var s = sc.Steps[i];
+                    var state = i < pos ? s.Final : i == pos ? (s.Final == "stop" ? "stop" : "active") : "";
+                    <li class="step @state">
+                        <div class="node">@(state == "done" ? "✓" : state == "stop" ? "!" : (i + 1).ToString())</div>
+                        <div class="body">
+                            <div class="row1">
+                                <h3>@s.Title @if (s.Tag is not null) { <span class="src">@s.Tag</span> }</h3>
+                                @if (i <= pos && s.Ms is not null) { <span class="ms">@s.Ms</span> }
+                            </div>
+                            <div class="what">@s.What</div>
+                            @if (i == pos || (pos >= sc.Steps.Count && i == sc.Steps.Count - 1) || (i < pos && (expandAll || open.Contains(i))))
+                            {
+                                <div class="detail">
+                                    @s.Detail
+                                    @if (s.Stream is not null)
+                                    {
+                                        <div class="stream">@(i == pos ? s.Stream[..Math.Min(typed, s.Stream.Length)] : s.Stream)</div>
+                                    }
+                                </div>
+                            }
+                            else if (i < pos && (s.Detail is not null || s.Stream is not null))
+                            {
+                                var ii = i;
+                                <button type="button" class="link-btn expand" @onclick="() => open.Add(ii)">Show details</button>
+                            }
+                        </div>
+                    </li>
+                }
+            </ol>
+        </div>
+    </section>
+
+    <aside class="card" aria-label="What is happening">
+        <div class="card-h"><h2>What is happening</h2></div>
+        <div class="pad">
+            @if (step is null)
+            {
+                <p class="muted">@sc.Intro</p>
+                <dl class="facts">
+                    @foreach (var (k, v) in sc.Facts)
+                    {
+                        <div><dt>@k</dt><dd>@v</dd></div>
+                    }
+                </dl>
+            }
+            else
+            {
+                <div><span class="badge b">@sc.Nodes[step.Node].Label</span></div>
+                <p style="margin:0">@step.Explain</p>
+                @if (step.Code is not null)
+                {
+                    <dl class="facts"><div><dt>Where in the code</dt><dd><code class="vec">@step.Code</code></dd></div></dl>
+                }
+                @if (step.Why is not null)
+                {
+                    <dl class="facts"><div><dt>Why it matters</dt><dd>@step.Why</dd></div></dl>
+                }
+            }
+        </div>
+    </aside>
+</div>
+
+@code {
+    private record SimStep(int Node, string Title, string What, RenderFragment? Detail, string Explain,
+        string? Code = null, string? Why = null, string Final = "done", string? Tag = null, string? Ms = null, string? Stream = null);
+
+    private record Scenario(string Tab, string Title, string Subtitle, string InputLabel, string Input, string PathCaption, string Route,
+        List<PathMap.Node> Nodes, List<SimStep> Steps, string Intro, List<(string, string)> Facts);
+
+    private List<Scenario> scenarios = new();
+    private int current;
+    private int pos = -1;
+    private int typed;
+    private bool playing;
+    private bool slow;
+    private int runId;
+    private bool expandAll;
+    private readonly HashSet<int> open = new();
+
+    protected override void OnInitialized() => scenarios = new() { Rag(), Agent(), Rules(), Ocr() };
+
+    private void Select(int i) { current = i; Reset(); }
+
+    private void Reset() { runId++; playing = false; pos = -1; typed = 0; open.Clear(); }
+
+    private void Pause() { runId++; playing = false; }
+
+    private async Task PlayAsync()
+    {
+        var id = ++runId;
+        playing = true;
+        if (pos >= scenarios[current].Steps.Count - 1) pos = -1;
+        while (pos < scenarios[current].Steps.Count - 1)
+        {
+            await AdvanceAsync(id);
+            if (id != runId) return;
+            await Task.Delay(slow ? 2600 : 1300);
+            if (id != runId) return;
+        }
+        playing = false;
+        pos = scenarios[current].Steps.Count; // finished: every step done, response node lit
+        StateHasChanged();
+    }
+
+    private async Task NextAsync()
+    {
+        var id = ++runId;
+        playing = false;
+        await AdvanceAsync(id);
+    }
+
+    // Move to the next step; if it carries model output, type it out.
+    private async Task AdvanceAsync(int id)
+    {
+        pos++;
+        typed = 0;
+        StateHasChanged();
+        var text = scenarios[current].Steps[pos].Stream;
+        if (text is null) return;
+        while (typed < text.Length)
+        {
+            await Task.Delay(slow ? 40 : 20);
+            if (id != runId) { typed = text.Length; return; }
+            typed = Math.Min(text.Length, typed + 3);
+            StateHasChanged();
+        }
+    }
+
+    public void Dispose() => runId++;
+
+    // ---------- shared pieces ----------
+
+    private static readonly List<PathMap.Node> RagNodes = new()
+    {
+        new("UI", "Blazor"), new("API", "FastAPI"), new("SAFE", "Guardrails"), new("MEM", "Rewrite"),
+        new("ML", "Intent"), new("AIS", "AI Search"), new("AOAI", "OpenAI"), new("RES", "Response"),
+    };
+
+    private static readonly List<PathMap.Node> AgentNodes = new()
+    {
+        new("UI", "Blazor"), new("API", "FastAPI"), new("SAFE", "Guardrails"), new("SK", "Kernel"),
+        new("MCP", "MCP server"), new("LLM", "Planner"), new("AIS", "AI Search"), new("AOAI", "Answer"), new("RES", "Response"),
+    };
+
+    private static RenderFragment Code(string text) => @<pre class="code">@text</pre>;
+
+    private static RenderFragment Budget(int used, bool over = false) => @<span class="budget" title="@used of 3 tool calls">
+        @for (var b = 0; b < 3; b++) { <i class="@(b < used ? "used" : "")"></i> }
+        @if (over) { <i class="over"></i> }
+    </span>;
+
+    private static RenderFragment Hits((string Id, double Score, string Text, bool Used)[] hits) => @<div class="hits">
+        @foreach (var h in hits)
+        {
+            <div class="hit @(h.Used ? "used" : "")">
+                <div class="score">@h.Score.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)</div>
+                <div>
+                    <div class="id">@h.Id @if (h.Id.StartsWith("SCAN-")) { <span class="badge a">OCR scan</span> } @if (h.Used) { <span class="badge b">sent to LLM</span> }</div>
+                    <div class="txt">@h.Text</div>
+                </div>
+            </div>
+        }
+    </div>;
+
+    private static RenderFragment Bars((string Label, int Pct)[] bars) => @<div class="bars">
+        @for (var i = 0; i < bars.Length; i++)
+        {
+            var b = bars[i];
+            <div class="bar @(i == 0 ? "top" : "")"><span class="lbl">@b.Label</span><span class="track"><span class="fillbar" style="width:@(b.Pct)%"></span></span><span class="v">@(b.Pct)%</span></div>
+        }
+    </div>;
+
+    private static RenderFragment Cites(params string[] ids) => @<div class="meta">
+        @foreach (var id in ids)
+        {
+            <span class="cite @(id.StartsWith("SCAN-") ? "scan" : "")">@id</span>
+        }
+    </div>;
+
+    private static readonly RenderFragment ToolTable = @<table class="tools">
+        <tr><th>Tool</th><th>Parameters (from the MCP schema)</th><th>Rule in code</th></tr>
+        <tr><td class="m">lookup_customer</td><td class="m">customer_id: string</td><td>customer_id forced to the selected customer</td></tr>
+        <tr><td class="m">worklist</td><td class="m">agent_id: string</td><td>agent_id forced to the signed-in agent</td></tr>
+        <tr><td class="m">search_knowledge_base</td><td class="m">query: string, product?: string, tier?: string</td><td>returns cited clauses only</td></tr>
+        <tr><td class="m">save_draft</td><td class="m">customer_id: string</td><td>saved as PENDING_APPROVAL</td></tr>
+        <tr><td class="m">simulate_send</td><td class="m">draft_id: string</td><td>blocked unless approved and consent given</td></tr>
+    </table>;
+
+    // ---------- 1. Ask: the RAG pipeline ----------
+
+    private Scenario Rag() => new(
+        "Ask (RAG)", "Ask a policy question", "POST /chat · customer C-204, Health Silver",
+        "Agent asks", "and what about Gold?", "Request path", "POST /chat", RagNodes,
+        new()
+        {
+            new(0, "Agent sends a follow-up", "Blazor workspace posts the question with the chat session id",
+                Code("POST /chat\n{ \"customer_id\": \"C-204\", \"question\": \"and what about Gold?\", \"session_id\": \"7f3c…\" }"),
+                "The previous question was about the waiting period for pre-existing diseases. The agent now types a short follow-up.",
+                "dotnet/Saathi.Client/CopilotHttpClient.cs · ChatAsync()", Ms: "1 ms"),
+            new(1, "FastAPI receives the request", "Loads the customer record and starts the pipeline",
+                @<span>Customer <span class="badge">C-204</span> <span class="badge">Health · Silver</span> <span class="badge g">consent given</span></span>,
+                "The API is the orchestrator for normal questions. It runs every step in a fixed order and logs each one to the audit chain.",
+                "api/app/main.py · chat()", Ms: "2 ms"),
+            new(2, "Guardrails", "Prompt-injection and off-topic checks",
+                @<span><span class="verdict pass">Passed</span>No injection pattern. Recognised as a follow-up, so the off-topic check lets it through.</span>,
+                "Guardrails run before anything expensive. A blocked question never reaches search or the LLM.",
+                "api/app/services/safety.py · is_injection(), topic_guard.py · is_on_topic()", "Stops prompt injection and keeps answers on insurance.", Tag: "safety", Ms: "4 ms"),
+            new(3, "Follow-up rewrite", "Chat memory completes the question",
+                @<div class="rewrite"><div class="from">and what about Gold?</div><div>→ What is the waiting period for pre-existing diseases under the Gold plan?</div></div>,
+                "The session memory holds the last turn. The short follow-up is rewritten into a complete question that search can use.",
+                "api/app/services/memory.py · resolve_question()", Tag: "memory", Ms: "38 ms"),
+            new(4, "Intent classification", "tfidf_lr model trained on 1,000 labelled questions",
+                Bars(new[] { ("compare_products", 79), ("coverage_question", 16), ("customer_lookup", 3), ("renewal_draft", 1), ("out_of_scope", 1) }),
+                "A small classic ML model labels the request. The intent is logged and shown in the trace.",
+                "ml/train_intent.py, api/app/services/ml_service.py · classify_intent()", Tag: "ML", Ms: "9 ms"),
+            new(5, "Azure AI Search", "Hybrid keyword and vector search, product = Health, top 5",
+                Hits(new[]
+                {
+                    ("POL-HEALTH-GOLD#CL-WAIT-02", 0.95, "Pre-existing diseases are covered under the Gold plan after a waiting period of 24 months of continuous coverage.", true),
+                    ("POL-HEALTH-SILVER#CL-WAIT-02", 0.84, "Pre-existing diseases are covered under the Silver plan only after a waiting period of 36 months of continuous coverage.", true),
+                    ("POL-HEALTH-GOLD#CL-COV-01", 0.52, "Gold plan covers in-patient hospitalisation up to INR 10 lakh per policy year with no room rent cap.", false),
+                    ("POL-HEALTH-SILVER#CL-WAIT-05", 0.47, "Specific listed treatments are subject to a 24 month waiting period under Health Silver.", false),
+                }),
+                "The rewritten question is searched in the policy index. Each hit carries its source, clause id and version, so it can be cited.",
+                "api/app/services/retriever.py · AzureSearchRetriever.search()", "The LLM only sees these clauses, so it cannot invent policy facts.", Tag: "Azure AI Search", Ms: "171 ms"),
+            new(6, "Azure OpenAI writes the answer", "Grounded prompt: system rules + 2 clauses + question, temperature 0",
+                null,
+                "The model writes a short answer from the clauses it was given. The grounding shield then checks every citation against the retrieved hits.",
+                "api/app/services/answer.py · generate_answer(), llm.py", "Answers that cite a clause that was not retrieved are rejected.", Tag: "Azure OpenAI", Ms: "1,310 ms",
+                Stream: "On Gold the pre-existing disease waiting period is 24 months, a year shorter than the 36 months on this customer's Silver plan."),
+            new(7, "Response with citations", "Answer, intent, rewritten question and citations go back to the UI",
+                Cites("POL-HEALTH-GOLD#CL-WAIT-02", "POL-HEALTH-SILVER#CL-WAIT-02"),
+                "The workspace shows the answer with clickable citations, and this trace. The audit chain records the chat event.",
+                "api/app/models/schemas.py · ChatResponse", Ms: "1 ms"),
+        },
+        "This is the default path for a question in the workspace. FastAPI runs the steps in a fixed order.",
+        new() { ("Customer", "C-204, Health Silver"), ("Index", "48 typed clauses + 2 OCR scans"), ("Model", "Azure OpenAI deployment, temperature 0") });
+
+    // ---------- 2. Agent: Semantic Kernel + MCP ----------
+
+    private Scenario Agent() => new(
+        "Agent (Semantic Kernel + MCP)", "Agent mode: Semantic Kernel calls the MCP tools", "POST /agent/chat · customer C-311, Health Gold",
+        "Agent asks", "Is air ambulance covered for this customer?", "Request path", "POST /agent/chat", AgentNodes,
+        new()
+        {
+            new(0, "Agent asks in agent mode", "The workspace calls the agent endpoint instead of /chat",
+                Code("POST /agent/chat\n{ \"customer_id\": \"C-311\", \"question\": \"Is air ambulance covered for this customer?\" }"),
+                "In agent mode the model decides which tools to use, instead of the fixed pipeline.",
+                "dotnet/Saathi.Client/CopilotHttpClient.cs · AgentChatAsync()", Ms: "1 ms"),
+            new(1, "FastAPI hands off to the agent", "Loads C-311 and calls run_agent()",
+                @<span>Customer <span class="badge">C-311</span> <span class="badge">Health · Gold</span> agent <span class="badge">A-002</span></span>,
+                "The API still owns the request. It loads the customer, then hands the question to the Semantic Kernel agent.",
+                "api/app/main.py · agent_chat()", Ms: "2 ms"),
+            new(2, "Guardrails", "Prompt-injection check",
+                @<span><span class="verdict pass">Passed</span></span>,
+                "The same injection check as /chat. A blocked request returns 400 and the kernel is never built.",
+                "api/app/services/safety.py · is_injection()", Tag: "safety", Ms: "3 ms"),
+            new(3, "Build the kernel", "Kernel() + plugin \"saathi\" + auto-function-invocation filter",
+                Code("kernel = Kernel()\nkernel.add_plugin(SaathiPlugin(\"C-311\", \"A-002\"), plugin_name=\"saathi\")\nkernel.add_filter(AUTO_FUNCTION_INVOCATION, limit_tool_calls)  # max 3, allowlist"),
+                "A fresh kernel is built for each request. The plugin is bound to this customer and this agent, so every tool call is scoped to them.",
+                "api/app/agent/agent.py · build_kernel(), SaathiPlugin", "Each request gets its own tool budget and customer binding.", Tag: "Semantic Kernel", Ms: "6 ms"),
+            new(4, "Discover the MCP tools", "mcp.list_tools() on the FastMCP server \"saathi\"",
+                ToolTable,
+                "The five tools are defined once on an MCP server. Semantic Kernel registers each one as a kernel function and builds its JSON schema from the signature. The same server also runs standalone over stdio for MCP Inspector or Claude Desktop.",
+                "api/app/agent/tools.py · FastMCP(\"saathi\"), agent.py · tool_schemas()", "One tool definition serves the in-app agent and any external MCP client.", Tag: "MCP", Ms: "4 ms"),
+            new(5, "Planner chooses a tool", "Azure OpenAI with FunctionChoiceBehavior.Auto, temperature 0",
+                Code("tool_calls: [{ \"name\": \"saathi-lookup_customer\", \"arguments\": { \"customer_id\": \"C-311\" } }]"),
+                "The model sees the question and the five tool schemas. It asks to look up the customer first.",
+                "api/app/agent/agent.py · plan_with_llm()", Tag: "Azure OpenAI", Ms: "640 ms"),
+            new(4, "Tool call 1 of 3: lookup_customer", "Filter checks the allowlist and the budget, then runs the MCP tool",
+                @<div>
+                    <div><span class="verdict pass">allowed</span>@Budget(1)</div>
+                    <pre class="code">{ "customer_id": "C-311", "product": "Health", "tier": "Gold", "policy_status": "ACTIVE", "consent": true }</pre>
+                </div>,
+                "limit_tool_calls lets the call through because lookup_customer is allowlisted and 0 of 3 calls are used. The plugin overwrites customer_id with C-311 before the tool runs.",
+                "api/app/agent/agent.py · limit_tool_calls(), run_tool()", Tag: "MCP", Ms: "3 ms"),
+            new(5, "Planner chooses the next tool", "The tool result goes back into the chat history",
+                Code("tool_calls: [{ \"name\": \"saathi-search_knowledge_base\",\n  \"arguments\": { \"query\": \"air ambulance cover\", \"product\": \"Health\", \"tier\": \"Gold\" } }]"),
+                "Now the model knows the plan is Health Gold, so it searches the policy clauses with that filter.",
+                "semantic_kernel · FunctionChoiceBehavior.Auto(maximum_auto_invoke_attempts=3)", Tag: "Azure OpenAI", Ms: "590 ms"),
+            new(6, "Tool call 2 of 3: search_knowledge_base", "Runs Azure AI Search through the MCP tool",
+                @<div>
+                    <div><span class="verdict pass">allowed</span>@Budget(2)</div>
+                    @Hits(new[]
+                    {
+                        ("SCAN-HEALTH-GOLD-END-17#CL-AIR-01", 0.91, "Air ambulance transfer to the nearest network hospital is covered up to INR 2.5 lakh per policy year when the treating doctor advises it in writing.", true),
+                        ("POL-HEALTH-GOLD#CL-AMB-04", 0.58, "Emergency ambulance expenses are covered up to INR 5000 per hospitalization.", false),
+                        ("POL-HEALTH-GOLD#CL-COV-01", 0.41, "Gold plan covers in-patient hospitalisation up to INR 10 lakh per policy year with no room rent cap.", false),
+                    })
+                </div>,
+                "The top hit came from a scanned endorsement. Its text only exists because the OCR pipeline read it out of an image (see the OCR tab).",
+                "api/app/agent/tools.py · search_knowledge_base()", "Proves OCR output is searchable and citable like typed clauses.", Tag: "Azure AI Search", Ms: "182 ms"),
+            new(5, "Planner stops", "The model has what it needs and replies with a short note",
+                @<span><span class="verdict pass">done</span>2 of 3 tool calls used @Budget(2)</span>,
+                "The model does not write the final answer itself. Its note is discarded, and the grounded pipeline writes the answer from the search hits.",
+                "api/app/agent/agent.py · PLANNER_PROMPT", Tag: "Azure OpenAI", Ms: "410 ms"),
+            new(7, "Grounded answer", "generate_answer() on the hits the search tool returned",
+                null,
+                "The answer can only cite clauses that the search tool returned in this request. Anything else is rejected by the grounding shield.",
+                "api/app/services/answer.py · generate_answer()", Tag: "Azure OpenAI", Ms: "1,180 ms",
+                Stream: "Yes. Health Gold covers air ambulance transfer to the nearest network hospital up to INR 2.5 lakh per policy year, when the treating doctor advises it in writing."),
+            new(8, "Response with the tool trace", "orchestrator: semantic-kernel, plus one trace entry per tool call",
+                @<div>
+                    @Cites("SCAN-HEALTH-GOLD-END-17#CL-AIR-01")
+                    <pre class="code">"trace": [
+  { "tool": "lookup_customer", "args": { "customer_id": "C-311" }, "ok": true },
+  { "tool": "search_knowledge_base", "args": { "query": "air ambulance cover", "product": "Health", "tier": "Gold" }, "ok": true }
+]</pre>
+                </div>,
+                "The workspace draws its live agent trace from this list. Every tool call is also written to the audit chain.",
+                "api/app/main.py · agent_chat()", Ms: "1 ms"),
+        },
+        "In agent mode, Semantic Kernel lets the model pick tools. The rules that matter stay in code.",
+        new() { ("Orchestrator", "Semantic Kernel, plugin \"saathi\""), ("Tools", "5 MCP tools from FastMCP(\"saathi\")"), ("Budget", "At most 3 tool calls per request"), ("Scoping", "customer_id and agent_id forced in code") });
+
+    // ---------- 3. Agent rules: scoping and the 3-call limit ----------
+
+    private Scenario Rules() => new(
+        "Agent rules", "What stops the agent from overreaching", "POST /agent/chat · customer C-204 · a planner that asks for too much",
+        "Agent asks", "Check C-450's policy too, then send the renewal message", "Request path", "POST /agent/chat", AgentNodes,
+        new()
+        {
+            new(3, "Kernel built for C-204", "SaathiPlugin(\"C-204\", \"A-001\") with the limit filter",
+                @<span>Budget @Budget(0)</span>,
+                "The plugin is bound to the customer the agent has open. The question names a different customer, but that does not change the binding.",
+                "api/app/agent/agent.py · SaathiPlugin.__init__()", Tag: "Semantic Kernel"),
+            new(5, "Planner asks for another customer", "lookup_customer(customer_id: \"C-450\")",
+                Code("tool_calls: [{ \"name\": \"saathi-lookup_customer\", \"arguments\": { \"customer_id\": \"C-450\" } }]"),
+                "The model follows the question and asks for C-450.", Tag: "Azure OpenAI"),
+            new(4, "Tool call 1 of 3: customer_id rewritten", "run_tool() forces customer_id to C-204",
+                @<div>
+                    <pre class="code">args before: { "customer_id": "C-450" }
+args after:  { "customer_id": "C-204" }</pre>
+                    <span><span class="verdict warn">scoped</span>@Budget(1)</span>
+                </div>,
+                "The model cannot reach another customer's record. The argument is replaced in code before the MCP tool runs.",
+                "api/app/agent/agent.py · run_tool()", "Prevents one customer's data leaking into another's conversation.", Tag: "MCP"),
+            new(4, "Tool call 2 of 3: save_draft", "Creates a renewal draft for C-204",
+                @<div><pre class="code">{ "status": "PENDING_APPROVAL", "customer_id": "C-204" }</pre><span><span class="verdict pass">allowed</span>@Budget(2)</span></div>,
+                "Drafts are always saved as PENDING_APPROVAL. A human agent has to approve them in the workspace.",
+                "api/app/agent/tools.py · save_draft()", Tag: "MCP"),
+            new(4, "Tool call 3 of 3: simulate_send", "Tries to send the draft straight away",
+                @<div><pre class="code">{ "error": "409: BLOCKED: draft must be approved by the agent before sending" }</pre><span><span class="verdict fail">refused by the API</span>@Budget(3)</span></div>,
+                "The tool calls the same send endpoint as the Send button. It refuses because no human approved the draft.",
+                "api/app/main.py · send_draft()", "The model can never send a message by itself.", "stop", "MCP"),
+            new(3, "Call 4 is cut off", "limit_tool_calls sets context.terminate = True",
+                @<span><span class="verdict fail">terminated</span>@Budget(3, over: true) no fourth call runs</span>,
+                "The model tries one more call. The SK filter stops the loop because the 3-call budget is used up. The plugin also counts calls as a second check.",
+                "api/app/agent/agent.py · limit_tool_calls(), SaathiPlugin.call()", "Bounds cost and stops runaway tool loops.", "stop", "Semantic Kernel"),
+            new(8, "Safe response", "Draft is waiting for approval, nothing was sent",
+                @<div class="stream">Draft created and waiting for your approval.</div>,
+                "The agent gets a plain result. The draft appears in the Renewal draft card, and the audit chain shows every attempt.",
+                "api/app/agent/agent.py · run_agent()"),
+        },
+        "This scenario shows the rules that hold even when the model asks for too much.",
+        new() { ("Allowlist", "lookup_customer, worklist, search_knowledge_base, save_draft, simulate_send"), ("Budget", "3 tool calls"), ("Send rule", "Only after human approval and with consent") });
+
+    // ---------- 4. OCR ingestion ----------
+
+    private static readonly List<PathMap.Node> OcrNodes = new()
+    {
+        new("PNG", "Scan"), new("BLOB", "Blob"), new("DS", "Data source"), new("OCR", "OCR skill"),
+        new("MRG", "Merge"), new("EMB", "Embedding"), new("IDX", "Indexer"), new("SRCH", "Main index"),
+    };
+
+    private Scenario Ocr() => new(
+        "OCR ingestion", "How a scanned endorsement becomes a citable clause", "python rag/azure/ocr_pipeline.py all",
+        "Document", "endorsement_health_gold_air_ambulance.png", "Ingestion path", "AI Search indexer", OcrNodes,
+        new()
+        {
+            new(0, "A scanned endorsement", "An image only. There is no text to search yet.",
+                @<img class="scan-img" src="img/endorsement_health_gold_air_ambulance.png" alt="Scanned Health Gold endorsement E-17 about air ambulance cover" />,
+                "Endorsements often arrive as scans. Without OCR they are pixels, and search cannot find anything in them.",
+                "rag/corpus/scanned/endorsement_health_gold_air_ambulance.png"),
+            new(1, "Upload to Blob Storage", "Container saathi-scans, with citation metadata on the blob",
+                Code("source_id: SCAN-HEALTH-GOLD-END-17\nclause_id: CL-AIR-01\nproduct:   Health\ntier:      Gold\nversion:   v1"),
+                "The metadata carries the citation fields, so the clause can be cited exactly like a typed one.",
+                "rag/azure/ocr_pipeline.py · upload()", Tag: "Azure Blob", Ms: "0.4 s"),
+            new(2, "Data source", "saathi-ocr-blob points the indexer at the container",
+                Code("SearchIndexerDataSourceConnection(name=\"saathi-ocr-blob\", type=\"azureblob\", container=\"saathi-scans\")"),
+                "AI Search pulls from the container on each indexer run.",
+                "rag/azure/ocr_pipeline.py · build_definitions()", Tag: "Azure AI Search"),
+            new(3, "OCR skill reads the image", "Skillset saathi-ocr-skillset, step 1",
+                @<div class="ocr-box"><img class="scan-img" src="img/endorsement_health_gold_air_ambulance.png" alt="" /><div class="sweep"></div></div>,
+                "The OCR skill finds the printed lines in the picture and returns them as text.",
+                "rag/azure/ocr_pipeline.py · OcrSkill", "Free tier covers 20 images per indexer per day.", Tag: "OCR", Ms: "2.1 s",
+                Stream: "POLICY ENDORSEMENT E-17 | HEALTH GOLD\nAir ambulance transfer to the nearest network hospital is covered up to INR 2.5 lakh per policy year when the treating doctor advises it in writing."),
+            new(4, "Merge skill", "Puts the OCR text back into the document text",
+                Code("/document/merged_text = \"POLICY ENDORSEMENT E-17 | HEALTH GOLD Air ambulance transfer …\""),
+                "The merge skill inserts the OCR text into the document content, so each clause has one text field.",
+                "rag/azure/ocr_pipeline.py · MergeSkill", Tag: "skill"),
+            new(5, "Embedding skill", "text-embedding-3-small, 1,536 dimensions, same model as the typed clauses",
+                @<div class="vec">[0.0123, -0.0481, 0.0277, 0.0019, -0.0315, 0.0642, … 1,530 more]</div>,
+                "Using the same embedding model keeps scanned and typed clauses comparable in vector search.",
+                "rag/azure/ocr_pipeline.py · AzureOpenAIEmbeddingSkill", Tag: "Azure OpenAI", Ms: "0.3 s"),
+            new(6, "Indexer writes the document", "saathi-ocr-indexer maps fields into the main index",
+                Code("id           <- metadata_storage_path (base64)\nsource_id    <- SCAN-HEALTH-GOLD-END-17\nclause_id    <- CL-AIR-01\ntext         <- /document/merged_text\nembedding    <- /document/embedding"),
+                "The scanned clause lands in the same index the app already searches, with the same citation fields.",
+                "rag/azure/ocr_pipeline.py · SearchIndexer, setup_and_run()", Tag: "Azure AI Search", Ms: "4.8 s"),
+            new(7, "Searchable and citable", "search = \"air ambulance\" now finds the scan",
+                @<div>
+                    @Hits(new[] { ("SCAN-HEALTH-GOLD-END-17#CL-AIR-01", 0.91, "Air ambulance transfer to the nearest network hospital is covered up to INR 2.5 lakh per policy year when the treating doctor advises it in writing.", true) })
+                    <p class="muted" style="margin-top:6px">Try it in the workspace: load C-311 and ask "Is air ambulance covered for Health Gold?"</p>
+                </div>,
+                "Nothing in the typed corpus mentions air ambulance, so a cited answer proves the text came through OCR.",
+                "rag/azure/ocr_pipeline.py · verify()", "Scanned paperwork becomes part of the knowledge base with no manual typing."),
+        },
+        "This runs once, offline, when new scans arrive. After it finishes, the scanned clause is searchable like any other.",
+        new() { ("Container", "saathi-scans"), ("Skillset", "OCR → Merge → Embedding"), ("Indexer", "saathi-ocr-indexer → main index"), ("Sample scans", "SCAN-HEALTH-GOLD-END-17, SCAN-MOTOR-GOLD-END-22") });
+}

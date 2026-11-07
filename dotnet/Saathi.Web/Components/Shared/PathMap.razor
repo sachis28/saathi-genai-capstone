@@ -1,0 +1,30 @@
+@* The request path strip: one box per service, a dot that moves to the active box. *@
+<div class="path-wrap">
+    <div class="path-cap"><span>@Caption</span><span>@Route</span></div>
+    <div class="path" style="--n:@Nodes.Count">
+        @if (Lit >= 0)
+        {
+            <div class="fill" style="left:@Pos(0); width:@Span(Lit)"></div>
+            <div class="packet" style="left:@Pos(Lit); @(Stopped ? "background:var(--red)" : "")"></div>
+        }
+        @for (var i = 0; i < Nodes.Count; i++)
+        {
+            var cls = i == Lit ? (Stopped ? "stop" : "lit") : i < Lit ? "past" : "";
+            <div class="pn @cls"><b>@Nodes[i].Code</b><span>@Nodes[i].Label</span></div>
+        }
+    </div>
+</div>
+
+@code {
+    public record Node(string Code, string Label);
+
+    [Parameter, EditorRequired] public List<Node> Nodes { get; set; } = new();
+    [Parameter] public int Lit { get; set; } = -1;
+    [Parameter] public bool Stopped { get; set; }
+    [Parameter] public string Caption { get; set; } = "Request path";
+    [Parameter] public string Route { get; set; } = "";
+
+    // Columns are equal, so node i's centre sits at (i + 0.5) / n of the inner width.
+    private string Pos(int i) => FormattableString.Invariant($"calc(6px + (100% - 12px) * {(i + 0.5) / Nodes.Count:0.####})");
+    private string Span(int i) => FormattableString.Invariant($"calc((100% - 12px) * {(double)i / Nodes.Count:0.####})");
+}

@@ -38,6 +38,9 @@ public class CopilotHttpClient : ICopilotClient
         return result;
     }
 
+    public Task<ApiResult<AgentChatResponse>> AgentChatAsync(ChatRequest request) =>
+        CallAsync<AgentChatResponse>(() => _http.PostAsJsonAsync("/agent/chat", request));
+
     public Task<ApiResult<Draft>> CreateDraftAsync(string customerId) =>
         CallAsync<Draft>(() => _http.PostAsJsonAsync("/drafts", new { customer_id = customerId }));
 

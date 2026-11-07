@@ -7,6 +7,7 @@ public interface ICopilotClient
     Task<bool> HealthAsync();
     Task<ApiResult<Customer>> GetCustomerAsync(string customerId);
     Task<ApiResult<ChatResponse>> ChatAsync(ChatRequest request);
+    Task<ApiResult<AgentChatResponse>> AgentChatAsync(ChatRequest request);
 
     Task<ApiResult<Draft>> CreateDraftAsync(string customerId);
     Task<ApiResult<Draft>> ApproveDraftAsync(string draftId);

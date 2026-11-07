@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Saathi.Client;
@@ -17,7 +18,20 @@ public record ChatResponse(
     [property: JsonPropertyName("intent")] string Intent,
     [property: JsonPropertyName("citations")] List<Citation> Citations,
     [property: JsonPropertyName("session_id")] string SessionId,
-    [property: JsonPropertyName("comparison")] Comparison? Comparison = null);
+    [property: JsonPropertyName("comparison")] Comparison? Comparison = null,
+    [property: JsonPropertyName("resolved_question")] string? ResolvedQuestion = null);
+
+// POST /agent/chat: the Semantic Kernel agent's answer plus one entry per MCP tool call.
+public record AgentToolCall(
+    [property: JsonPropertyName("tool")] string Tool,
+    [property: JsonPropertyName("args")] Dictionary<string, JsonElement> Args,
+    [property: JsonPropertyName("ok")] bool Ok);
+
+public record AgentChatResponse(
+    [property: JsonPropertyName("answer")] string Answer,
+    [property: JsonPropertyName("citations")] List<Citation> Citations,
+    [property: JsonPropertyName("trace")] List<AgentToolCall> Trace,
+    [property: JsonPropertyName("orchestrator")] string Orchestrator);
 
 public record ComparisonCell(
     [property: JsonPropertyName("text")] string Text,
@@ -38,7 +52,10 @@ public record Customer(
     [property: JsonPropertyName("customer_id")] string CustomerId,
     [property: JsonPropertyName("name")] string Name,
     [property: JsonPropertyName("product")] string Product,
-    [property: JsonPropertyName("tier")] string Tier);
+    [property: JsonPropertyName("tier")] string Tier,
+    [property: JsonPropertyName("consent")] bool? Consent = null,
+    [property: JsonPropertyName("renewal_date")] string? RenewalDate = null,
+    [property: JsonPropertyName("policy_status")] string? PolicyStatus = null);
 
 public record Draft(
     [property: JsonPropertyName("draft_id")] string DraftId,

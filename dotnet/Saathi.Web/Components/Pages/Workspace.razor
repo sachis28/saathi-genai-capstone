@@ -1,159 +1,281 @@
 @page "/"
 @rendermode InteractiveServer
+@using System.Text.Json
 @using Saathi.Client
 @inject ICopilotClient Client
 @inject ChatSession Session
 
 <PageTitle>Saathi - Agent Workspace</PageTitle>
 
-<div class="ws">
-    <header class="ws-head">
-        <div>
-            <h1>Saathi</h1>
-            <span class="sub">Insurance Agent Copilot</span>
-        </div>
-        <span class="pill @(apiOk == true ? "ok" : apiOk == false ? "bad" : "wait")">
-            API: @(apiOk == true ? "connected" : apiOk == false ? "unreachable" : "checking...")
-        </span>
-    </header>
+<div class="ph">
+    <div>
+        <div class="crumb">Workspace@(customer is null ? "" : $" / Customer {customer.CustomerId}")</div>
+        <h1>@(customer?.Name ?? "Agent workspace")</h1>
+    </div>
+    <span class="status-dot @(apiOk == true ? "ok" : apiOk == false ? "bad" : "")">
+        API @(apiOk == true ? "connected" : apiOk == false ? "unreachable" : "checking...")
+    </span>
+</div>
 
-    @if (error is not null)
-    {
-        <div class="banner err" role="alert">@error</div>
-    }
-    @if (info is not null)
-    {
-        <div class="banner okmsg">@info</div>
-    }
+@if (error is not null)
+{
+    <div class="banner err" role="alert">@error</div>
+}
+@if (info is not null)
+{
+    <div class="banner okmsg">@info</div>
+}
 
-    <section class="card">
-        <h2>1. Customer</h2>
-        <div class="row">
-            <input @bind="customerId" placeholder="Customer ID, e.g. C-204" aria-label="Customer ID" />
-            <button type="button" @onclick="LoadCustomerAsync" disabled="@busy">Load customer</button>
-        </div>
-        @if (customer is not null)
-        {
-            <p class="cust">
-                <strong>@customer.Name</strong> &middot; @customer.Product &middot; @customer.Tier
-                <span class="muted">(@customer.CustomerId)</span>
-            </p>
-        }
-    </section>
+<section class="card cust" aria-label="Customer summary">
+    <div class="kv"><div class="k">Customer ID</div><div class="v">@(customer?.CustomerId ?? "-")</div></div>
+    <div class="kv"><div class="k">Plan</div><div class="v">@(customer is null ? "-" : $"{customer.Product} · {customer.Tier}")</div></div>
+    <div class="kv"><div class="k">Renewal date</div><div class="v">@(customer?.RenewalDate ?? "-")</div></div>
+    <div class="kv"><div class="k">Policy status</div><div class="v">
+        @if (customer?.PolicyStatus is { } ps) { <span class="badge @(ps is "ACTIVE" ? "g" : ps is "IN_GRACE" ? "a" : "r")">@ps</span> } else { <text>-</text> }
+    </div></div>
+    <div class="kv"><div class="k">Consent</div><div class="v">
+        @if (customer?.Consent is { } consent) { <span class="badge @(consent ? "g" : "r")">@(consent ? "Given" : "Declined")</span> } else { <text>-</text> }
+    </div></div>
+    <div class="load-row">
+        <input type="text" id="customer-id" @bind="customerId" placeholder="e.g. C-204" aria-label="Customer ID" />
+        <button type="button" class="sec" @onclick="LoadCustomerAsync" disabled="@busy">Load</button>
+    </div>
+</section>
 
-    <section class="card">
-        <h2>2. Ask Saathi</h2>
-        <div class="chat">
-            @if (messages.Count == 0)
-            {
-                <p class="muted">Load a customer, then ask a policy question. Follow-up questions like "and what about Platinum?" work too.</p>
-            }
-            @foreach (var m in messages)
-            {
-                <div class="msg @m.Role">
-                    <div class="who">@(m.Role == "agent" ? "You" : "Saathi")</div>
-                    @if (m.Comparison is { } cmp)
-                    {
-                        <div>@($"{cmp.Product} {string.Join(" vs ", cmp.Tiers)}, from the policy clauses")</div>
-                        <table class="compare">
-                            <thead><tr><th></th>@foreach (var t in cmp.Tiers) { <th>@t</th> }</tr></thead>
-                            <tbody>
-                                @foreach (var row in cmp.Rows)
-                                {
-                                    <tr>
-                                        <th>@row.Aspect</th>
-                                        @foreach (var t in cmp.Tiers)
-                                        {
-                                            var cell = row.Cells.GetValueOrDefault(t);
-                                            <td>
-                                                @if (cell is null) { <span class="muted">Not stated</span> }
-                                                else
-                                                {
-                                                    <div>@cell.Text</div>
-                                                    <span class="chip" title="Version @cell.Version">@($"{cell.SourceId}#{cell.ClauseId}")</span>
-                                                }
-                                            </td>
-                                        }
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    }
-                    else
-                    {
-                        <div style="white-space: pre-line">@m.Text</div>
-                    }
-                    @if (m.Comparison is null && m.Citations.Count > 0)
-                    {
-                        <div class="chips">
-                            @foreach (var c in m.Citations)
-                            {
-                                <span class="chip" title="Version @c.Version">@($"{c.SourceId}#{c.ClauseId}")</span>
-                            }
-                        </div>
-                    }
-                </div>
-            }
-        </div>
-        <div class="row">
-            <input @bind="question" @bind:event="oninput" @onkeydown="OnKeyAsync"
-                   placeholder="Ask about this customer's policy..." aria-label="Question"
-                   disabled="@(customer is null)" />
-            <button type="button" @onclick="AskAsync" disabled="@(busy || customer is null)">Ask</button>
-        </div>
-    </section>
-
-    <section class="card">
-        <h2>3. Renewal draft</h2>
-        <div class="row">
-            <button type="button" @onclick="CreateDraftAsync" disabled="@(busy || customer is null)">Create renewal draft</button>
-        </div>
-        @if (draft is not null)
-        {
-            <div class="draft">
-                <div class="status @StatusClass(draft.Status)">@draft.Status</div>
-                <p>@draft.Message</p>
-                <div class="chips">
-                    @foreach (var c in draft.Citations)
-                    {
-                        <span class="chip">@($"{c.SourceId}#{c.ClauseId}")</span>
-                    }
-                </div>
-                <div class="row">
-                    <button type="button" class="approve" @onclick="ApproveAsync" disabled="@busy">Approve</button>
-                    <button type="button" class="send" @onclick="SendAsync" disabled="@busy">Send</button>
-                </div>
-                <p class="muted">The Send button stays clickable on purpose. The server decides whether sending is allowed.</p>
+<div class="cols">
+    <section class="card" aria-label="Chat">
+        <div class="card-h">
+            <h2>Ask Saathi</h2>
+            <div class="seg" role="group" aria-label="Answer mode">
+                <button type="button" class="@(agentMode ? "" : "on")" @onclick="() => agentMode = false">Ask (RAG)</button>
+                <button type="button" class="@(agentMode ? "on" : "")" @onclick="() => agentMode = true">Agent (Semantic Kernel)</button>
             </div>
-        }
+        </div>
+        <div class="chat">
+            @if (turns.Count == 0)
+            {
+                <p class="muted">Load a customer, then ask a policy question. Follow-ups like "and what about Gold?" work too. The trace on the right shows each step Saathi took.</p>
+            }
+            @for (var i = 0; i < turns.Count; i++)
+            {
+                var t = turns[i];
+                var idx = i;
+                <div class="msg agent"><div class="who">You@(t.Agent ? " · agent mode" : "")</div>@t.Question</div>
+                @if (t.Pending)
+                {
+                    <div class="msg saathi"><div class="who">Saathi</div><span class="typing"><i></i><i></i><i></i></span></div>
+                }
+                else
+                {
+                    <div class="msg saathi @(t.Blocked ? "blocked" : "") @(idx == selected ? "selected" : "")">
+                        <div class="who">Saathi</div>
+                        @if (t.Comparison is { } cmp)
+                        {
+                            <div>@($"{cmp.Product} {string.Join(" vs ", cmp.Tiers)}, from the policy clauses")</div>
+                            <table class="compare">
+                                <thead><tr><th></th>@foreach (var tier in cmp.Tiers) { <th>@tier</th> }</tr></thead>
+                                <tbody>
+                                    @foreach (var row in cmp.Rows)
+                                    {
+                                        <tr>
+                                            <th>@row.Aspect</th>
+                                            @foreach (var tier in cmp.Tiers)
+                                            {
+                                                var cell = row.Cells.GetValueOrDefault(tier);
+                                                <td>
+                                                    @if (cell is null) { <span class="muted">Not stated</span> }
+                                                    else { <div>@cell.Text</div><span class="cite" title="Version @cell.Version">@($"{cell.SourceId}#{cell.ClauseId}")</span> }
+                                                </td>
+                                            }
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <div style="white-space: pre-line">@t.Answer</div>
+                        }
+                        <div class="meta">
+                            @if (t.Comparison is null)
+                            {
+                                @foreach (var c in t.Citations)
+                                {
+                                    <span class="cite @(IsScan(c) ? "scan" : "")" title="@CiteTitle(c)">@($"{c.SourceId}#{c.ClauseId}")</span>
+                                }
+                            }
+                            <button type="button" class="link-btn" @onclick="() => ShowTraceAsync(idx)">View trace</button>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+        <div class="ask">
+            <div class="chips">
+                @foreach (var s in Suggestions)
+                {
+                    <button type="button" disabled="@(busy || customer is null)" @onclick="() => AskAsync(s)">@s</button>
+                }
+            </div>
+            <div class="ask-row">
+                <input type="text" id="question" @bind="question" @bind:event="oninput" @onkeydown="OnKeyAsync"
+                       placeholder="@(agentMode ? "Ask the agent, e.g. Is air ambulance covered?" : "Ask about this customer's policy")" aria-label="Question"
+                       disabled="@(customer is null)" />
+                <button type="button" @onclick="() => AskAsync(question)" disabled="@(busy || customer is null)">Send</button>
+            </div>
+        </div>
     </section>
 
-    <section class="card">
-        <h2>4. Audit trail</h2>
-        <div class="row">
-            <button type="button" @onclick="VerifyAuditAsync" disabled="@busy">Verify audit chain</button>
+    <section class="card" aria-label="Answer trace">
+        <div class="card-h">
+            <h2>Answer trace</h2>
+            <div class="btns">
+                <a href="how-it-works" class="muted">Full walkthrough</a>
+                <button type="button" class="sec small" disabled="@(selected < 0 || turns[selected].Pending)" @onclick="() => ShowTraceAsync(selected)">Replay</button>
+            </div>
         </div>
-        @if (audit is not null)
-        {
-            @if (audit.Valid)
+        <div class="trace">
+            @if (selected < 0)
             {
-                <p class="okmsg-text">Chain is valid. @audit.TotalEvents events, none changed.</p>
+                <p class="muted">Ask a question to see the request move through guardrails, memory, the intent model, Azure AI Search and Azure OpenAI. Switch to Agent mode to watch Semantic Kernel call the MCP tools.</p>
             }
             else
             {
-                <p class="err-text">Chain is BROKEN at event #@audit.BrokenAtSeq of @audit.TotalEvents.</p>
+                var t = turns[selected];
+                <div class="q-banner">Question: <b>@t.Question</b></div>
+                <PathMap Nodes="@(t.Agent ? AgentNodes : RagNodes)" Lit="@LitNode(t)" Stopped="@(t.Blocked && shown >= t.Steps.Count)"
+                         Route="@(t.Agent ? "POST /agent/chat" : "POST /chat")" />
+                <ol class="steps">
+                    @for (var i = 0; i < t.Steps.Count; i++)
+                    {
+                        var s = t.Steps[i];
+                        var state = t.Pending ? "" : i < shown ? s.Final : i == shown ? "active" : "";
+                        <li class="step @state">
+                            <div class="node">@(state == "done" ? "✓" : state == "stop" ? "!" : (i + 1).ToString())</div>
+                            <div class="body">
+                                <div class="row1"><h3>@s.Title @if (s.Tag is not null) { <span class="src">@s.Tag</span> }</h3></div>
+                                <div class="what">@s.What</div>
+                                @if (state != "" && s.Detail is not null)
+                                {
+                                    <div class="detail">@s.Detail</div>
+                                }
+                            </div>
+                        </li>
+                    }
+                </ol>
+                <div class="legend">
+                    <span>Built from the live API response.</span>
+                    <span><span class="cite scan">SCAN-…</span> clause read by OCR from a scanned endorsement</span>
+                </div>
             }
-        }
+        </div>
+    </section>
+</div>
+
+<div class="lower">
+    <section class="card" aria-label="Renewal draft">
+        <div class="card-h">
+            <h2>Renewal draft</h2>
+            @if (draft is not null) { <span class="badge @StatusBadge(draft.Status)">@draft.Status</span> }
+        </div>
+        <div class="pad">
+            <div class="flow">
+                <span class="st @(draft is null ? "on" : "")">Draft</span><span class="ar">→</span>
+                <span class="st @(draft?.Status == "PENDING_APPROVAL" ? "on" : "")">Pending approval</span><span class="ar">→</span>
+                <span class="st @(draft?.Status == "APPROVED" ? "on" : "")">Approved</span><span class="ar">→</span>
+                <span class="st @(draft?.Status == "SIMULATED_SENT" ? "on" : "")">Sent (simulated)</span>
+            </div>
+            @if (draft is not null)
+            {
+                <div class="draft">
+                    @draft.Message
+                    <div class="meta">
+                        @foreach (var c in draft.Citations) { <span class="cite">@($"{c.SourceId}#{c.ClauseId}")</span> }
+                    </div>
+                </div>
+                <div class="btns">
+                    <button type="button" class="ok" @onclick="ApproveAsync" disabled="@busy">Approve</button>
+                    <button type="button" class="sec" @onclick="SendAsync" disabled="@busy">Send</button>
+                </div>
+                <p class="muted">The Send button stays clickable on purpose. The server decides whether sending is allowed.</p>
+            }
+            else
+            {
+                <div class="btns"><button type="button" @onclick="CreateDraftAsync" disabled="@(busy || customer is null)">Create renewal draft</button></div>
+            }
+        </div>
+    </section>
+
+    <section class="card" aria-label="Audit trail">
+        <div class="card-h">
+            <h2>Audit trail</h2>
+            @if (audit is not null) { <span class="badge @(audit.Valid ? "g" : "r")">@(audit.Valid ? "Chain valid" : "Chain broken")</span> }
+        </div>
+        <div class="pad">
+            @if (audit is not null)
+            {
+                @if (audit.Valid)
+                {
+                    <p class="muted">@audit.TotalEvents hash-chained events, none changed.</p>
+                }
+                else
+                {
+                    <p class="muted" style="color:var(--red)">Chain is BROKEN at event #@audit.BrokenAtSeq of @audit.TotalEvents.</p>
+                }
+            }
+            else
+            {
+                <p class="muted">Every chat, tool call, draft and send is written to a hash-chained log.</p>
+            }
+            <div class="btns"><button type="button" class="sec" @onclick="VerifyAuditAsync" disabled="@busy">Verify audit chain</button></div>
+        </div>
     </section>
 </div>
 
 @code {
-    private record Message(string Role, string Text, List<Citation> Citations, Comparison? Comparison = null);
+    // One step in the answer trace. Final is the state it ends in: done, stop or skip.
+    private record Step(string Title, string What, RenderFragment? Detail, string Final = "done", string? Tag = null, int Node = 0);
+
+    private class Turn
+    {
+        public required string Question { get; init; }
+        public bool Agent { get; init; }
+        public bool Pending { get; set; } = true;
+        public bool Blocked { get; set; }
+        public string Answer { get; set; } = "";
+        public List<Citation> Citations { get; set; } = new();
+        public Comparison? Comparison { get; set; }
+        public List<Step> Steps { get; set; } = new();
+    }
+
+    private static readonly List<PathMap.Node> RagNodes = new()
+    {
+        new("UI", "Blazor"), new("API", "FastAPI"), new("SAFE", "Guardrails"), new("MEM", "Rewrite"),
+        new("ML", "Intent"), new("AIS", "AI Search"), new("AOAI", "OpenAI"), new("RES", "Response"),
+    };
+
+    private static readonly List<PathMap.Node> AgentNodes = new()
+    {
+        new("UI", "Blazor"), new("API", "FastAPI"), new("SAFE", "Guardrails"), new("SK", "Kernel"),
+        new("MCP", "MCP tools"), new("AIS", "AI Search"), new("AOAI", "OpenAI"), new("RES", "Response"),
+    };
+
+    private static readonly string[] Suggestions =
+    {
+        "What is the waiting period for pre-existing diseases?",
+        "and what about Gold?",
+        "Compare Silver and Gold",
+        "Is air ambulance covered for Health Gold?",
+    };
 
     private string customerId = "C-204";
     private string question = "";
     private Customer? customer;
-    private readonly List<Message> messages = new();
+    private readonly List<Turn> turns = new();
+    private int selected = -1;
+    private int shown;
+    private int playId;
+    private bool agentMode;
     private Draft? draft;
     private AuditStatus? audit;
     private string? error;
@@ -175,14 +297,8 @@
         busy = true;
         error = null;
         info = null;
-        try
-        {
-            await work();
-        }
-        finally
-        {
-            busy = false;
-        }
+        try { await work(); }
+        finally { busy = false; }
     }
 
     private async Task LoadCustomerAsync() => await Run(async () =>
@@ -192,7 +308,8 @@
         {
             customer = r.Data;
             draft = null;
-            messages.Clear();
+            turns.Clear();
+            selected = -1;
         }
         else
         {
@@ -204,26 +321,200 @@
     private async Task OnKeyAsync(KeyboardEventArgs e)
     {
         if (e.Key == "Enter" && !busy)
-            await AskAsync();
+            await AskAsync(question);
     }
 
-    private async Task AskAsync()
+    private async Task AskAsync(string text)
     {
-        if (customer is null || string.IsNullOrWhiteSpace(question))
+        if (customer is null || string.IsNullOrWhiteSpace(text))
             return;
 
-        var q = question.Trim();
+        var q = text.Trim();
         question = "";
-        messages.Add(new Message("agent", q, new List<Citation>()));
+        var turn = new Turn { Question = q, Agent = agentMode };
+        turns.Add(turn);
+        selected = turns.Count - 1;
+        shown = 0;
 
         await Run(async () =>
         {
-            var r = await Client.ChatAsync(new ChatRequest(customer.CustomerId, q, Session.SessionId));
-            if (r.Success)
-                messages.Add(new Message("saathi", r.Data!.Answer, r.Data.Citations, r.Data.Comparison));
+            if (turn.Agent)
+            {
+                var r = await Client.AgentChatAsync(new ChatRequest(customer.CustomerId, q, Session.SessionId));
+                if (r.Success)
+                {
+                    turn.Answer = r.Data!.Answer;
+                    turn.Citations = r.Data.Citations;
+                    turn.Steps = AgentSteps(q, customer.CustomerId, r.Data);
+                }
+                else if (r.Error?.Contains("BLOCKED") == true)
+                {
+                    turn.Blocked = true;
+                    turn.Answer = r.Error;
+                    turn.Steps = AgentSteps(q, customer.CustomerId, null);
+                }
+                else error = r.Error;
+            }
             else
-                error = r.Error;
+            {
+                var r = await Client.ChatAsync(new ChatRequest(customer.CustomerId, q, Session.SessionId));
+                if (r.Success)
+                {
+                    var d = r.Data!;
+                    turn.Answer = d.Answer;
+                    turn.Citations = d.Citations;
+                    turn.Comparison = d.Comparison;
+                    turn.Blocked = d.Intent == "prompt_injection";
+                    turn.Steps = RagSteps(q, d);
+                }
+                else error = r.Error;
+            }
         });
+
+        turn.Pending = false;
+        if (turn.Steps.Count == 0)
+        {
+            turns.Remove(turn);
+            selected = turns.Count - 1;
+            return;
+        }
+        await ShowTraceAsync(selected);
+    }
+
+    // Reveal the trace one step at a time, so the demo shows the order things happen in.
+    private async Task ShowTraceAsync(int index)
+    {
+        if (index < 0 || index >= turns.Count) return;
+        var id = ++playId;
+        selected = index;
+        var steps = turns[index].Steps;
+        for (shown = 0; shown <= steps.Count; shown++)
+        {
+            StateHasChanged();
+            if (shown == steps.Count) break;
+            await Task.Delay(steps[shown].Final == "skip" ? 120 : 550);
+            if (id != playId) return;
+        }
+    }
+
+    private int LitNode(Turn t)
+    {
+        if (t.Pending || t.Steps.Count == 0) return 1;
+        if (shown >= t.Steps.Count) return t.Blocked ? 2 : (t.Agent ? AgentNodes : RagNodes).Count - 1;
+        return t.Steps[shown].Node;
+    }
+
+    private static string CiteTitle(Citation c) =>
+        $"Version {c.Version}" + (IsScan(c) ? " · read by OCR from a scanned endorsement" : "");
+
+    private static bool IsScan(Citation c) => c.SourceId.StartsWith("SCAN-", StringComparison.OrdinalIgnoreCase);
+
+    private RenderFragment CiteChips(List<Citation> cites) => @<div class="meta">
+        @foreach (var c in cites)
+        {
+            <span class="cite @(IsScan(c) ? "scan" : "")">@($"{c.SourceId}#{c.ClauseId} · {c.Version}")</span>
+            @if (IsScan(c)) { <span class="badge a">from OCR scan</span> }
+        }
+    </div>;
+
+    private List<Step> RagSteps(string q, ChatResponse d)
+    {
+        var steps = new List<Step>();
+        if (d.Intent == "prompt_injection")
+        {
+            steps.Add(new("Guardrails", "Prompt-injection check before retrieval or the LLM",
+                @<span><span class="verdict fail">Blocked</span>This looks like a prompt-injection attempt. Nothing after this step ran.</span>, "stop", Node: 2));
+            foreach (var (title, node) in new[] { ("Follow-up rewrite", 3), ("Intent classification", 4), ("Clause retrieval", 5), ("Grounded answer", 6) })
+                steps.Add(new(title, "", @<span>Skipped. The guardrail stopped this question.</span>, "skip", Node: node));
+            return steps;
+        }
+        if (d.Intent == "out_of_scope" && d.Citations.Count == 0)
+        {
+            steps.Add(new("Guardrails", "Off-topic check", @<span><span class="verdict warn">Redirected</span>Not an insurance question, so Saathi replied with a polite redirect and did not search.</span>, Node: 2));
+            steps.Add(new("Clause retrieval", "", @<span>Skipped. Off-topic questions are not searched.</span>, "skip", Node: 5));
+            return steps;
+        }
+
+        steps.Add(new("Guardrails", "Prompt-injection and off-topic checks",
+            @<span><span class="verdict pass">Passed</span>Policy question for @customer?.CustomerId.</span>, Node: 2));
+
+        var resolved = d.ResolvedQuestion;
+        steps.Add(new("Follow-up rewrite", "Chat memory completes short follow-ups",
+            resolved is not null && !string.Equals(resolved, q, StringComparison.OrdinalIgnoreCase)
+                ? @<div class="rewrite"><div class="from">@q</div><div>→ @resolved</div></div>
+                : @<span class="muted">Already a complete question. No rewrite needed.</span>, Tag: "memory", Node: 3));
+
+        steps.Add(new("Intent classification", "tfidf_lr model, 5 intent classes",
+            @<span>Predicted intent <span class="badge b">@d.Intent</span></span>, Tag: "ML", Node: 4));
+
+        if (d.Comparison is { } cmp)
+        {
+            steps.Add(new("Clause retrieval", "Azure AI Search, one search per tier",
+                @<span>Built a @string.Join(" vs ", cmp.Tiers) table with @cmp.Rows.Count rows, every cell cited.</span>, Tag: "Azure AI Search", Node: 5));
+        }
+        else if (d.Citations.Count > 0)
+        {
+            steps.Add(new("Clause retrieval", $"Azure AI Search, top 5, filtered to {customer?.Product}",
+                @<span>@d.Citations.Count clause@(d.Citations.Count == 1 ? "" : "s") used for the answer.</span>, Tag: "Azure AI Search", Node: 5));
+            steps.Add(new("Grounded answer", "Azure OpenAI writes only from the retrieved clauses",
+                @<div class="stream">@d.Answer</div>, Tag: "Azure OpenAI", Node: 6));
+        }
+        else
+        {
+            steps.Add(new("Answer source", "Customer record or not found",
+                @<span>No clauses were cited. The answer came from the customer's record, or the policy documents did not cover it.</span>, Node: 6));
+        }
+
+        if (d.Citations.Count > 0 || d.Comparison is not null)
+        {
+            var cites = d.Comparison is { } c2
+                ? c2.Rows.SelectMany(r => r.Cells.Values).Where(v => v is not null).Select(v => new Citation(v!.SourceId, v.ClauseId, v.Version)).Distinct().ToList()
+                : d.Citations;
+            steps.Add(new("Citations", "Versioned clause references", CiteChips(cites), Node: 7));
+        }
+        return steps;
+    }
+
+    private List<Step> AgentSteps(string q, string customerIdForRun, AgentChatResponse? d)
+    {
+        var steps = new List<Step>();
+        if (d is null)
+        {
+            steps.Add(new("Guardrails", "Prompt-injection check", @<span><span class="verdict fail">Blocked</span>The API refused the request before the kernel was built.</span>, "stop", Node: 2));
+            steps.Add(new("Semantic Kernel", "", @<span>Skipped.</span>, "skip", Node: 3));
+            return steps;
+        }
+
+        steps.Add(new("Guardrails", "Prompt-injection check", @<span><span class="verdict pass">Passed</span></span>, Node: 2));
+        steps.Add(new("Semantic Kernel", "Kernel with the saathi plugin and a tool-limit filter",
+            @<span>Orchestrator <span class="badge v">@d.Orchestrator</span>. The five MCP tools are registered as one plugin. The model may call at most 3.</span>, Tag: "SK", Node: 3));
+
+        for (var i = 0; i < d.Trace.Count; i++)
+        {
+            var call = d.Trace[i];
+            var n = i + 1;
+            var args = string.Join(", ", call.Args
+                .Where(a => !(a.Value.ValueKind == JsonValueKind.String && a.Value.GetString() == ""))
+                .Select(a => $"{a.Key}: {a.Value.GetRawText()}"));
+            var scoped = call.Args.ContainsKey("customer_id");
+            steps.Add(new($"Tool call {n} of 3: {call.Tool}", "MCP tool invoked through the SK plugin",
+                @<div>
+                    <pre class="code">@($"{call.Tool}({args})")</pre>
+                    <span>
+                        @if (call.Ok) { <span class="verdict pass">ok</span> } else { <span class="verdict fail">refused</span> }
+                        @if (scoped) { <span class="muted">customer_id is forced to @customerIdForRun in code</span> }
+                        <span class="budget">@for (var b = 0; b < 3; b++) { <i class="@(b < n ? "used" : "")"></i> }</span>
+                    </span>
+                </div>, call.Ok ? "done" : "stop", "MCP", call.Tool == "search_knowledge_base" ? 5 : 4));
+        }
+        if (d.Trace.Count == 0)
+            steps.Add(new("Tool calls", "", @<span class="muted">The planner did not call any tool.</span>, Node: 4));
+
+        steps.Add(new("Grounded answer", "generate_answer applies the grounding shield",
+            @<div class="stream">@d.Answer</div>, Tag: "Azure OpenAI", Node: 6));
+        if (d.Citations.Count > 0)
+            steps.Add(new("Citations", "Only clauses the search tool returned", CiteChips(d.Citations), Node: 7));
+        return steps;
     }
 
     private async Task CreateDraftAsync() => await Run(async () =>
@@ -250,11 +541,11 @@
         if (r.Success) audit = r.Data; else error = r.Error;
     });
 
-    private static string StatusClass(string status) => status switch
+    private static string StatusBadge(string status) => status switch
     {
-        "PENDING_APPROVAL" => "pending",
-        "APPROVED" => "approved",
-        "SIMULATED_SENT" => "sent",
-        _ => "blocked"
+        "PENDING_APPROVAL" => "a",
+        "APPROVED" => "b",
+        "SIMULATED_SENT" => "g",
+        _ => "r"
     };
 }
