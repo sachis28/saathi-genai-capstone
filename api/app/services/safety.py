@@ -1,5 +1,8 @@
+import base64
+import binascii
 import logging
 import re
+import unicodedata
 from typing import List, Tuple
 
 from app.models.schemas import SearchHit
@@ -9,22 +12,54 @@ logger = logging.getLogger("saathi")
 
 # ---------- 1. Prompt injection ----------
 INJECTION = re.compile(
-    r"ignore (all |any )?(previous|prior|above) instructions"
-    r"|disregard (the )?(system|previous) (prompt|instructions)"
-    r"|you are now"
-    r"|reveal (the )?(system prompt|api key|password)"
-    r"|send (the )?(message|draft) without approval"
-    r"|act as (an? )?(admin|developer)",
+    # override: "ignore / forget / disregard / bypass ... instructions / rules / prompt"
+    r"\b(ignore|disregard|forget|override|bypass|skip|drop)\b[\w\s,'-]{0,40}?\b(instructions?|rules|prompts?|guidelines|guardrails|polic(y|ies)|restrictions|safety|filters?)\b"
+    r"|\bnew (instructions|rules|system prompt)\b"
+    r"|\bsystem prompt\b|\b(your|the|hidden|initial) instructions\b"
+    # role play / persona swaps
+    r"|\byou are now\b|\bfrom now on,? you\b|\bpretend (to be|you are|you're)\b|\bact as (an? |the |my )?(admin\w*|developer|system|root|unfiltered|unrestricted|jailbroken|evil|hacker|ceo|underwriter|supervisor|manager)\b|\brole-?play\b"
+    r"|\bdeveloper mode\b|\bjailbreak|\bdo anything now\b|\bDAN\b|\bno (rules|restrictions|limits)\b"
+    # extraction
+    r"|\b(reveal|print|show|repeat|output|leak|dump|tell me)\b[\w\s]{0,20}?\b(api keys?|passwords?|secrets?|credentials|tokens?|text above|everything above|prompt)\b"
+    # approval / consent bypass
+    r"|\bsend\b[\w\s]{0,30}?\bwithout\b[\w\s]{0,15}?\b(approval|approving|consent|review)\b"
+    r"|\b(skip|bypass|disable|turn off)\b[\w\s]{0,20}?\b(approval|consent|review|human)\b"
+    r"|\b(mark|set)\b[\w\s]{0,25}?\bas approved\b|\bauto-?approve\b",
     re.IGNORECASE,
 )
 
+ZERO_WIDTH = re.compile("[\u200b-\u200f\u2060\ufeff\u00ad]")
+LEET = str.maketrans({"0": "o", "1": "i", "3": "e", "4": "a", "5": "s", "7": "t", "@": "a", "$": "s"})
+SPACED = re.compile(r"\b(?:[A-Za-z] ){3,}[A-Za-z]\b")          # "i g n o r e"
+B64 = re.compile(r"[A-Za-z0-9+/]{16,}={0,2}")
+
+
+def _variants(text: str):
+    """The text as written, plus de-obfuscated versions: unicode tricks, leetspeak, spacing, base64."""
+    base = ZERO_WIDTH.sub("", unicodedata.normalize("NFKC", text))
+    yield base
+    yield base.translate(LEET)
+    yield SPACED.sub(lambda m: m.group(0).replace(" ", ""), base)
+    for token in B64.findall(base):
+        try:
+            decoded = base64.b64decode(token + "=" * (-len(token) % 4), validate=True).decode("utf-8")
+        except (binascii.Error, UnicodeDecodeError, ValueError):
+            continue
+        if decoded.isprintable():
+            yield decoded
+
 
 def is_injection(text: str) -> bool:
-    return bool(INJECTION.search(text))
+    return any(INJECTION.search(v) for v in _variants(text))
+
+
+# Only clauses from the official policy library (POL-...) or its scanned endorsements (SCAN-...)
+# may reach the LLM. Anything else in the index (test fixtures, uploads, untrusted docs) is dropped.
+TRUSTED_SOURCE = re.compile(r"^(POL|SCAN)-")
 
 
 def filter_poisoned(hits: List[SearchHit]) -> Tuple[List[SearchHit], int]:
-    clean = [h for h in hits if not is_injection(h.text)]
+    clean = [h for h in hits if TRUSTED_SOURCE.match(h.source_id) and not is_injection(h.text)]
     return clean, len(hits) - len(clean)
 
 

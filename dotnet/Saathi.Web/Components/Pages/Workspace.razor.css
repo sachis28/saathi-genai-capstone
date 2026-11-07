@@ -41,3 +41,7 @@ button.send { background: #b45309; }
 .banner.okmsg { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
 .okmsg-text { color: #166534; font-weight: 600; margin: 0.6rem 0 0; }
 .err-text { color: #991b1b; font-weight: 700; margin: 0.6rem 0 0; }
+.compare { border-collapse: collapse; margin-top: 0.5rem; font-size: 0.9rem; width: 100%; }
+.compare th, .compare td { border: 1px solid #d1d5db; padding: 0.4rem 0.5rem; vertical-align: top; text-align: left; }
+.compare thead th { background: #e5e7eb; }
+.compare td .chip { display: inline-block; margin-top: 0.3rem; }

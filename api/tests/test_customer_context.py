@@ -45,3 +45,12 @@ def test_clause_questions_do_not_hit_the_record():
               "what is covered in this customers policy?",
               "Does the premium increase after a claim?"]:
         assert record_answer(q, GOLD) is None, q
+
+
+from app.services.customer_context import tier_filter  # noqa: E402
+
+
+def test_tier_filter_follows_the_question_then_the_customer():
+    assert tier_filter("What is the ambulance limit under Platinum?", GOLD) == "Platinum"
+    assert tier_filter("What is the ambulance limit?", GOLD) == "Gold"
+    assert tier_filter("Compare Silver and Gold", GOLD) is None

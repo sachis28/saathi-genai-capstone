@@ -27,7 +27,7 @@ def setup(monkeypatch, tmp_path):
     monkeypatch.setenv('LLM_PROVIDER', 'mock')
     from app.services.llm import get_llm
     get_llm.cache_clear()
-    hit = SearchHit(source_id='TEST-POLICY', clause_id='WAIT-01', version='v1', product='Health',
+    hit = SearchHit(source_id='POL-TEST-POLICY', clause_id='WAIT-01', version='v1', product='Health',
                     tier='All', text='The waiting period is 30 days.', score=1.0)
     search = Mock(return_value=[hit])
     monkeypatch.setattr(main, 'get_retriever', lambda: types.SimpleNamespace(search=search))
@@ -43,7 +43,7 @@ def test_chat_preserves_citations_memory_and_predicted_audit_intent(setup):
     assert r.status_code == 200
     body = r.json()
     assert body['intent'] == 'coverage_question'
-    assert body['citations'] == [{'source_id':'TEST-POLICY', 'clause_id':'WAIT-01', 'version':'v1'}]
+    assert body['citations'] == [{'source_id':'POL-TEST-POLICY', 'clause_id':'WAIT-01', 'version':'v1'}]
     assert '30 days' in body['answer'] and 'Dummy' not in body['answer']
     assert client.get('/sessions/ml-integrated').json()[-1]['answer'] == body['answer']
     assert main.audit.read_events()[-1]['data']['intent'] == body['intent']

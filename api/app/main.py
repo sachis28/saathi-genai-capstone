@@ -9,17 +9,21 @@ import httpx
 from app.services.ml_service import classify_intent, renewal_worklist
 from app.services.worklist_access import AgentPrincipal, authenticate_agent, load_authorized_radar_frame
 
-from app.models.schemas import (ChatRequest, ChatResponse, Customer, Citation,
+from app.models.schemas import (ChatRequest, ChatResponse, Comparison, Customer, Citation,
                                 SearchRequest, SearchHit, DraftRequest, Draft, Turn)
 from app.routers.summary import router as summary_router
 from app.services.retriever import get_retriever
 from app.services.query_rewrite import rewrite_query
-from app.services.customer_context import scope_question, record_answer
+from app.services.customer_context import scope_question, record_answer, tier_filter
+from app.services.compare import tiers_named, is_comparison, comparison_tiers, build_comparison, comparison_answer
 from app.services.topic_guard import is_on_topic, OFF_TOPIC_MSG
-from app.services.answer import generate_answer
+from app.services.answer import generate_answer, NOT_FOUND
 from app.services.customers import load_customers
 from app.services import memory
 from app.services import audit
+from app.services import telemetry
+import time
+from fastapi import Request
 from app.services.safety import is_injection, safe_log
 from app.agent.agent import run_agent
 
@@ -29,6 +33,22 @@ BLOCKED_MSG = "BLOCKED: this request looks like a prompt-injection attempt and w
 
 app = FastAPI(title="Saathi API", version="0.6")
 app.include_router(summary_router)
+
+
+@app.middleware("http")
+async def telemetry_middleware(request: Request, call_next):
+    start = time.perf_counter()
+    response = await call_next(request)
+    route = request.scope.get("route")
+    telemetry.record_request(getattr(route, "path", request.url.path), response.status_code,
+                             (time.perf_counter() - start) * 1000)
+    return response
+
+
+@app.get("/metrics")
+async def metrics():
+    """Trust Scorecard numbers: latency per route, block rate, citation rate, not-found rate."""
+    return telemetry.summary()
 
 DRAFTS: Dict[str, Draft] = {}
 
@@ -82,6 +102,7 @@ async def chat(req: ChatRequest):
     if is_injection(req.question):
         safe_log("prompt_injection_blocked", customer_id=customer.customer_id, question=req.question)
         audit.log_event("prompt_injection_blocked", customer_id=customer.customer_id)
+        telemetry.record_chat("blocked", 0)
         return ChatResponse(answer=BLOCKED_MSG, intent="prompt_injection", citations=[],
                             session_id=session_id, resolved_question=req.question)
 
@@ -89,6 +110,7 @@ async def chat(req: ChatRequest):
     if (not memory.FOLLOW_UP.match(req.question) and not is_on_topic(req.question)
             and not record_answer(req.question, customer)):
         audit.log_event("off_topic_redirected", customer_id=customer.customer_id)
+        telemetry.record_chat("off_topic", 0)
         return ChatResponse(answer=OFF_TOPIC_MSG, intent="out_of_scope", citations=[],
                             session_id=session_id, resolved_question=req.question)
 
@@ -98,15 +120,23 @@ async def chat(req: ChatRequest):
     except (FileNotFoundError, ValueError):
         raise HTTPException(status_code=503, detail="Configure a trained intent provider: python -m ml.hf_models distilbert, or INTENT_PROVIDER=tfidf_lr after python -m ml.train_intent")
 
+    comparison = None
     from_record = record_answer(resolved, customer)
     if from_record:
         answer, citations = from_record, []
+    elif is_comparison(req.question) and (comparison := build_comparison(
+            customer.product, comparison_tiers(req.question, customer.tier))):
+        answer, citations = comparison_answer(comparison)
     else:
         scoped = scope_question(resolved, customer)
-        hits = get_retriever().search(rewrite_query(scoped), k=5, product=customer.product)
+        hits = get_retriever().search(rewrite_query(scoped), k=5, product=customer.product,
+                                      tier=tier_filter(req.question if tiers_named(req.question) else scoped, customer))
         answer, citations = generate_answer(scoped, hits)
 
     memory.add_turn(session_id, req.question, resolved, answer)
+    outcome = ("record" if from_record else "comparison" if comparison
+               else "not_found" if answer == NOT_FOUND else "answer")
+    telemetry.record_chat(outcome, len(citations), classification["intent"])
     safe_log("chat", customer_id=customer.customer_id, question=req.question, citations=len(citations))
     audit.log_event("chat", customer_id=customer.customer_id, intent=classification["intent"],
                     citations=len(citations))
@@ -117,7 +147,20 @@ async def chat(req: ChatRequest):
         citations=citations,
         session_id=session_id,
         resolved_question=resolved,
+        comparison=comparison,
     )
+
+
+@app.post("/compare", response_model=Comparison)
+async def compare(customer_id: str, tiers: str = "Silver,Gold"):
+    """Cited plan comparison table, e.g. /compare?customer_id=C-204&tiers=Silver,Gold"""
+    customer = get_customer_or_404(customer_id)
+    wanted = [t.strip().title() for t in tiers.split(",") if t.strip()]
+    result = build_comparison(customer.product, wanted)
+    if result is None:
+        raise HTTPException(status_code=422, detail="Comparison needs two or more Health tiers: Silver, Gold, Platinum")
+    audit.log_event("comparison", customer_id=customer.customer_id, tiers=",".join(wanted))
+    return result
 
 
 @app.post("/agent/chat")

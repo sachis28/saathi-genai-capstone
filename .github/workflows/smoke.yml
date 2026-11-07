@@ -1,0 +1,19 @@
+name: Live smoke test
+on:
+  workflow_dispatch:
+    inputs:
+      api_url:
+        description: "Deployed API URL, e.g. https://saathi-api.<env>.azurecontainerapps.io"
+        required: true
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install httpx
+      - run: python scripts/smoke_live.py "${{ inputs.api_url }}"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: live-smoke, path: docs/evidence/live_smoke.json }
