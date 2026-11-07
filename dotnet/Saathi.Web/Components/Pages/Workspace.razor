@@ -52,7 +52,7 @@
             {
                 <div class="msg @m.Role">
                     <div class="who">@(m.Role == "agent" ? "You" : "Saathi")</div>
-                    <div>@m.Text</div>
+                    <div style="white-space: pre-line">@m.Text</div>
                     @if (m.Citations.Count > 0)
                     {
                         <div class="chips">

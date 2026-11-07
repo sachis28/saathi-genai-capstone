@@ -25,3 +25,23 @@ def test_renewal_date_answered_from_record():
 
 def test_clause_question_is_not_a_renewal_date_question():
     assert renewal_answer("What happens in the renewal grace period?", GOLD) is None
+
+
+from app.services.customer_context import details_answer, record_answer  # noqa: E402
+
+
+def test_customer_details_answered_from_record():
+    a = record_answer("what is this customers details", GOLD)
+    assert "Health Gold" in a and "2026-11-12" in a and "Contact consent: Given" in a
+
+
+def test_premium_and_consent_questions_use_record():
+    assert details_answer("Has this customer given consent?", GOLD)
+    assert details_answer("What is their premium?", GOLD)
+
+
+def test_clause_questions_do_not_hit_the_record():
+    for q in ["What is the waiting period for pre-existing diseases?",
+              "what is covered in this customers policy?",
+              "Does the premium increase after a claim?"]:
+        assert record_answer(q, GOLD) is None, q
