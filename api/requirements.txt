@@ -11,3 +11,5 @@ azure-search-documents
 python-dotenv
 -r ../requirements.txt
 mcp>=1.10,<2
+semantic-kernel>=1.30,<2
+azure-storage-blob
