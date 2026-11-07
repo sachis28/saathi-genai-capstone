@@ -1,5 +1,5 @@
 from pydantic import BaseModel, StrictBool, Field
-from typing import List, Optional, Literal
+from typing import Dict, List, Optional, Literal
 from datetime import date
 
 
@@ -15,12 +15,31 @@ class Citation(BaseModel):
     version: str
 
 
+class ComparisonCell(BaseModel):
+    text: str
+    source_id: str
+    clause_id: str
+    version: str
+
+
+class ComparisonRow(BaseModel):
+    aspect: str
+    cells: Dict[str, Optional[ComparisonCell]]
+
+
+class Comparison(BaseModel):
+    product: str
+    tiers: List[str]
+    rows: List[ComparisonRow]
+
+
 class ChatResponse(BaseModel):
     answer: str
     intent: str
     citations: List[Citation] = []
     session_id: str
     resolved_question: Optional[str] = None
+    comparison: Optional[Comparison] = None
 
 
 class Customer(BaseModel):

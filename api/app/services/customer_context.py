@@ -78,3 +78,19 @@ def renewal_answer(question: str, customer: Customer) -> Optional[str]:
     }.get(customer.policy_status or "", "")
     return (f"From the customer record: {customer.name}'s {customer.product} {customer.tier} policy "
             f"renews on {customer.renewal_date.isoformat()}. {status}").strip()
+
+
+TIERS = ("Silver", "Gold", "Platinum")
+
+
+def tier_filter(question: str, customer: Customer) -> Optional[str]:
+    """Which tier's clauses to search: the one the question names, else the customer's own.
+
+    A question naming two or more tiers (a comparison) searches all tiers.
+    """
+    named = {t for t in TIERS if re.search(rf"\b{t}\b", question, re.IGNORECASE)}
+    if len(named) == 1:
+        return named.pop()
+    if not named:
+        return customer.tier if customer.tier in TIERS else None
+    return None

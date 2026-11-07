@@ -28,3 +28,13 @@
 {"query": "Is roadside assistance available under Motor Gold?", "product": "Motor", "tier": "Gold", "expected_clause_ids": ["CL-ROADSIDE-03", "CL-COV-01"]}
 {"query": "What happens if a driver is under the influence of alcohol?", "product": "Motor", "tier": "Gold", "expected_clause_ids": ["CL-EXC-04"]}
 {"query": "What is the policy renewal grace period?", "product": "All", "tier": "All", "expected_clause_ids": ["CL-REN-01"]}
+{"query": "Is plastic surgery for looks excluded under Health Gold?", "product": "Health", "tier": "Gold", "expected_clause_ids": ["EXC-GOLD-07"]}
+{"query": "Which treatments have a 24 month waiting period in Health Silver?", "product": "Health", "tier": "Silver", "expected_clause_ids": ["CL-WAIT-05"]}
+{"query": "Can a Health Gold policy be renewed every year?", "product": "Health", "tier": "Gold", "expected_clause_ids": ["CL-RENEW-11"]}
+{"query": "What does a Platinum policyholder submit for a reimbursement claim?", "product": "Health", "tier": "Platinum", "expected_clause_ids": ["CL-CLAIM-02"]}
+{"query": "For how many days after discharge are post hospitalisation costs covered in Platinum?", "product": "Health", "tier": "Platinum", "expected_clause_ids": ["CL-POST-05"]}
+{"query": "Is cosmetic enhancement covered under the Platinum plan?", "product": "Health", "tier": "Platinum", "expected_clause_ids": ["CL-EXC-06"]}
+{"query": "Are day-care treatments covered under Health Platinum?", "product": "Health", "tier": "Platinum", "expected_clause_ids": ["CL-DAY-07"]}
+{"query": "What is needed to claim for a stolen car under Motor Gold?", "product": "Motor", "tier": "Gold", "expected_clause_ids": ["CL-THEFT-05"]}
+{"query": "Is accidental damage to the vehicle covered, and is there a deductible?", "product": "Motor", "tier": "Gold", "expected_clause_ids": ["CL-DAMAGE-06"]}
+{"query": "Can the insurer inspect the vehicle before approving a motor claim?", "product": "Motor", "tier": "Gold", "expected_clause_ids": ["CL-INSPECT-08"]}

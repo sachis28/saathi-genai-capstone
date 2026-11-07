@@ -20,7 +20,19 @@ jobs:
         run: pip install -r ml/azureml/requirements-local.txt
       - name: Train the small intent and Radar models used by the API
         run: python -m ml.train_intent && python -m ml.radar
-      - run: python -m pytest -q
+      - name: Tests, including the Red-Team Arena release gate
+        run: python -m pytest -q
+        env: { REDTEAM_REPORT: "1" }
+      - name: 50-query RAG evaluation (fails if Recall@5 < 0.85 or off-topic redirects miss)
+        run: python rag/evaluate_rag.py --check
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: evaluation
+          path: |
+            docs/rag_evaluation_report.md
+            docs/evidence/rag_eval_mock-local.json
+            docs/evidence/redteam_results.json
   dotnet:
     runs-on: ubuntu-latest
     steps:

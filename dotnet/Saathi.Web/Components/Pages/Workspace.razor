@@ -52,8 +52,38 @@
             {
                 <div class="msg @m.Role">
                     <div class="who">@(m.Role == "agent" ? "You" : "Saathi")</div>
-                    <div style="white-space: pre-line">@m.Text</div>
-                    @if (m.Citations.Count > 0)
+                    @if (m.Comparison is { } cmp)
+                    {
+                        <div>@($"{cmp.Product} {string.Join(" vs ", cmp.Tiers)}, from the policy clauses")</div>
+                        <table class="compare">
+                            <thead><tr><th></th>@foreach (var t in cmp.Tiers) { <th>@t</th> }</tr></thead>
+                            <tbody>
+                                @foreach (var row in cmp.Rows)
+                                {
+                                    <tr>
+                                        <th>@row.Aspect</th>
+                                        @foreach (var t in cmp.Tiers)
+                                        {
+                                            var cell = row.Cells.GetValueOrDefault(t);
+                                            <td>
+                                                @if (cell is null) { <span class="muted">Not stated</span> }
+                                                else
+                                                {
+                                                    <div>@cell.Text</div>
+                                                    <span class="chip" title="Version @cell.Version">@($"{cell.SourceId}#{cell.ClauseId}")</span>
+                                                }
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <div style="white-space: pre-line">@m.Text</div>
+                    }
+                    @if (m.Comparison is null && m.Citations.Count > 0)
                     {
                         <div class="chips">
                             @foreach (var c in m.Citations)
@@ -118,7 +148,7 @@
 </div>
 
 @code {
-    private record Message(string Role, string Text, List<Citation> Citations);
+    private record Message(string Role, string Text, List<Citation> Citations, Comparison? Comparison = null);
 
     private string customerId = "C-204";
     private string question = "";
@@ -190,7 +220,7 @@
         {
             var r = await Client.ChatAsync(new ChatRequest(customer.CustomerId, q, Session.SessionId));
             if (r.Success)
-                messages.Add(new Message("saathi", r.Data!.Answer, r.Data.Citations));
+                messages.Add(new Message("saathi", r.Data!.Answer, r.Data.Citations, r.Data.Comparison));
             else
                 error = r.Error;
         });
