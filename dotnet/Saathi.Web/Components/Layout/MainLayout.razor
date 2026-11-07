@@ -1,8 +1,16 @@
 ﻿@inherits LayoutComponentBase
 
-<main class="saathi-shell">
-    @Body
-</main>
+<div class="app">
+    <nav class="nav" aria-label="Main">
+        <div class="logo"><i>S</i>Saathi</div>
+        <NavLink href="" Match="NavLinkMatch.All">Workspace</NavLink>
+        <NavLink href="how-it-works">How it works</NavLink>
+        <div class="foot">Insurance agent copilot<br />Synthetic demo data</div>
+    </nav>
+    <main class="main">
+        @Body
+    </main>
+</div>
 
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.
