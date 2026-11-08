@@ -1,3 +1,5 @@
+"""ML tests: locked train/test splits with no leakage, the intent models, the Radar model,
+the prompt grader, and local vs Azure scoring giving the same results."""
 import json
 
 import joblib

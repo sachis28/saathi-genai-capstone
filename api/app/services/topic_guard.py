@@ -38,6 +38,7 @@ OFF_TOPIC_MSG = ("I can only help with insurance policy questions, for example t
                  "what a plan covers, or the renewal grace period. Please ask a policy question.")
 
 
+# Every content word that appears in any policy clause, read once and cached.
 @lru_cache
 def corpus_vocabulary() -> frozenset:
     words = set()
@@ -52,10 +53,12 @@ def corpus_vocabulary() -> frozenset:
     return frozenset(words)
 
 
+# The question's content words, minus generic question words.
 def topic_words(question: str) -> set:
     return {w for w in content_words(question) if w not in QUESTION_WORDS}
 
 
+# True if the question shares at least one word with the clauses or the insurance word list.
 def is_on_topic(question: str) -> bool:
     vocab = corpus_vocabulary()
     if not vocab:

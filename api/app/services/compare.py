@@ -11,7 +11,9 @@ from app.models.schemas import Citation, Comparison, ComparisonCell, ComparisonR
 from app.services.retriever import get_retriever
 from app.services.safety import filter_poisoned
 
+# The three Health plan tiers, in display order.
 TIERS = ("Silver", "Gold", "Platinum")
+# Words that mean the user wants a comparison, e.g. "Silver vs Gold", "which is better".
 COMPARE_WORDS = re.compile(r"\b(compare|comparison|vs\.?|versus|difference|differ|better)\b", re.IGNORECASE)
 
 # (row label, search query, word the clause must contain to fill the cell)
@@ -28,15 +30,18 @@ ASPECTS = {
 }
 
 
+# Which tier names appear in the question.
 def tiers_named(question: str) -> List[str]:
     return [t for t in TIERS if re.search(rf"\b{t}\b", question, re.IGNORECASE)]
 
 
+# A comparison = two tiers named, or one tier plus a comparison word ("compare with Gold").
 def is_comparison(question: str) -> bool:
     named = tiers_named(question)
     return len(named) >= 2 or (len(named) == 1 and bool(COMPARE_WORDS.search(question)))
 
 
+# Which tiers go in the table.
 def comparison_tiers(question: str, customer_tier: str) -> List[str]:
     named = tiers_named(question)
     if len(named) == 1 and customer_tier in TIERS and customer_tier not in named:
@@ -44,6 +49,7 @@ def comparison_tiers(question: str, customer_tier: str) -> List[str]:
     return sorted(set(named), key=TIERS.index)
 
 
+# One table cell: the best clause for this aspect in this tier, or None ("Not stated").
 def _cell(product: str, tier: str, query: str, must: str) -> Optional[ComparisonCell]:
     hits, _ = filter_poisoned(get_retriever().search(f"{query} {tier}", k=5, product=product, tier=tier))
     # Only this tier's own clauses (not general 'All' ones), and only a clause about this aspect.
@@ -54,6 +60,7 @@ def _cell(product: str, tier: str, query: str, must: str) -> Optional[Comparison
     return ComparisonCell(text=h.text, source_id=h.source_id, clause_id=h.clause_id, version=h.version)
 
 
+# Build the whole table: one row per aspect, one cell per tier. Rows with no clauses are dropped.
 def build_comparison(product: str, tiers: List[str]) -> Optional[Comparison]:
     aspects = ASPECTS.get(product)
     if not aspects or len(tiers) < 2:

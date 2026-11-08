@@ -1,20 +1,26 @@
+"""Pydantic models: the shapes of the JSON going in and out of the API.
+
+FastAPI uses these to validate requests, build responses and generate the /docs page."""
 from pydantic import BaseModel, StrictBool, Field
 from typing import Dict, List, Optional, Literal
 from datetime import date
 
 
+# Body of POST /chat and /agent/chat.
 class ChatRequest(BaseModel):
     customer_id: str
     question: str
     session_id: Optional[str] = None
 
 
+# One citation: which document (source_id), which clause, and which version.
 class Citation(BaseModel):
     source_id: str
     clause_id: str
     version: str
 
 
+# Comparison table: Comparison -> rows (one per aspect) -> cells (one per tier).
 class ComparisonCell(BaseModel):
     text: str
     source_id: str
@@ -43,6 +49,7 @@ class RetrievedClause(BaseModel):
     used: bool = False
 
 
+# What /chat returns.
 class ChatResponse(BaseModel):
     answer: str
     intent: str
@@ -58,6 +65,7 @@ class ChatResponse(BaseModel):
     retrieved: List[RetrievedClause] = []
 
 
+# One customer's CRM record. Status fields are filled in by services/customers.py.
 class Customer(BaseModel):
     customer_id: str
     name: str
@@ -73,6 +81,7 @@ class Customer(BaseModel):
     eligibility_reason: Optional[str] = None
 
 
+# Body of POST /search.
 class SearchRequest(BaseModel):
     query: str
     k: int = 5
@@ -80,6 +89,7 @@ class SearchRequest(BaseModel):
     tier: Optional[str] = None
 
 
+# One retrieved clause with its relevance score.
 class SearchHit(BaseModel):
     source_id: str
     clause_id: str
@@ -90,10 +100,12 @@ class SearchHit(BaseModel):
     score: float
 
 
+# Body of POST /drafts.
 class DraftRequest(BaseModel):
     customer_id: str
 
 
+# A renewal message draft. status goes PENDING_APPROVAL -> APPROVED -> SIMULATED_SENT.
 class Draft(BaseModel):
     draft_id: str
     customer_id: str
@@ -102,6 +114,7 @@ class Draft(BaseModel):
     citations: List[Citation] = []
 
 
+# One remembered chat turn.
 class Turn(BaseModel):
     question: str
     resolved_question: str

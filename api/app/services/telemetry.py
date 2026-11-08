@@ -8,6 +8,7 @@ import time
 from collections import Counter, deque
 from typing import Deque, Dict, List
 
+# deque(maxlen=...) keeps only the latest 5,000 rows, so memory stays bounded.
 MAX_ROWS = 5000
 _requests: Deque[Dict] = deque(maxlen=MAX_ROWS)
 _chats: Deque[Dict] = deque(maxlen=MAX_ROWS)
@@ -23,6 +24,7 @@ def record_chat(outcome: str, citations: int, intent: str = "") -> None:
     _chats.append({"outcome": outcome, "citations": citations, "intent": intent})
 
 
+# Percentile helper, e.g. p=0.95 gives the p95 latency.
 def _pct(values: List[float], p: float) -> float:
     if not values:
         return 0.0
@@ -30,12 +32,14 @@ def _pct(values: List[float], p: float) -> float:
     return round(values[min(len(values) - 1, int(round(p * (len(values) - 1))))], 1)
 
 
+# Builds the /metrics response from the rows collected so far.
 def summary() -> Dict:
     by_route: Dict[str, List[float]] = {}
     for r in _requests:
         by_route.setdefault(r["route"], []).append(r["latency_ms"])
     outcomes = Counter(c["outcome"] for c in _chats)
     total = len(_chats)
+    # Turns that went through retrieval (the ones where a citation is expected).
     rag_answers = outcomes["answer"] + outcomes["not_found"] + outcomes["comparison"]
     cited = sum(1 for c in _chats if c["outcome"] in ("answer", "comparison") and c["citations"] > 0)
     errors = sum(1 for r in _requests if r["status"] >= 500)
@@ -57,6 +61,7 @@ def summary() -> Dict:
     }
 
 
+# Clear everything (used by tests).
 def reset() -> None:
     _requests.clear()
     _chats.clear()

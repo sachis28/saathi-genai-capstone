@@ -15,6 +15,8 @@ from mcp.server.fastmcp import FastMCP
 from app.services.customers import load_customers, renewal_candidates
 from app.services.retriever import get_retriever
 
+# FastMCP turns each decorated function below into an MCP tool. The docstring becomes the
+# tool description and the type hints become its JSON input schema.
 mcp = FastMCP("saathi")
 
 
@@ -44,7 +46,9 @@ def search_knowledge_base(query: str, product: str = "", tier: str = "") -> List
 @mcp.tool()
 async def save_draft(customer_id: str) -> Dict[str, Any]:
     """Create a renewal message draft. It is saved as PENDING_APPROVAL; a human must approve it."""
+    # Imported inside the function to avoid a circular import (main.py imports the agent).
     from app import main
+    # Reuse the real /drafts endpoint so drafts made by the agent follow the same rules.
     from app.models.schemas import DraftRequest
     try:
         return (await main.create_draft(DraftRequest(customer_id=customer_id))).model_dump()
@@ -57,13 +61,16 @@ async def simulate_send(draft_id: str) -> Dict[str, Any]:
     """Simulate sending an APPROVED draft. Blocked unless a human approved it and consent is given."""
     from app import main
     try:
+        # Reuse the real send endpoint: it blocks unless the draft is APPROVED and consent is given.
         return (await main.send_draft(draft_id)).model_dump()
     except HTTPException as e:
         return {"error": e.detail}
 
 
+# Name -> function lookup used by the in-process agent (app/agent/agent.py).
 TOOLS = {f.__name__: f for f in (lookup_customer, worklist, search_knowledge_base, save_draft, simulate_send)}
 
 
+# Running this file directly starts it as a standalone MCP server over stdio.
 if __name__ == "__main__":
     mcp.run()

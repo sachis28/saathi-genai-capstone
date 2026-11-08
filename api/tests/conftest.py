@@ -1,3 +1,5 @@
+"""Shared pytest setup for the API tests: forces the offline mock LLM and local retriever,
+so tests are free, fast and give the same answers every run."""
 import os
 
 # Tests must never call the real Foundry model (costs credits, answers vary).

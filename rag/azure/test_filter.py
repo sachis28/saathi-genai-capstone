@@ -1,3 +1,5 @@
+"""Quick check that metadata filters work on the Azure AI Search index:
+lists only the Health Gold v2 clauses. Run: python rag/azure/test_filter.py"""
 import os
 
 from azure.core.credentials import AzureKeyCredential

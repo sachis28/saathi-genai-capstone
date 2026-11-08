@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿// A small console app that (1) proves the DI lifetimes work and (2) calls the real API once.
+// Run: dotnet run --project dotnet/Saathi.Console  (SAATHI_MODE=Mock to run without the API)
+using Microsoft.Extensions.DependencyInjection;
 using Saathi.Client;
 
 var mode = Environment.GetEnvironmentVariable("SAATHI_MODE") ?? "Http";
@@ -11,14 +13,17 @@ using var provider = services.BuildServiceProvider();
 Console.WriteLine($"Mode: {mode}");
 Console.WriteLine("---- Lifetime demo ----");
 
+// Singleton: asking twice gives the SAME factory object.
 var f1 = provider.GetRequiredService<ICopilotClientFactory>();
 var f2 = provider.GetRequiredService<ICopilotClientFactory>();
 Console.WriteLine($"Singleton factory  -> same instance: {ReferenceEquals(f1, f2)}");
 
+// Transient: asking twice gives two DIFFERENT client objects.
 var c1 = provider.GetRequiredService<ICopilotClient>();
 var c2 = provider.GetRequiredService<ICopilotClient>();
 Console.WriteLine($"Transient client   -> same instance: {ReferenceEquals(c1, c2)}");
 
+// Scoped: the same ChatSession inside one scope, a new one in another scope.
 string idA;
 using (var scopeA = provider.CreateScope())
 {
@@ -34,6 +39,7 @@ using (var scopeB = provider.CreateScope())
     Console.WriteLine($"Scoped session     -> different across scopes: {idA != s3.SessionId}");
 }
 
+// Now use the client like the web app does: health check, load a customer, ask a question.
 Console.WriteLine("---- Saathi call ----");
 
 using var scope = provider.CreateScope();

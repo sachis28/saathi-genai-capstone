@@ -1,3 +1,7 @@
+"""Shared paths, labels and helpers for the ML workstream.
+
+The dataset files are "locked": their SHA-256 hashes are stored in manifest.json, and
+load_split() refuses a file whose hash changed, so results are always reproducible."""
 import hashlib
 import json
 import random
@@ -11,7 +15,9 @@ ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data" / "generated"
 ARTIFACTS = ROOT / "artifacts"
 DOCS = ROOT / "docs"
+# The five intents the classifier can predict for an agent's question.
 LABELS = ["compare_products", "coverage_question", "renewal_draft", "customer_lookup", "out_of_scope"]
+# One random seed used everywhere, so every run gives the same result.
 SEED = 42
 
 
@@ -38,6 +44,7 @@ def load_split(name):
     return pd.read_csv(path)
 
 
+# Saves metrics (macro F1, per-class report, confusion matrix) and predictions for one model.
 def evaluate(name, frame, predictions, metadata=None):
     output = ARTIFACTS / name
     output.mkdir(parents=True, exist_ok=True)

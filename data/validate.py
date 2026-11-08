@@ -1,3 +1,5 @@
+"""Data validation with pandera schemas: checks column types and allowed values, and that the
+train/dev/test splits share no text or template (no "leakage" that would inflate scores)."""
 import json
 import numpy as np
 
@@ -6,6 +8,7 @@ import pandera.pandas as pa
 
 from ml.common import ARTIFACTS, DATA, LABELS, load_split, sha256, write_json
 
+# Schema for the intent dataset: one row per labelled question.
 intent_schema = pa.DataFrameSchema({
     "id": pa.Column(str, unique=True),
     "text": pa.Column(str, pa.Check.str_length(min_value=5, max_value=2000)),
@@ -16,6 +19,7 @@ intent_schema = pa.DataFrameSchema({
     "region": pa.Column(str, pa.Check.isin(["urban", "rural"])),
 }, strict=True)
 
+# Schema for the Renewal Radar training data. nonrenewed is the label (1 = did not renew).
 radar_schema = pa.DataFrameSchema({
     "customer_id": pa.Column(str, unique=True),
     "days_to_renewal": pa.Column(int),
@@ -27,6 +31,7 @@ radar_schema = pa.DataFrameSchema({
     "nonrenewed": pa.Column(int, pa.Check.isin([0, 1])),
 }, strict=True)
 
+# At prediction time the label and age band are not needed, so they are dropped from the schema.
 radar_inference_schema = radar_schema.remove_columns(["age_band", "nonrenewed"])
 
 

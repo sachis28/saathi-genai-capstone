@@ -1,3 +1,5 @@
+"""OCR pipeline tests (no Azure calls): scans are committed, the skillset runs OCR -> merge -> embed,
+and the indexer writes into the main index with the citation fields."""
 import importlib.util
 import json
 from pathlib import Path

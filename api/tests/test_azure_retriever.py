@@ -1,7 +1,10 @@
+"""Azure AI Search retriever tests using a fake search client (no Azure calls):
+the filter rule, the hybrid + semantic query, and safe fallbacks for query rewriting."""
 from app.services import query_rewrite
 from app.services.retriever import AzureSearchRetriever, azure_filter
 
 
+# A stand-in for Azure's SearchClient: records the query it receives and returns canned rows.
 class FakeSearchClient:
     def __init__(self, rows):
         self.rows, self.calls = rows, []

@@ -1,3 +1,4 @@
+"""Data checks for the synthetic CRM, interactions and Renewal Radar feature files."""
 import json
 from collections import Counter
 from datetime import date

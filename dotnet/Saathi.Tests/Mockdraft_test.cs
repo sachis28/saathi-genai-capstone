@@ -2,6 +2,7 @@ using Saathi.Client;
 
 namespace Saathi.Tests;
 
+// Checks the human-in-the-loop rule: a draft cannot be sent before it is approved, or approved twice.
 public class MockDraftTests
 {
     [Fact]

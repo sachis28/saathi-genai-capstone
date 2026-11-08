@@ -1,3 +1,4 @@
+"""LLM layer tests: answers carry citation tags, made-up citations are dropped, and drafts start pending."""
 from fastapi.testclient import TestClient
 
 from app.main import app

@@ -2,6 +2,7 @@ using Saathi.Client;
 
 namespace Saathi.Tests;
 
+// Checks the mock client: unknown customers fail, and a chat answer raises AnswerReceived.
 public class MockClientTests
 {
     [Fact]

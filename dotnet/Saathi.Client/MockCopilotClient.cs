@@ -2,6 +2,8 @@ using System.Text.Json;
 
 namespace Saathi.Client;
 
+// An in-memory fake of the API for offline demos and unit tests. It copies the real rules
+// (approve before send, can't approve twice) so tests of the UI flow stay meaningful.
 public class MockCopilotClient : ICopilotClient
 {
     public event EventHandler<ChatResponse>? AnswerReceived;
@@ -46,8 +48,10 @@ public class MockCopilotClient : ICopilotClient
         return Task.FromResult(ApiResult<ChatResponse>.Ok(resp));
     }
 
+    // Builds a fake agent trace that looks like the real Semantic Kernel response.
     public Task<ApiResult<AgentChatResponse>> AgentChatAsync(ChatRequest request)
     {
+        // Small helper: turn a string into a JsonElement (the type tool arguments use).
         JsonElement J(string v) => JsonSerializer.SerializeToElement(v);
         var trace = new List<AgentToolCall>
         {
@@ -83,6 +87,7 @@ public class MockCopilotClient : ICopilotClient
         if (d.Status != "PENDING_APPROVAL")
             return Task.FromResult(ApiResult<Draft>.Fail($"409: Cannot approve a draft in status {d.Status}"));
 
+        // Records are immutable; "with" makes a copy with only the Status changed.
         d = d with { Status = "APPROVED" };
         _drafts[draftId] = d;
         return Task.FromResult(ApiResult<Draft>.Ok(d));

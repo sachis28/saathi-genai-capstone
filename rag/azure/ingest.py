@@ -1,3 +1,8 @@
+"""Uploads the chunked policy clauses into the Azure AI Search index.
+
+Steps: read rag/corpus/insurance_chunks.jsonl -> embed each clause with our Azure OpenAI
+embedding deployment (in batches of 16) -> upload clause + vector to the index -> print count.
+Run after create_index.py:  python rag/azure/ingest.py"""
 import os
 import json
 from pathlib import Path
@@ -24,7 +29,9 @@ OPENAI_ENDPOINT = os.environ["AZURE_OPENAI_ENDPOINT"].rstrip("/")
 OPENAI_KEY = os.environ["AZURE_OPENAI_API_KEY"]
 EMBEDDING_DEPLOYMENT = os.environ["AZURE_OPENAI_EMBED_DEPLOYMENT"]
 
+# Embed and upload 16 clauses per request to stay well within API limits.
 BATCH_SIZE = 16
+# Sanity checks: text-embedding-3-small returns 1536 numbers, and the corpus has 48 clauses.
 EXPECTED_EMBEDDING_DIMENSIONS = 1536
 EXPECTED_CHUNKS = 48
 
@@ -127,6 +134,7 @@ def load_chunks():
 # GENERATE EMBEDDINGS
 # ==================================================
 
+# One API call embeds a whole batch of texts and returns one vector per text.
 def generate_embeddings(texts):
 
     if not texts:
