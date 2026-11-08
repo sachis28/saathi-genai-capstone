@@ -19,7 +19,21 @@ public record ChatResponse(
     [property: JsonPropertyName("citations")] List<Citation> Citations,
     [property: JsonPropertyName("session_id")] string SessionId,
     [property: JsonPropertyName("comparison")] Comparison? Comparison = null,
-    [property: JsonPropertyName("resolved_question")] string? ResolvedQuestion = null);
+    [property: JsonPropertyName("resolved_question")] string? ResolvedQuestion = null,
+    [property: JsonPropertyName("intent_confidence")] double? IntentConfidence = null,
+    [property: JsonPropertyName("intent_model")] string? IntentModel = null,
+    [property: JsonPropertyName("intent_scores")] Dictionary<string, double>? IntentScores = null,
+    [property: JsonPropertyName("retriever")] string? Retriever = null,
+    [property: JsonPropertyName("retrieved")] List<RetrievedClause>? Retrieved = null);
+
+// One ranked search hit behind a /chat answer. Used = the answer cites it.
+public record RetrievedClause(
+    [property: JsonPropertyName("source_id")] string SourceId,
+    [property: JsonPropertyName("clause_id")] string ClauseId,
+    [property: JsonPropertyName("version")] string Version,
+    [property: JsonPropertyName("text")] string Text,
+    [property: JsonPropertyName("score")] double Score,
+    [property: JsonPropertyName("used")] bool Used);
 
 // POST /agent/chat: the Semantic Kernel agent's answer plus one entry per MCP tool call.
 public record AgentToolCall(

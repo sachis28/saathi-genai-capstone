@@ -33,6 +33,16 @@ class Comparison(BaseModel):
     rows: List[ComparisonRow]
 
 
+class RetrievedClause(BaseModel):
+    """One search hit as the retriever ranked it; used=True if the answer cites it."""
+    source_id: str
+    clause_id: str
+    version: str
+    text: str
+    score: float
+    used: bool = False
+
+
 class ChatResponse(BaseModel):
     answer: str
     intent: str
@@ -40,6 +50,12 @@ class ChatResponse(BaseModel):
     session_id: str
     resolved_question: Optional[str] = None
     comparison: Optional[Comparison] = None
+    # Trace details for the UI. Uncalibrated scores, shown for explanation only.
+    intent_confidence: Optional[float] = None
+    intent_model: Optional[str] = None
+    intent_scores: Dict[str, float] = {}
+    retriever: Optional[str] = None
+    retrieved: List[RetrievedClause] = []
 
 
 class Customer(BaseModel):

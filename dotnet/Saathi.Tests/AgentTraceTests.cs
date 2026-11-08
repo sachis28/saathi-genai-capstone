@@ -36,4 +36,28 @@ public class AgentTraceTests
         const string json = """{"answer":"a","intent":"compare_products","citations":[],"session_id":"s","resolved_question":"full question"}""";
         Assert.Equal("full question", JsonSerializer.Deserialize<ChatResponse>(json)!.ResolvedQuestion);
     }
+
+    [Fact]
+    public void Chat_response_reads_intent_scores_and_ranked_hits()
+    {
+        const string json = """
+        {"answer":"a","intent":"coverage_question","citations":[],"session_id":"s",
+         "intent_confidence":0.93,"intent_model":"tfidf_lr","intent_scores":{"coverage_question":0.93,"out_of_scope":0.07},
+         "retriever":"azure","retrieved":[{"source_id":"POL-HEALTH-GOLD","clause_id":"CL-WAIT-02","version":"v2","text":"t","score":3.41,"used":true}]}
+        """;
+        var r = JsonSerializer.Deserialize<ChatResponse>(json)!;
+        Assert.Equal(0.93, r.IntentScores!["coverage_question"]);
+        Assert.Equal("azure", r.Retriever);
+        Assert.True(r.Retrieved![0].Used);
+        Assert.Equal(3.41, r.Retrieved[0].Score);
+    }
+
+    [Fact]
+    public void Old_chat_json_without_scores_still_reads()
+    {
+        const string json = """{"answer":"a","intent":"x","citations":[],"session_id":"s"}""";
+        var r = JsonSerializer.Deserialize<ChatResponse>(json)!;
+        Assert.Null(r.IntentScores);
+        Assert.Null(r.Retrieved);
+    }
 }

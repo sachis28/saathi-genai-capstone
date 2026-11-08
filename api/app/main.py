@@ -1,5 +1,6 @@
 from typing import Dict, List
 import logging
+import os
 import uuid
 
 from fastapi import FastAPI, HTTPException, Query, Depends
@@ -10,7 +11,7 @@ from app.services.ml_service import classify_intent, renewal_worklist
 from app.services.worklist_access import AgentPrincipal, authenticate_agent, load_authorized_radar_frame
 
 from app.models.schemas import (ChatRequest, ChatResponse, Comparison, Customer, Citation,
-                                SearchRequest, SearchHit, DraftRequest, Draft, Turn)
+                                SearchRequest, SearchHit, DraftRequest, Draft, Turn, RetrievedClause)
 from app.routers.summary import router as summary_router
 from app.services.retriever import get_retriever
 from app.services.query_rewrite import rewrite_query
@@ -121,6 +122,7 @@ async def chat(req: ChatRequest):
         raise HTTPException(status_code=503, detail="Configure a trained intent provider: python -m ml.hf_models distilbert, or INTENT_PROVIDER=tfidf_lr after python -m ml.train_intent")
 
     comparison = None
+    retrieved = []
     from_record = record_answer(resolved, customer)
     if from_record:
         answer, citations = from_record, []
@@ -132,6 +134,9 @@ async def chat(req: ChatRequest):
         hits = get_retriever().search(rewrite_query(scoped), k=5, product=customer.product,
                                       tier=tier_filter(req.question if tiers_named(req.question) else scoped, customer))
         answer, citations = generate_answer(scoped, hits)
+        cited = {(c.source_id, c.clause_id) for c in citations}
+        retrieved = [RetrievedClause(source_id=h.source_id, clause_id=h.clause_id, version=h.version, text=h.text,
+                                     score=h.score, used=(h.source_id, h.clause_id) in cited) for h in hits]
 
     memory.add_turn(session_id, req.question, resolved, answer)
     outcome = ("record" if from_record else "comparison" if comparison
@@ -148,6 +153,11 @@ async def chat(req: ChatRequest):
         session_id=session_id,
         resolved_question=resolved,
         comparison=comparison,
+        intent_confidence=classification.get("confidence"),
+        intent_model=classification.get("model"),
+        intent_scores=classification.get("scores") or {},
+        retriever=os.getenv("RETRIEVER", "local") if retrieved else None,
+        retrieved=retrieved,
     )
 
 

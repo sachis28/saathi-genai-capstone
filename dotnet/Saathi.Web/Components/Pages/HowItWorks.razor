@@ -274,12 +274,12 @@
             new(5, "Azure AI Search", "Hybrid keyword and vector search, product = Health, top 5",
                 Hits(new[]
                 {
-                    ("POL-HEALTH-GOLD#CL-WAIT-02", 0.95, "Pre-existing diseases are covered under the Gold plan after a waiting period of 24 months of continuous coverage.", true),
-                    ("POL-HEALTH-SILVER#CL-WAIT-02", 0.84, "Pre-existing diseases are covered under the Silver plan only after a waiting period of 36 months of continuous coverage.", true),
-                    ("POL-HEALTH-GOLD#CL-COV-01", 0.52, "Gold plan covers in-patient hospitalisation up to INR 10 lakh per policy year with no room rent cap.", false),
-                    ("POL-HEALTH-SILVER#CL-WAIT-05", 0.47, "Specific listed treatments are subject to a 24 month waiting period under Health Silver.", false),
+                    ("POL-HEALTH-GOLD#CL-WAIT-02", 3.41, "Pre-existing diseases are covered under the Gold plan after a waiting period of 24 months of continuous coverage.", true),
+                    ("POL-HEALTH-SILVER#CL-WAIT-02", 3.02, "Pre-existing diseases are covered under the Silver plan only after a waiting period of 36 months of continuous coverage.", true),
+                    ("POL-HEALTH-GOLD#CL-COV-01", 1.87, "Gold plan covers in-patient hospitalisation up to INR 10 lakh per policy year with no room rent cap.", false),
+                    ("POL-HEALTH-SILVER#CL-WAIT-05", 1.52, "Specific listed treatments are subject to a 24 month waiting period under Health Silver.", false),
                 }),
-                "The rewritten question is searched in the policy index. Each hit carries its source, clause id and version, so it can be cited.",
+                "The rewritten question is searched in the policy index. The score is the semantic reranker score, from 0 (unrelated) to 4 (very relevant). Each hit carries its source, clause id and version, so it can be cited.",
                 "api/app/services/retriever.py · AzureSearchRetriever.search()", "The LLM only sees these clauses, so it cannot invent policy facts.", Tag: "Azure AI Search", Ms: "171 ms"),
             new(6, "Azure OpenAI writes the answer", "Grounded prompt: system rules + 2 clauses + question, temperature 0",
                 null,
@@ -341,9 +341,9 @@
                     <div><span class="verdict pass">allowed</span>@Budget(2)</div>
                     @Hits(new[]
                     {
-                        ("SCAN-HEALTH-GOLD-END-17#CL-AIR-01", 0.91, "Air ambulance transfer to the nearest network hospital is covered up to INR 2.5 lakh per policy year when the treating doctor advises it in writing.", true),
-                        ("POL-HEALTH-GOLD#CL-AMB-04", 0.58, "Emergency ambulance expenses are covered up to INR 5000 per hospitalization.", false),
-                        ("POL-HEALTH-GOLD#CL-COV-01", 0.41, "Gold plan covers in-patient hospitalisation up to INR 10 lakh per policy year with no room rent cap.", false),
+                        ("SCAN-HEALTH-GOLD-END-17#CL-AIR-01", 3.27, "Air ambulance transfer to the nearest network hospital is covered up to INR 2.5 lakh per policy year when the treating doctor advises it in writing.", true),
+                        ("POL-HEALTH-GOLD#CL-AMB-04", 2.06, "Emergency ambulance expenses are covered up to INR 5000 per hospitalization.", false),
+                        ("POL-HEALTH-GOLD#CL-COV-01", 1.44, "Gold plan covers in-patient hospitalisation up to INR 10 lakh per policy year with no room rent cap.", false),
                     })
                 </div>,
                 "The top hit came from a scanned endorsement. Its text only exists because the OCR pipeline read it out of an image (see the OCR tab).",
@@ -457,7 +457,7 @@ args after:  { "customer_id": "C-204" }</pre>
                 "rag/azure/ocr_pipeline.py · SearchIndexer, setup_and_run()", Tag: "Azure AI Search", Ms: "4.8 s"),
             new(7, "Searchable and citable", "search = \"air ambulance\" now finds the scan",
                 @<div>
-                    @Hits(new[] { ("SCAN-HEALTH-GOLD-END-17#CL-AIR-01", 0.91, "Air ambulance transfer to the nearest network hospital is covered up to INR 2.5 lakh per policy year when the treating doctor advises it in writing.", true) })
+                    @Hits(new[] { ("SCAN-HEALTH-GOLD-END-17#CL-AIR-01", 3.27, "Air ambulance transfer to the nearest network hospital is covered up to INR 2.5 lakh per policy year when the treating doctor advises it in writing.", true) })
                     <p class="muted" style="margin-top:6px">Try it in the workspace: load C-311 and ask "Is air ambulance covered for Health Gold?"</p>
                 </div>,
                 "Nothing in the typed corpus mentions air ambulance, so a cited answer proves the text came through OCR.",

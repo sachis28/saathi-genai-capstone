@@ -417,6 +417,36 @@
         }
     </div>;
 
+    private static string Num(double v, string fmt) => v.ToString(fmt, System.Globalization.CultureInfo.InvariantCulture);
+
+    private static string ScoreNote(string? retriever) => retriever == "azure"
+        ? "Score is the Azure AI Search semantic reranker score, from 0 (unrelated) to 4 (very relevant)."
+        : "Score is the fused rank score from keyword (BM25) and vector search. Higher means a better match.";
+
+    private static RenderFragment IntentBars(Dictionary<string, double> scores) => @<div class="bars">
+        @{ var first = true; }
+        @foreach (var (label, p) in scores.OrderByDescending(x => x.Value))
+        {
+            var pct = Math.Round(p * 100, 1);
+            <div class="bar @(first ? "top" : "")"><span class="lbl">@label</span><span class="track"><span class="fillbar" style="width:@Num(pct, "0.#")%"></span></span><span class="v">@Num(pct, "0.#")%</span></div>
+            first = false;
+        }
+    </div>;
+
+    private static RenderFragment HitRows(List<RetrievedClause> hits) => @<div class="hits">
+        @foreach (var h in hits)
+        {
+            var scan = h.SourceId.StartsWith("SCAN-", StringComparison.OrdinalIgnoreCase);
+            <div class="hit @(h.Used ? "used" : "")">
+                <div class="score">@Num(h.Score, h.Score < 0.1 ? "0.0000" : "0.00")</div>
+                <div>
+                    <div class="id">@h.SourceId#@h.ClauseId · @h.Version @if (scan) { <span class="badge a">OCR scan</span> } @if (h.Used) { <span class="badge b">cited</span> }</div>
+                    <div class="txt">@(h.Text.Length > 160 ? h.Text[..157].TrimEnd() + "…" : h.Text)</div>
+                </div>
+            </div>
+        }
+    </div>;
+
     private List<Step> RagSteps(string q, ChatResponse d)
     {
         var steps = new List<Step>();
@@ -444,9 +474,15 @@
                 ? @<div class="rewrite"><div class="from">@q</div><div>→ @resolved</div></div>
                 : @<span class="muted">Already a complete question. No rewrite needed.</span>, Tag: "memory", Node: 3));
 
-        steps.Add(new("Intent classification", "tfidf_lr model, 5 intent classes",
-            @<span>Predicted intent <span class="badge b">@d.Intent</span></span>, Tag: "ML", Node: 4));
+        var model = d.IntentModel ?? "tfidf_lr";
+        steps.Add(new("Intent classification",
+            d.IntentScores is { Count: > 0 } s ? $"{model} model, probability for each of {s.Count} intent classes" : $"{model} model",
+            d.IntentScores is { Count: > 0 }
+                ? @<div>@IntentBars(d.IntentScores)<div class="muted scorenote">Uncalibrated model probabilities. They label the request for the trace and the audit log, and never decide access.</div></div>
+                : @<span>Predicted intent <span class="badge b">@d.Intent</span></span>, Tag: "ML", Node: 4));
 
+        var hits = d.Retrieved ?? new();
+        var where = d.Retriever == "azure" ? "Azure AI Search" : "Local hybrid search";
         if (d.Comparison is { } cmp)
         {
             steps.Add(new("Clause retrieval", "Azure AI Search, one search per tier",
@@ -454,10 +490,19 @@
         }
         else if (d.Citations.Count > 0)
         {
-            steps.Add(new("Clause retrieval", $"Azure AI Search, top 5, filtered to {customer?.Product}",
-                @<span>@d.Citations.Count clause@(d.Citations.Count == 1 ? "" : "s") used for the answer.</span>, Tag: "Azure AI Search", Node: 5));
+            steps.Add(new("Clause retrieval", $"{where}, top {Math.Max(hits.Count, 1)}, filtered to {customer?.Product}",
+                hits.Count > 0
+                    ? @<div>@HitRows(hits)<div class="muted scorenote">@ScoreNote(d.Retriever) @d.Citations.Count of @hits.Count clauses were cited in the answer (highlighted).</div></div>
+                    : @<span>@d.Citations.Count clause@(d.Citations.Count == 1 ? "" : "s") used for the answer.</span>, Tag: where, Node: 5));
             steps.Add(new("Grounded answer", "Azure OpenAI writes only from the retrieved clauses",
                 @<div class="stream">@d.Answer</div>, Tag: "Azure OpenAI", Node: 6));
+        }
+        else if (hits.Count > 0)
+        {
+            steps.Add(new("Clause retrieval", $"{where}, top {hits.Count}, filtered to {customer?.Product}",
+                @<div>@HitRows(hits)<div class="muted scorenote">@ScoreNote(d.Retriever)</div></div>, Tag: where, Node: 5));
+            steps.Add(new("Grounded answer", "Grounding shield",
+                @<span><span class="verdict warn">Not found</span>None of these clauses supported an answer, so Saathi said it could not find it instead of guessing.</span>, Tag: "Azure OpenAI", Node: 6));
         }
         else
         {

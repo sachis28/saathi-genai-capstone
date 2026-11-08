@@ -37,6 +37,7 @@ def classify_intent(text):
         index = int(probabilities.argmax())
         confidence = float(probabilities[index])
         label = str(loaded.classes_[index])
+        scores = {str(c): float(v) for c, v in zip(loaded.classes_, probabilities)}
     else:
         import torch
         tokenizer,model = loaded
@@ -45,8 +46,9 @@ def classify_intent(text):
         index = int(probabilities.argmax())
         confidence = float(probabilities[index])
         label = model.config.id2label[index]
+        scores = {model.config.id2label[i]: float(v) for i, v in enumerate(probabilities.tolist())}
     # This score is uncalibrated and not an authorization or grounding decision.
-    return {"intent":label,"confidence":confidence,"model":provider}
+    return {"intent":label,"confidence":confidence,"model":provider,"scores":scores}
 
 
 async def renewal_worklist(frame=None):

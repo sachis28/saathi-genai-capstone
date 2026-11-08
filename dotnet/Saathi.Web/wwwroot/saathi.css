@@ -164,12 +164,13 @@ ol.steps::before { content: ""; position: absolute; left: 11px; top: 12px; botto
 .bar.top .fillbar { background: var(--primary); }
 .bar .v { font: 12px var(--mono); text-align: right; }
 .hits { border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
-.hit { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 8px; padding: 6px 10px; border-top: 1px solid var(--border); }
+.hit { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 8px; padding: 6px 10px; border-top: 1px solid var(--border); }
 .hit:first-child { border-top: 0; }
 .hit .score { font: 500 12px var(--mono); }
 .hit .id { font: 11.5px var(--mono); color: var(--text-3); }
 .hit .txt { font-size: 13px; }
 .hit.used { background: var(--primary-soft); }
+.scorenote { font-size: 12px; margin-top: 6px; }
 .tools { width: 100%; border-collapse: collapse; font-size: 12.5px; }
 .tools td, .tools th, table.events td, table.events th { text-align: left; padding: 5px 6px 5px 0; border-top: 1px solid var(--border); vertical-align: top; }
 .tools th, table.events th { font-weight: 600; color: var(--text-3); font-size: 12px; border-top: 0; }
