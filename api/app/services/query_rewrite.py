@@ -16,11 +16,15 @@ SYSTEM = (
 )
 
 
+# Returns a shorter search query, or the original question if rewriting is off or looks unsafe.
 def rewrite_query(question: str) -> str:
+    # Off by default; set QUERY_REWRITE=llm to turn it on.
     if os.getenv("QUERY_REWRITE", "off").lower() != "llm":
         return question
     try:
+        # Keep only the first line of whatever the model returns.
         rewritten = (get_llm().complete(SYSTEM, question) or "").strip().splitlines()[0].strip()
+    # Any provider error: just search with the original question.
     except Exception:
         return question
     # Never let the model widen or redirect the search: fall back on anything odd.

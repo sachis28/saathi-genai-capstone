@@ -1,3 +1,5 @@
+"""Audit log tests: events are hash-chained, editing or deleting a line is detected,
+and PII is redacted before it is written."""
 import json
 
 import pytest

@@ -1,3 +1,5 @@
+"""Quick check that the Azure AI Foundry chat model is reachable with the .env settings.
+Run: python api/scripts/check_foundry.py"""
 import os
 import sys
 

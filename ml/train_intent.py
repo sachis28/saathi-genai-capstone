@@ -1,3 +1,8 @@
+"""Trains the fast intent classifier: TF-IDF features + logistic regression.
+
+Tries three regularisation strengths (C), keeps the one with the best macro F1 on the dev
+split, then reports the final score once on the held-out test split.
+Run: python -m ml.train_intent  (writes artifacts/tfidf_lr/model.joblib, used by the API)"""
 import argparse
 
 import joblib
@@ -12,10 +17,13 @@ from ml.common import ARTIFACTS, LABELS, SEED, evaluate, load_split, write_json
 def train():
     train, dev = load_split("train"), load_split("dev")
     candidates = []
+    # Smaller C = stronger regularisation (simpler model); larger C fits the training data more closely.
     for c in [0.5, 2.0, 8.0]:
+        # TF-IDF on single words and word pairs (ngram_range=(1, 2)) turns each question into numbers.
         model = Pipeline([("tfidf", TfidfVectorizer(ngram_range=(1, 2), sublinear_tf=True)),
                           ("classifier", LogisticRegression(C=c, max_iter=1000, random_state=SEED))])
         model.fit(train.text, train.label)
+        # Macro F1 averages the F1 of each intent, so small intents count as much as big ones.
         score = float(f1_score(dev.label, model.predict(dev.text), average="macro", labels=LABELS))
         candidates.append((score, c, model))
     score, c, model = max(candidates, key=lambda x: x[0])
@@ -24,6 +32,7 @@ def train():
     joblib.dump(model, output / "model.joblib")
     write_json(output / "selection.json", {"criterion": "dev macro F1 only", "selected_C": c,
                "dev_macro_f1": score, "candidates": [{"C": x[1], "dev_macro_f1": x[0]} for x in candidates]})
+    # The test split is used only once, after the model is chosen, so the score is honest.
     test = load_split("test")
     return evaluate("tfidf_lr", test, model.predict(test.text), {"selected_C": c, "dev_macro_f1": score})
 

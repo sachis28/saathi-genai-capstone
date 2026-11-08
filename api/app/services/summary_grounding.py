@@ -3,13 +3,18 @@ import re
 
 from app.services.safety import is_injection
 
+# Interaction citation tags look like [I-0012].
 CITATION = re.compile(r'\[(I-[0-9]+)\]')
 
 
+# Collapse all whitespace so spacing differences don't count as a mismatch.
 def normalized(text):
     return ' '.join(text.split())
 
 
+# Checks an LLM summary line by line. Each line must be the EXACT interaction text followed by
+# its [I-...] tag, every interaction must appear exactly once, and nothing extra is allowed.
+# Returns the cited ids, or raises ValueError (the router turns that into a 502).
 def validate_summary(answer: str, history: list[dict]) -> list[str]:
     if not isinstance(answer, str) or not answer.strip() or is_injection(answer):
         raise ValueError('Unsafe or empty summary')

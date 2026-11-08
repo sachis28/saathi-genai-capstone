@@ -1,3 +1,5 @@
+"""Manual demo of vector search on the Azure index: embeds a question, finds the nearest
+clauses, and prints them with their scores. Run: python rag/azure/test_vector_search.py"""
 import os
 
 from openai import OpenAI

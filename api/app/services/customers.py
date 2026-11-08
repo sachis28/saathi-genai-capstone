@@ -1,3 +1,7 @@
+"""Loads customer (CRM) records and works out each policy's status from its renewal date.
+
+Status rule: renewal date today or later = ACTIVE; up to 30 days past = IN_GRACE
+(can still renew); more than 30 days past = LAPSED; cancelled is always explicit."""
 import json
 import logging
 import os
@@ -21,6 +25,7 @@ FALLBACK = {
 }
 
 
+# "Today" for the status rule. SAATHI_AS_OF_DATE pins it so demos and tests are repeatable.
 def reference_date(as_of: date | None = None) -> date:
     if as_of is not None:
         return as_of
@@ -30,6 +35,7 @@ def reference_date(as_of: date | None = None) -> date:
 
 def policy_metadata(row: dict, as_of: date | None = None) -> dict:
     """Authoritative 30-day grace rule; cancellation is always explicit."""
+    # Strict type check: "yes" or 1 is not accepted as a boolean.
     cancelled = row.get("cancelled", False)
     if type(cancelled) is not bool:
         raise ValueError("cancelled must be boolean")
@@ -44,12 +50,14 @@ def policy_metadata(row: dict, as_of: date | None = None) -> dict:
         return {"policy_status":None, "renewal_eligible":False,
                 "eligibility_reason":"MISSING_RENEWAL_DATE"}
     renewal = date.fromisoformat(renewal) if isinstance(renewal, str) else renewal
+    # Days until renewal: negative means the renewal date has already passed.
     days = (renewal - reference_date(as_of)).days
     status = "ACTIVE" if days >= 0 else "IN_GRACE" if days >= -30 else "LAPSED"
     return {"policy_status":status, "renewal_eligible":status != "LAPSED",
             "eligibility_reason":"LAPSED_BEYOND_GRACE" if status == "LAPSED" else None}
 
 
+# Converts one raw JSON row into a validated Customer object (with status fields added).
 def _to_customer(row: dict, as_of: date | None = None) -> Customer:
     values = dict(row)
     values["name"] = row.get("name") or row.get("customer_name") or row["customer_id"]
@@ -58,6 +66,7 @@ def _to_customer(row: dict, as_of: date | None = None) -> Customer:
     return Customer.model_validate(values)
 
 
+# Ownership check: an agent may only open customers assigned to them (404 or 403 otherwise).
 def authorize_customer(customer_id: str, agent_id: str) -> Customer:
     customer = load_customers().get(customer_id)
     if customer is None:
@@ -67,6 +76,7 @@ def authorize_customer(customer_id: str, agent_id: str) -> Customer:
     return customer
 
 
+# Data files may be a plain list or {"customers": [...]}; both are accepted.
 def _read(path: Path) -> list:
     raw = json.loads(path.read_text(encoding="utf-8"))
     return raw.get("customers", raw) if isinstance(raw, dict) else raw
@@ -90,6 +100,7 @@ def load_customers() -> Dict[str, Customer]:
     return customers
 
 
+# Customers this agent can still renew (used by the agent's worklist tool).
 def renewal_candidates(agent_id: str) -> list:
     """Auth first, then eligibility. Consent is enforced at send, not here."""
     return [c for c in load_customers().values() if c.agent_id == agent_id and c.renewal_eligible]

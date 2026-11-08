@@ -1,3 +1,4 @@
+"""Plan comparison tests: detecting "Silver vs Gold" questions and returning a cited table."""
 from fastapi.testclient import TestClient
 
 from app.main import app

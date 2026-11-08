@@ -1,3 +1,7 @@
+"""Writes the two evaluation files used by the RAG tests:
+- retrieval_gold_set.jsonl: test questions, each with the clause ids that should be retrieved;
+- poisoned_docs.jsonl: fake clauses with hidden instructions, used to test that the
+poisoned-clause filter keeps them away from the LLM."""
 import json
 from pathlib import Path
 

@@ -3,16 +3,20 @@ using System.Text.Json.Serialization;
 
 namespace Saathi.Client;
 
+// C# records that mirror the API's JSON (api/app/models/schemas.py).
+// JsonPropertyName maps C# PascalCase names to the API's snake_case field names.
 public record ChatRequest(
     [property: JsonPropertyName("customer_id")] string CustomerId,
     [property: JsonPropertyName("question")] string Question,
     [property: JsonPropertyName("session_id")] string? SessionId = null);
 
+// Which document, clause and version an answer is based on.
 public record Citation(
     [property: JsonPropertyName("source_id")] string SourceId,
     [property: JsonPropertyName("clause_id")] string ClauseId,
     [property: JsonPropertyName("version")] string Version);
 
+// What POST /chat returns. Comparison is only set for "Silver vs Gold" style questions.
 public record ChatResponse(
     [property: JsonPropertyName("answer")] string Answer,
     [property: JsonPropertyName("intent")] string Intent,
@@ -33,6 +37,7 @@ public record AgentChatResponse(
     [property: JsonPropertyName("trace")] List<AgentToolCall> Trace,
     [property: JsonPropertyName("orchestrator")] string Orchestrator);
 
+// Comparison table: one row per aspect, one cell per tier (null cell = "Not stated").
 public record ComparisonCell(
     [property: JsonPropertyName("text")] string Text,
     [property: JsonPropertyName("source_id")] string SourceId,
@@ -48,6 +53,7 @@ public record Comparison(
     [property: JsonPropertyName("tiers")] List<string> Tiers,
     [property: JsonPropertyName("rows")] List<ComparisonRow> Rows);
 
+// A customer's CRM record (only the fields the UI shows).
 public record Customer(
     [property: JsonPropertyName("customer_id")] string CustomerId,
     [property: JsonPropertyName("name")] string Name,
@@ -57,6 +63,7 @@ public record Customer(
     [property: JsonPropertyName("renewal_date")] string? RenewalDate = null,
     [property: JsonPropertyName("policy_status")] string? PolicyStatus = null);
 
+// A renewal message draft. Status: PENDING_APPROVAL -> APPROVED -> SIMULATED_SENT.
 public record Draft(
     [property: JsonPropertyName("draft_id")] string DraftId,
     [property: JsonPropertyName("customer_id")] string CustomerId,
@@ -64,6 +71,7 @@ public record Draft(
     [property: JsonPropertyName("status")] string Status,
     [property: JsonPropertyName("citations")] List<Citation> Citations);
 
+// Result of GET /audit/verify.
 public record AuditStatus(
     [property: JsonPropertyName("valid")] bool Valid,
     [property: JsonPropertyName("broken_at_seq")] int? BrokenAtSeq,

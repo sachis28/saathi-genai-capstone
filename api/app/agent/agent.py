@@ -30,10 +30,14 @@ from app.services import audit
 from app.services.answer import generate_answer, NOT_FOUND
 from app.services.safety import safe_log
 
+# Name of the Semantic Kernel plugin that holds our five tools.
 PLUGIN = "saathi"
+# Hard limit on tool calls per request, so the model can't loop forever.
 MAX_TOOL_CALLS = 3
+# Allowlist: the only tool names the agent may ever run.
 ALLOWED = {"lookup_customer", "worklist", "search_knowledge_base", "save_draft", "simulate_send"}
 
+# System prompt for the planning step. It only chooses tools; it does not write the final answer.
 PLANNER_PROMPT = (
     "You are Saathi, an insurance agent's copilot. Decide which tools to call to answer the "
     "agent's question about the selected customer. Use search_knowledge_base for any question "
@@ -42,6 +46,7 @@ PLANNER_PROMPT = (
 )
 
 
+# Lists the MCP tools' JSON schemas (name, description, parameters) for the UI and docs.
 async def tool_schemas() -> List[Dict[str, Any]]:
     """The MCP server's own JSON schemas (shown in the UI trace and the docs)."""
     return [{"type": "function", "function": {"name": t.name, "description": t.description or "",
@@ -49,6 +54,7 @@ async def tool_schemas() -> List[Dict[str, Any]]:
             for t in await mcp.list_tools() if t.name in ALLOWED]
 
 
+# Runs one tool by name, after enforcing the safety rules below.
 async def run_tool(name: str, args: Dict[str, Any], customer_id: str, agent_id: str) -> Any:
     if name not in ALLOWED or name not in TOOLS:
         return {"error": f"Tool {name} is not allowed"}
@@ -60,15 +66,20 @@ async def run_tool(name: str, args: Dict[str, Any], customer_id: str, agent_id: 
     return await result if inspect.isawaitable(result) else result
 
 
+# Wraps the five MCP tools as Semantic Kernel functions. One instance is created per request,
+# so customer_id, agent_id, the trace and the search hits never leak between requests.
 class SaathiPlugin:
     """The MCP tools as Semantic Kernel functions, bound to one request's customer and agent."""
 
     def __init__(self, customer_id: str, agent_id: str):
         self.customer_id = customer_id
         self.agent_id = agent_id
+        # Every tool call made in this request (shown in the UI as the agent trace).
         self.trace: List[Dict[str, Any]] = []
+        # Clauses returned by search_knowledge_base; the final answer can only cite these.
         self.hits: List[SearchHit] = []
 
+    # Shared path for every tool: enforce the call limit, run it, record it, log it.
     async def call(self, name: str, args: Dict[str, Any]) -> Any:
         if len(self.trace) >= MAX_TOOL_CALLS:
             return {"error": "Tool call limit reached"}
@@ -81,9 +92,11 @@ class SaathiPlugin:
         audit.log_event("agent_tool_call", tool=name, customer_id=self.customer_id)
         return result
 
+    # Semantic Kernel functions must return text, so tool results are turned into JSON strings.
     async def _json(self, name: str, **args) -> str:
         return json.dumps(await self.call(name, args), default=str)
 
+    # Each @kernel_function below is what the LLM "sees": a name, a description and typed arguments.
     @kernel_function(name="lookup_customer",
                      description="Get one customer's CRM record: product, tier, consent, renewal date and policy status.")
     async def lookup_customer(self, customer_id: Annotated[str, "Customer ID, e.g. C-204"]) -> str:
@@ -112,10 +125,12 @@ class SaathiPlugin:
         return await self._json("simulate_send", draft_id=draft_id)
 
 
+# Builds a Kernel with our plugin and a filter that enforces the tool budget.
 def build_kernel(plugin: SaathiPlugin) -> Kernel:
     kernel = Kernel()
     kernel.add_plugin(plugin, plugin_name=PLUGIN)
 
+    # A Semantic Kernel filter runs before each automatic function call the model asks for.
     async def limit_tool_calls(context: AutoFunctionInvocationContext, next):
         # Stop the model's tool loop once the per-request budget is used up.
         if context.function.name not in ALLOWED or len(plugin.trace) >= MAX_TOOL_CALLS:
@@ -127,6 +142,7 @@ def build_kernel(plugin: SaathiPlugin) -> Kernel:
     return kernel
 
 
+# Offline "planner": fixed rules instead of an LLM, so the demo and tests work without Azure.
 def mock_plan(question: str, customer_id: str) -> List[Tuple[str, Dict[str, Any]]]:
     """Deterministic planner for LLM_PROVIDER=mock (offline demo and tests)."""
     q = question.lower()
@@ -135,10 +151,12 @@ def mock_plan(question: str, customer_id: str) -> List[Tuple[str, Dict[str, Any]
     return [("lookup_customer", {"customer_id": customer_id}), ("search_knowledge_base", {"query": question})]
 
 
+# Creates the Semantic Kernel chat service that talks to our Azure AI Foundry model.
 def chat_service():
     """SK chat completion service on the Foundry deployment already used for LLM_PROVIDER=azure."""
     from openai import AsyncOpenAI
     from semantic_kernel.connectors.ai.open_ai import OpenAIChatCompletion
+    # Accept the endpoint with or without the /openai/v1 suffix.
     endpoint = os.environ["AZURE_OPENAI_ENDPOINT"].strip().rstrip("/")
     if endpoint.endswith("/openai/v1"):
         endpoint = endpoint[: -len("/openai/v1")]
@@ -146,10 +164,13 @@ def chat_service():
     return OpenAIChatCompletion(ai_model_id=os.environ["AZURE_OPENAI_DEPLOYMENT"].strip(), async_client=client)
 
 
+# Real planning with the LLM: Semantic Kernel lets the model call tools automatically
+# (FunctionChoiceBehavior.Auto), limited to our plugin and to MAX_TOOL_CALLS attempts.
 async def plan_with_llm(kernel: Kernel, question: str, customer_id: str) -> None:
     from semantic_kernel.connectors.ai.open_ai import OpenAIChatPromptExecutionSettings
     service = chat_service()
     settings = OpenAIChatPromptExecutionSettings(
+        # temperature=0 makes tool choice repeatable.
         temperature=0,
         function_choice_behavior=FunctionChoiceBehavior.Auto(
             filters={"included_plugins": [PLUGIN]}, maximum_auto_invoke_attempts=MAX_TOOL_CALLS),
@@ -159,10 +180,12 @@ async def plan_with_llm(kernel: Kernel, question: str, customer_id: str) -> None
     await service.get_chat_message_content(history, settings, kernel=kernel)
 
 
+# Entry point used by POST /agent/chat.
 async def run_agent(question: str, customer_id: str, agent_id: str) -> Dict[str, Any]:
     plugin = SaathiPlugin(customer_id, agent_id)
     kernel = build_kernel(plugin)
 
+    # LLM_PROVIDER=azure -> the model plans; anything else -> the fixed mock plan.
     if os.getenv("LLM_PROVIDER", "mock").lower() == "azure":
         await plan_with_llm(kernel, question, customer_id)
     else:
@@ -171,9 +194,11 @@ async def run_agent(question: str, customer_id: str, agent_id: str) -> Dict[str,
                 continue
             await kernel.invoke(function_name=name, plugin_name=PLUGIN, arguments=KernelArguments(**args))
 
+    # If search found clauses, write the answer with the SAME grounded pipeline as /chat.
     if plugin.hits:
         answer, citations = generate_answer(question, plugin.hits)
     else:
+        # Otherwise the only useful outcome is a saved draft; if nothing worked, say "not found".
         drafts = [t for t in plugin.trace if t["tool"] == "save_draft" and t["ok"]]
         answer = "Draft created and waiting for your approval." if drafts else NOT_FOUND
         citations: List[Citation] = []

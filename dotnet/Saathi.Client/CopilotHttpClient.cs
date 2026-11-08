@@ -3,10 +3,12 @@ using System.Text.Json;
 
 namespace Saathi.Client;
 
+// The real client: every method is one HTTP call to the FastAPI backend.
 public class CopilotHttpClient : ICopilotClient
 {
     private readonly HttpClient _http;
 
+    // Raised after every successful /chat answer, so other parts of the UI can react to it.
     public event EventHandler<ChatResponse>? AnswerReceived;
 
     public CopilotHttpClient(HttpClient http)
@@ -14,6 +16,7 @@ public class CopilotHttpClient : ICopilotClient
         _http = http;
     }
 
+    // GET /health. Returns false instead of throwing when the API is down.
     public async Task<bool> HealthAsync()
     {
         try
@@ -27,9 +30,11 @@ public class CopilotHttpClient : ICopilotClient
         }
     }
 
+    // Uri.EscapeDataString keeps user-typed ids from breaking or changing the URL.
     public Task<ApiResult<Customer>> GetCustomerAsync(string customerId) =>
         CallAsync<Customer>(() => _http.GetAsync($"/customers/{Uri.EscapeDataString(customerId)}"));
 
+    // POST /chat: the grounded RAG answer with citations.
     public async Task<ApiResult<ChatResponse>> ChatAsync(ChatRequest request)
     {
         var result = await CallAsync<ChatResponse>(() => _http.PostAsJsonAsync("/chat", request));
@@ -38,9 +43,11 @@ public class CopilotHttpClient : ICopilotClient
         return result;
     }
 
+    // POST /agent/chat: the Semantic Kernel agent's answer plus its tool-call trace.
     public Task<ApiResult<AgentChatResponse>> AgentChatAsync(ChatRequest request) =>
         CallAsync<AgentChatResponse>(() => _http.PostAsJsonAsync("/agent/chat", request));
 
+    // The draft workflow: create -> approve (human) -> send (simulated).
     public Task<ApiResult<Draft>> CreateDraftAsync(string customerId) =>
         CallAsync<Draft>(() => _http.PostAsJsonAsync("/drafts", new { customer_id = customerId }));
 
@@ -50,6 +57,7 @@ public class CopilotHttpClient : ICopilotClient
     public Task<ApiResult<Draft>> SendDraftAsync(string draftId) =>
         CallAsync<Draft>(() => _http.PostAsync($"/drafts/{Uri.EscapeDataString(draftId)}/send", null));
 
+    // GET /audit/verify: is the audit hash chain intact?
     public Task<ApiResult<AuditStatus>> VerifyAuditAsync() =>
         CallAsync<AuditStatus>(() => _http.GetAsync("/audit/verify"));
 

@@ -1,3 +1,4 @@
+"""Radar input contract tests: interaction windows, duplicates, unknown customers and sentiment averages."""
 from datetime import date, timedelta
 
 import pytest

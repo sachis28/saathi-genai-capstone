@@ -1,3 +1,5 @@
+"""Semantic Kernel agent + MCP tool tests: five tools with JSON schemas, cited answers,
+the 3-call limit, customer scoping, the tool allowlist, human approval and injection blocking."""
 import asyncio
 
 from fastapi.testclient import TestClient

@@ -1,3 +1,4 @@
+"""Smoke tests: the API starts, customers can be fetched, and /chat answers."""
 from fastapi.testclient import TestClient
 from app.main import app
 

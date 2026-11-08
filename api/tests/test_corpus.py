@@ -1,3 +1,4 @@
+"""Makes sure the search index never loads the poisoned test docs or the gold evaluation set."""
 from app.services.retriever import LocalRetriever, CORPUS_DIR
 
 def test_default_corpus_excludes_poison_and_gold(monkeypatch):

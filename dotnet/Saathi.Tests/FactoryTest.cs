@@ -3,6 +3,8 @@ using Saathi.Client;
 
 namespace Saathi.Tests;
 
+// Checks dependency injection: the mode picks the right client, the factory is a singleton,
+// and each scope gets its own chat session.
 public class FactoryTests
 {
     private static ServiceProvider Build(string mode) =>

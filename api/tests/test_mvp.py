@@ -1,3 +1,5 @@
+"""End-to-end MVP flow: ask -> cited answer -> draft -> approve -> simulated send,
+plus the consent block, double-approval block and follow-up memory."""
 from fastapi.testclient import TestClient
 
 from app.main import app

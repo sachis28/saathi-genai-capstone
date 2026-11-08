@@ -1,3 +1,5 @@
+"""Customer summary tests: only exact, cited interaction text is accepted, access is checked,
+injection never reaches the LLM, and provider errors don't leak details."""
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
