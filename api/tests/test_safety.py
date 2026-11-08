@@ -1,3 +1,4 @@
+"""Guardrail tests: injection blocking, poisoned-clause removal, the Grounding Shield and PII redaction."""
 import re
 
 from fastapi.testclient import TestClient
@@ -9,6 +10,7 @@ from app.services.safety import check_grounding, filter_poisoned, redact
 client = TestClient(app)
 
 
+# Helper: build a SearchHit for a fake clause.
 def hit(clause_id, text):
     return SearchHit(source_id="POL-TEST", clause_id=clause_id, version="v1",
                      product="Health", tier="Silver", text=text, score=1.0)

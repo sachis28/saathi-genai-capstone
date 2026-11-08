@@ -3,6 +3,8 @@ using Saathi.Client;
 
 namespace Saathi.Tests;
 
+// Checks the agent response model: the mock trace is scoped to the customer, and the
+// real API's JSON (tool trace, citations, resolved question) deserialises correctly.
 public class AgentTraceTests
 {
     [Fact]

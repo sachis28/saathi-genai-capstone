@@ -1,3 +1,4 @@
+"""Off-topic guard tests: jokes and weather get redirected, real policy questions do not."""
 from fastapi.testclient import TestClient
 
 from app.main import app

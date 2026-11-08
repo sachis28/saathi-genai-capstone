@@ -1,3 +1,7 @@
+"""Builds the synthetic policy library (insurance_docs.jsonl).
+
+Starts from sample_docs.jsonl and adds 40 more synthetic clauses, each as a tuple of
+(source_id, clause_id, product, tier, version, text). All data is made up for the capstone."""
 import json
 from pathlib import Path
 

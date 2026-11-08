@@ -9,10 +9,12 @@ from typing import Optional
 
 from app.models.schemas import Customer
 
+# Phrases like "this policy", "my policy", "the customer's policy".
 POLICY_REF = re.compile(
     r"\b(?:this|the|my|their|his|her)\s+(?:customer'?s?\s+)?policy\b|\bthis\s+customer'?s?\s+plan\b",
     re.IGNORECASE,
 )
+# Questions about renewal or expiry dates.
 RENEWAL_DATE_Q = re.compile(
     r"\b(when|what date|which date|due date|expiry|expire|expires|expiring)\b.*\b(renew\w*|expir\w*|due|end\w*)\b"
     r"|\brenewal date\b",
@@ -20,13 +22,16 @@ RENEWAL_DATE_Q = re.compile(
 )
 
 
+# Phrases that point at the customer ("this customer", "their", "client's").
 CUSTOMER_REF = re.compile(r"\b(this|the|my)\s+(customer|client)|\b(customer|client)'?s\b|\b(their|his|her)\b",
                           re.IGNORECASE)
+# Words asking for record details (premium, consent, status, agent...).
 DETAIL_Q = re.compile(
     r"\b(details?|info|information|profile|summary|premium|consent|status|agent|eligib\w*)\b"
     r"|\b(which|what)\s+(plan|product|tier)\b|\bwho is\b",
     re.IGNORECASE,
 )
+# Human-friendly text for each policy status code.
 STATUS_TEXT = {
     "ACTIVE": "Active",
     "IN_GRACE": "In the 30 day grace period (renewal date has passed)",
@@ -80,6 +85,7 @@ def renewal_answer(question: str, customer: Customer) -> Optional[str]:
             f"renews on {customer.renewal_date.isoformat()}. {status}").strip()
 
 
+# Same tier names as in compare.py.
 TIERS = ("Silver", "Gold", "Platinum")
 
 

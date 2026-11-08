@@ -1,3 +1,5 @@
+"""Customer-aware chat tests: "this policy" becomes the customer's plan, and record questions
+(renewal date, premium, consent) are answered from the CRM record, not from clauses."""
 from datetime import date
 
 from app.models.schemas import Customer

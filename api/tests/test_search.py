@@ -1,3 +1,4 @@
+"""Retrieval tests: the right clause is found, tier filters work, and /chat cites real clauses."""
 from fastapi.testclient import TestClient
 from app.main import app
 

@@ -1,3 +1,8 @@
+"""Compares three Azure AI Search methods on the retrieval gold set and writes docs/retrieval_report.md.
+
+Methods: (1) vector only, (2) hybrid = keyword + vector, (3) semantic hybrid = hybrid plus
+Azure's semantic reranker. Metrics: Recall@5 (did the expected clause appear in the top 5?)
+and MRR (how high up was the first correct clause? 1.0 = always first)."""
 import os
 import json
 from pathlib import Path
@@ -115,6 +120,7 @@ def generate_query_embeddings(queries):
 # METADATA FILTER
 # ==================================================
 
+# Every method searches only the product and tier the gold question is about.
 def build_filter(question):
 
     product = question["product"]
@@ -139,6 +145,7 @@ def vector_search(query, embedding, question):
     )
 
     results = search_client.search(
+        # search_text=None means pure vector search: no keyword matching at all.
         search_text=None,
         vector_queries=[vector_query],
         filter=build_filter(question),
@@ -169,6 +176,7 @@ def hybrid_search(query, embedding, question):
     )
 
     results = search_client.search(
+        # Passing both search_text and a vector query makes Azure run a hybrid search and fuse the results.
         search_text=query,
         vector_queries=[vector_query],
         filter=build_filter(question),
@@ -202,6 +210,7 @@ def semantic_hybrid_search(query, embedding, question):
         search_text=query,
         vector_queries=[vector_query],
         filter=build_filter(question),
+        # Same hybrid query, then the semantic ranker reorders the results by meaning.
         query_type="semantic",
         semantic_configuration_name="insurance-semantic-config",
         select=[
@@ -224,6 +233,7 @@ def semantic_hybrid_search(query, embedding, question):
 
 def evaluate_results(results, question):
 
+    # A clause is identified by (product, tier, clause_id), because clause ids repeat across tiers.
     expected = set(
         (
             question["product"],
@@ -249,8 +259,10 @@ def evaluate_results(results, question):
 
     relevant_found = expected.intersection(retrieved_set)
 
+    # Recall = share of the expected clauses that were found in the results.
     recall = len(relevant_found) / len(expected)
 
+    # Reciprocal rank = 1 / position of the first correct clause (0 if none was found).
     reciprocal_rank = 0.0
 
     for rank, document in enumerate(retrieved, start=1):

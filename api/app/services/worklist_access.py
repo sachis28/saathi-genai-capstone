@@ -22,16 +22,19 @@ from app.services.customers import policy_metadata, reference_date
 from datetime import date
 
 
+# Who is calling: the agent's id and the products they are allowed to see.
 class AgentPrincipal(BaseModel):
     model_config = ConfigDict(frozen=True, extra='forbid')
     agent_id: StrictStr = Field(min_length=1)
     allowed_products: tuple[StrictStr, ...] = Field(min_length=1)
 
 
+# How an agent is stored in the credentials file: the SHA-256 of their token, never the token.
 class AgentCredential(AgentPrincipal):
     token_sha256: StrictStr = Field(pattern=r'^[a-f0-9]{64}$')
 
 
+# The few CRM fields needed to decide access. Strict types: bad data is rejected, not guessed.
 class CustomerAccess(BaseModel):
     # Existing CRM fields are retained upstream; only access metadata is read here.
     model_config = ConfigDict(extra='ignore')
@@ -45,6 +48,7 @@ class CustomerAccess(BaseModel):
     renewal_eligible: StrictBool | None = None
 
 
+# Reads "Authorization: Bearer <token>" from the request. auto_error=False lets us return our own 401.
 bearer = HTTPBearer(auto_error=False)
 
 
@@ -60,12 +64,14 @@ def _read_json(path: Path):
     return json.loads(path.read_text(encoding='utf-8'), object_pairs_hook=unique_keys)
 
 
+# FastAPI dependency: turns a bearer token into an AgentPrincipal, or rejects the request.
 def authenticate_agent(
     credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer)],
 ) -> AgentPrincipal:
     if credentials is None or credentials.scheme.lower() != 'bearer':
         raise HTTPException(status_code=401, detail='Agent authentication required',
                             headers={'WWW-Authenticate': 'Bearer'})
+    # The credentials file path comes from configuration. No file = fail closed with 503.
     configured = os.getenv('SAATHI_AGENT_CREDENTIALS_FILE')
     try:
         if not configured:
@@ -78,6 +84,7 @@ def authenticate_agent(
             raise ValueError('Duplicate credential digest')
     except (OSError, ValueError, TypeError, ValidationError):
         raise HTTPException(status_code=503, detail='Agent authentication is not configured')
+    # Hash the presented token and compare in constant time (hmac.compare_digest) to resist timing attacks.
     digest = hashlib.sha256(credentials.credentials.encode('utf-8')).hexdigest()
     matches = [agent for agent in agents if hmac.compare_digest(agent.token_sha256, digest)]
     if not matches:
@@ -103,6 +110,7 @@ def filter_radar_rows(frame: pd.DataFrame, customers: list, principal: AgentPrin
     by_id = {c.customer_id: c for c in records}
     if len(by_id) != len(records):
         raise ValueError('Duplicate CRM customer ID')
+    # Allowed = assigned to this agent, in an allowed product, eligible, and ACTIVE or IN_GRACE.
     permitted = {
         c.customer_id for c in records
         if c.agent_id == principal.agent_id
@@ -120,6 +128,7 @@ def filter_radar_rows(frame: pd.DataFrame, customers: list, principal: AgentPrin
     return selected
 
 
+# Loads the Radar feature rows and CRM rows from disk, then filters them for this agent.
 def load_authorized_radar_frame(principal: AgentPrincipal) -> pd.DataFrame:
     features_path = Path(os.getenv('RADAR_INPUT_FILE') or str(ROOT / 'data/radar_input.json'))
     customers_path = Path(os.getenv('RADAR_CUSTOMERS_FILE') or str(ROOT / 'data/customers.json'))

@@ -1,3 +1,4 @@
+"""/metrics test: latency, block rate and citation rate are reported after a few requests."""
 from fastapi.testclient import TestClient
 
 from app.main import app

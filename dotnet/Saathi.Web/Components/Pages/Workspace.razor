@@ -5,8 +5,13 @@
 @inject ICopilotClient Client
 @inject ChatSession Session
 
+@* Agent Workspace: the main demo page (route "/"). Load a customer, ask questions in RAG or *@
+@* Agent mode, watch the step-by-step answer trace, create/approve/send a renewal draft, verify the audit log. *@
+@* InteractiveServer (above) means buttons and inputs run C# on the server over a live SignalR connection. *@
+@* @inject gives the page the Saathi API client and this user's chat session (see Saathi.Client). *@
 <PageTitle>Saathi - Agent Workspace</PageTitle>
 
+@* Page header: customer name and a green/red dot showing whether the API is reachable. *@
 <div class="ph">
     <div>
         <div class="crumb">Workspace@(customer is null ? "" : $" / Customer {customer.CustomerId}")</div>
@@ -17,6 +22,7 @@
     </span>
 </div>
 
+@* Error and success banners. *@
 @if (error is not null)
 {
     <div class="banner err" role="alert">@error</div>
@@ -26,6 +32,7 @@
     <div class="banner okmsg">@info</div>
 }
 
+@* Customer summary card: the CRM fields returned by GET /customers/{id}. *@
 <section class="card cust" aria-label="Customer summary">
     <div class="kv"><div class="k">Customer ID</div><div class="v">@(customer?.CustomerId ?? "-")</div></div>
     <div class="kv"><div class="k">Plan</div><div class="v">@(customer is null ? "-" : $"{customer.Product} · {customer.Tier}")</div></div>
@@ -37,15 +44,18 @@
         @if (customer?.Consent is { } consent) { <span class="badge @(consent ? "g" : "r")">@(consent ? "Given" : "Declined")</span> } else { <text>-</text> }
     </div></div>
     <div class="load-row">
+        @* @bind keeps the input box and the customerId field in sync. *@
         <input type="text" id="customer-id" @bind="customerId" placeholder="e.g. C-204" aria-label="Customer ID" />
         <button type="button" class="sec" @onclick="LoadCustomerAsync" disabled="@busy">Load</button>
     </div>
 </section>
 
+@* Two columns: the chat on the left, the answer trace on the right. *@
 <div class="cols">
     <section class="card" aria-label="Chat">
         <div class="card-h">
             <h2>Ask Saathi</h2>
+            @* Toggle between plain RAG (/chat) and the Semantic Kernel agent (/agent/chat). *@
             <div class="seg" role="group" aria-label="Answer mode">
                 <button type="button" class="@(agentMode ? "" : "on")" @onclick="() => agentMode = false">Ask (RAG)</button>
                 <button type="button" class="@(agentMode ? "on" : "")" @onclick="() => agentMode = true">Agent (Semantic Kernel)</button>
@@ -56,11 +66,13 @@
             {
                 <p class="muted">Load a customer, then ask a policy question. Follow-ups like "and what about Gold?" work too. The trace on the right shows each step Saathi took.</p>
             }
+            @* One question + one answer bubble per turn. *@
             @for (var i = 0; i < turns.Count; i++)
             {
                 var t = turns[i];
                 var idx = i;
                 <div class="msg agent"><div class="who">You@(t.Agent ? " · agent mode" : "")</div>@t.Question</div>
+                @* While waiting for the API, show a "typing" animation. *@
                 @if (t.Pending)
                 {
                     <div class="msg saathi"><div class="who">Saathi</div><span class="typing"><i></i><i></i><i></i></span></div>
@@ -69,6 +81,7 @@
                 {
                     <div class="msg saathi @(t.Blocked ? "blocked" : "") @(idx == selected ? "selected" : "")">
                         <div class="who">Saathi</div>
+                        @* Comparison answers are drawn as a table: one row per aspect, one column per tier, each cell cited. *@
                         @if (t.Comparison is { } cmp)
                         {
                             <div>@($"{cmp.Product} {string.Join(" vs ", cmp.Tiers)}, from the policy clauses")</div>
@@ -94,6 +107,7 @@
                         }
                         else
                         {
+                            @* Normal answers: the text, then one chip per citation (SCAN- chips are clauses read by OCR). *@
                             <div style="white-space: pre-line">@t.Answer</div>
                         }
                         <div class="meta">
@@ -112,12 +126,14 @@
         </div>
         <div class="ask">
             <div class="chips">
+                @* Suggested questions, to make the live demo quick. *@
                 @foreach (var s in Suggestions)
                 {
                     <button type="button" disabled="@(busy || customer is null)" @onclick="() => AskAsync(s)">@s</button>
                 }
             </div>
             <div class="ask-row">
+                @* @bind:event="oninput" updates the field on every key press; Enter sends (OnKeyAsync). *@
                 <input type="text" id="question" @bind="question" @bind:event="oninput" @onkeydown="OnKeyAsync"
                        placeholder="@(agentMode ? "Ask the agent, e.g. Is air ambulance covered?" : "Ask about this customer's policy")" aria-label="Question"
                        disabled="@(customer is null)" />
@@ -126,6 +142,7 @@
         </div>
     </section>
 
+    @* The answer trace: replays what happened inside the API for the selected answer. *@
     <section class="card" aria-label="Answer trace">
         <div class="card-h">
             <h2>Answer trace</h2>
@@ -143,8 +160,10 @@
             {
                 var t = turns[selected];
                 <div class="q-banner">Question: <b>@t.Question</b></div>
+                @* PathMap draws the request path (UI -> API -> Guardrails -> ... -> Response) and lights the current step. *@
                 <PathMap Nodes="@(t.Agent ? AgentNodes : RagNodes)" Lit="@LitNode(t)" Stopped="@(t.Blocked && shown >= t.Steps.Count)"
                          Route="@(t.Agent ? "POST /agent/chat" : "POST /chat")" />
+                @* One list item per step; the state class (active, done, stop, skip) drives the colours. *@
                 <ol class="steps">
                     @for (var i = 0; i < t.Steps.Count; i++)
                     {
@@ -172,6 +191,7 @@
     </section>
 </div>
 
+@* Lower row: renewal draft workflow and audit chain check. *@
 <div class="lower">
     <section class="card" aria-label="Renewal draft">
         <div class="card-h">
@@ -179,6 +199,7 @@
             @if (draft is not null) { <span class="badge @StatusBadge(draft.Status)">@draft.Status</span> }
         </div>
         <div class="pad">
+            @* The draft status flow: Draft -> Pending approval -> Approved -> Sent (simulated). *@
             <div class="flow">
                 <span class="st @(draft is null ? "on" : "")">Draft</span><span class="ar">→</span>
                 <span class="st @(draft?.Status == "PENDING_APPROVAL" ? "on" : "")">Pending approval</span><span class="ar">→</span>
@@ -197,6 +218,7 @@
                     <button type="button" class="ok" @onclick="ApproveAsync" disabled="@busy">Approve</button>
                     <button type="button" class="sec" @onclick="SendAsync" disabled="@busy">Send</button>
                 </div>
+                @* Send is never disabled in the UI on purpose: the SERVER enforces approval and consent. *@
                 <p class="muted">The Send button stays clickable on purpose. The server decides whether sending is allowed.</p>
             }
             else
@@ -206,6 +228,7 @@
         </div>
     </section>
 
+    @* Audit trail card: calls GET /audit/verify and shows whether the hash chain is intact. *@
     <section class="card" aria-label="Audit trail">
         <div class="card-h">
             <h2>Audit trail</h2>
@@ -232,10 +255,12 @@
     </section>
 </div>
 
+@* Everything below is the page's C# code. *@
 @code {
     // One step in the answer trace. Final is the state it ends in: done, stop or skip.
     private record Step(string Title, string What, RenderFragment? Detail, string Final = "done", string? Tag = null, int Node = 0);
 
+    // One chat turn as shown on the page (question, answer, citations and the trace steps).
     private class Turn
     {
         public required string Question { get; init; }
@@ -248,6 +273,7 @@
         public List<Step> Steps { get; set; } = new();
     }
 
+    // The boxes drawn by PathMap for each mode. The index of a box is the Step.Node value.
     private static readonly List<PathMap.Node> RagNodes = new()
     {
         new("UI", "Blazor"), new("API", "FastAPI"), new("SAFE", "Guardrails"), new("MEM", "Rewrite"),
@@ -260,6 +286,7 @@
         new("MCP", "MCP tools"), new("AIS", "AI Search"), new("AOAI", "OpenAI"), new("RES", "Response"),
     };
 
+    // The quick-question chips. "and what about Gold?" shows follow-up memory working.
     private static readonly string[] Suggestions =
     {
         "What is the waiting period for pre-existing diseases?",
@@ -268,6 +295,7 @@
         "Is air ambulance covered for Health Gold?",
     };
 
+    // Page state. Blazor re-renders the page when these change.
     private string customerId = "C-204";
     private string question = "";
     private Customer? customer;
@@ -283,6 +311,7 @@
     private bool busy;
     private bool? apiOk;
 
+    // After the first render, check the API's /health once.
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -292,6 +321,7 @@
         }
     }
 
+    // Wraps every button action: disables buttons while busy and clears old messages.
     private async Task Run(Func<Task> work)
     {
         busy = true;
@@ -301,6 +331,7 @@
         finally { busy = false; }
     }
 
+    // GET /customers/{id}. A new customer clears the chat and any old draft.
     private async Task LoadCustomerAsync() => await Run(async () =>
     {
         var r = await Client.GetCustomerAsync(customerId.Trim());
@@ -324,6 +355,7 @@
             await AskAsync(question);
     }
 
+    // Sends one question to /chat or /agent/chat, then builds and plays the trace.
     private async Task AskAsync(string text)
     {
         if (customer is null || string.IsNullOrWhiteSpace(text))
@@ -336,6 +368,7 @@
         selected = turns.Count - 1;
         shown = 0;
 
+        // Same session id every time, so the API's memory can resolve follow-ups.
         await Run(async () =>
         {
             if (turn.Agent)
@@ -347,6 +380,7 @@
                     turn.Citations = r.Data.Citations;
                     turn.Steps = AgentSteps(q, customer.CustomerId, r.Data);
                 }
+                // The agent endpoint answers a prompt injection with a 400 "BLOCKED" error.
                 else if (r.Error?.Contains("BLOCKED") == true)
                 {
                     turn.Blocked = true;
@@ -364,6 +398,7 @@
                     turn.Answer = d.Answer;
                     turn.Citations = d.Citations;
                     turn.Comparison = d.Comparison;
+                    // /chat answers a prompt injection with intent "prompt_injection".
                     turn.Blocked = d.Intent == "prompt_injection";
                     turn.Steps = RagSteps(q, d);
                 }
@@ -372,6 +407,7 @@
         });
 
         turn.Pending = false;
+        // Nothing came back (an error was shown), so drop the empty turn.
         if (turn.Steps.Count == 0)
         {
             turns.Remove(turn);
@@ -385,6 +421,7 @@
     private async Task ShowTraceAsync(int index)
     {
         if (index < 0 || index >= turns.Count) return;
+        // playId cancels an older replay if the user starts a new one.
         var id = ++playId;
         selected = index;
         var steps = turns[index].Steps;
@@ -397,6 +434,7 @@
         }
     }
 
+    // Which PathMap box should be lit right now.
     private int LitNode(Turn t)
     {
         if (t.Pending || t.Steps.Count == 0) return 1;
@@ -409,6 +447,7 @@
 
     private static bool IsScan(Citation c) => c.SourceId.StartsWith("SCAN-", StringComparison.OrdinalIgnoreCase);
 
+    // A row of citation chips, used inside the trace steps.
     private RenderFragment CiteChips(List<Citation> cites) => @<div class="meta">
         @foreach (var c in cites)
         {
@@ -417,9 +456,11 @@
         }
     </div>;
 
+    // Builds the trace for a /chat answer from the API response.
     private List<Step> RagSteps(string q, ChatResponse d)
     {
         var steps = new List<Step>();
+        // Blocked: one red step, the rest marked as skipped.
         if (d.Intent == "prompt_injection")
         {
             steps.Add(new("Guardrails", "Prompt-injection check before retrieval or the LLM",
@@ -428,6 +469,7 @@
                 steps.Add(new(title, "", @<span>Skipped. The guardrail stopped this question.</span>, "skip", Node: node));
             return steps;
         }
+        // Off-topic: polite redirect, retrieval skipped.
         if (d.Intent == "out_of_scope" && d.Citations.Count == 0)
         {
             steps.Add(new("Guardrails", "Off-topic check", @<span><span class="verdict warn">Redirected</span>Not an insurance question, so Saathi replied with a polite redirect and did not search.</span>, Node: 2));
@@ -438,6 +480,7 @@
         steps.Add(new("Guardrails", "Prompt-injection and off-topic checks",
             @<span><span class="verdict pass">Passed</span>Policy question for @customer?.CustomerId.</span>, Node: 2));
 
+        // Show the follow-up rewrite if memory changed the question.
         var resolved = d.ResolvedQuestion;
         steps.Add(new("Follow-up rewrite", "Chat memory completes short follow-ups",
             resolved is not null && !string.Equals(resolved, q, StringComparison.OrdinalIgnoreCase)
@@ -475,6 +518,7 @@
         return steps;
     }
 
+    // Builds the trace for an /agent/chat answer: kernel, each MCP tool call, then the grounded answer.
     private List<Step> AgentSteps(string q, string customerIdForRun, AgentChatResponse? d)
     {
         var steps = new List<Step>();
@@ -493,6 +537,7 @@
         {
             var call = d.Trace[i];
             var n = i + 1;
+            // Show the tool arguments, hiding empty ones.
             var args = string.Join(", ", call.Args
                 .Where(a => !(a.Value.ValueKind == JsonValueKind.String && a.Value.GetString() == ""))
                 .Select(a => $"{a.Key}: {a.Value.GetRawText()}"));
@@ -517,6 +562,7 @@
         return steps;
     }
 
+    // Draft buttons: each one calls the API and shows the server's answer (or its BLOCKED error).
     private async Task CreateDraftAsync() => await Run(async () =>
     {
         var r = await Client.CreateDraftAsync(customer!.CustomerId);
@@ -541,6 +587,7 @@
         if (r.Success) audit = r.Data; else error = r.Error;
     });
 
+    // Badge colour for each draft status.
     private static string StatusBadge(string status) => status switch
     {
         "PENDING_APPROVAL" => "a",

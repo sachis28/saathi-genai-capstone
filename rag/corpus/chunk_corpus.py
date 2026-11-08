@@ -1,3 +1,7 @@
+"""Splits the policy documents (insurance_docs.jsonl) into search-sized chunks (insurance_chunks.jsonl).
+
+Each chunk keeps its source_id, clause_id, product, tier and version, so every search
+result can still be cited back to the exact clause it came from."""
 import json
 import re
 from pathlib import Path
@@ -11,6 +15,8 @@ BASE_DIR = Path(__file__).parent
 INPUT_FILE = BASE_DIR / "insurance_docs.jsonl"
 OUTPUT_FILE = BASE_DIR / "insurance_chunks.jsonl"
 
+# Max characters per chunk, and how many characters neighbouring chunks share,
+# so a sentence cut at a boundary still appears whole in one of the two chunks.
 CHUNK_SIZE = 1200
 CHUNK_OVERLAP = 150
 
@@ -35,6 +41,7 @@ def load_documents(file_path):
 # --------------------------------------------------
 
 def split_text(text):
+    # Collapse runs of spaces and newlines into single spaces.
     text = re.sub(r"\s+", " ", text).strip()
 
     if len(text) <= CHUNK_SIZE:
@@ -61,6 +68,7 @@ def split_text(text):
         if end >= len(text):
             break
 
+        # Step back by the overlap for the next chunk (and always move forward at least 1 character).
         start = max(end - CHUNK_OVERLAP, start + 1)
 
     return chunks
@@ -80,6 +88,7 @@ def create_chunks(documents):
         for number, chunk_text in enumerate(text_chunks, start=1):
 
             chunk_record = {
+                # A unique, readable id per chunk, e.g. POL-HEALTH-GOLD-CL-WAIT-01-v1-chunk-001.
                 "id": (
                     f"{document['source_id']}-"
                     f"{document['clause_id']}-"

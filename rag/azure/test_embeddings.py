@@ -1,3 +1,5 @@
+"""Quick connection check: embeds one sample sentence with our Azure embedding deployment
+and prints the vector size (should be 1536). Run: python rag/azure/test_embeddings.py"""
 import os
 from openai import OpenAI
 

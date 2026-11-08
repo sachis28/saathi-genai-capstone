@@ -30,6 +30,7 @@ import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+# Let this script import the API package (api/app) the same way the server does.
 sys.path[:0] = [str(ROOT), str(ROOT / "api")]
 
 from fastapi.testclient import TestClient  # noqa: E402
@@ -41,8 +42,10 @@ from app.services.retriever import get_retriever  # noqa: E402
 from app.services.topic_guard import OFF_TOPIC_MSG  # noqa: E402
 
 GOLD = ROOT / "rag" / "corpus" / "retrieval_gold_set.jsonl"
+# CI fails (--check) if Recall@5 drops below 0.85 or any off-topic question is not redirected.
 TARGETS = {"recall_at_5": 0.85, "off_topic_redirect_rate": 1.0}
 
+# In-domain questions the policy library cannot answer: the right reply is a refusal.
 UNANSWERABLE = [
     ("Does Health Platinum include a free gym membership?", "Health", "Platinum"),
     ("Is there a loyalty discount for paying three years of premium upfront?", "Health", "Silver"),
@@ -50,6 +53,7 @@ UNANSWERABLE = [
     ("Can the premium for Health Silver be paid in cryptocurrency?", "Health", "Silver"),
     ("Does Motor Gold include a free annual car wash?", "Motor", "Gold"),
 ]
+# Questions that have nothing to do with insurance: the right reply is the polite redirect.
 OFF_TOPIC = ["Tell me a joke", "What is the weather in Pune today?", "Write a poem about the sea",
              "Book a flight to Delhi", "Who won the cricket match yesterday?"]
 
@@ -64,6 +68,7 @@ def customer_for(product: str, tier: str) -> str:
     return "C-204"
 
 
+# Ask one question through the real /chat endpoint (in-process test client) and time it.
 def ask(client: TestClient, question: str, customer_id: str):
     start = time.perf_counter()
     body = client.post("/chat", json={"customer_id": customer_id, "question": question}).json()
@@ -77,15 +82,18 @@ def run() -> dict:
     rows, latencies = [], []
 
     recalls, rrs, cite_hits, answered = [], [], [], []
+    # Part 1: 40 answerable questions. Measure retrieval alone, then the full /chat answer.
     for g in gold:
         product = None if g["product"] == "All" else g["product"]
         tier = None if g["tier"] == "All" else g["tier"]
         expected = set(g["expected_clause_ids"])
         retrieved = [h.clause_id for h in retriever.search(g["query"], k=5, product=product, tier=tier)]
+        # Recall@5: share of expected clauses found in the top 5. rr: 1 / rank of the first correct one.
         recall = len(expected & set(retrieved)) / len(expected)
         rr = next((1 / (i + 1) for i, c in enumerate(retrieved) if c in expected), 0.0)
         body, ms = ask(client, g["query"], customer_for(g["product"], g["tier"]))
         cited = [c["clause_id"] for c in body["citations"]]
+        # Citation hit: did the final answer cite at least one of the expected clauses?
         hit = bool(expected & set(cited))
         recalls.append(recall); rrs.append(rr); cite_hits.append(hit); latencies.append(ms)
         answered.append(body["answer"] != NOT_FOUND)
@@ -93,6 +101,7 @@ def run() -> dict:
                      "recall_at_5": recall, "rr": round(rr, 3), "cited": cited, "citation_hit": hit,
                      "answer": body["answer"][:300]})
 
+    # Part 2: unanswerable questions should be refused, not answered with a guess.
     refusals = []
     for q, product, tier in UNANSWERABLE:
         body, ms = ask(client, q, customer_for(product, tier))
@@ -100,6 +109,7 @@ def run() -> dict:
         refusals.append(ok); latencies.append(ms)
         rows.append({"type": "unanswerable", "query": q, "refused": ok, "answer": body["answer"][:300]})
 
+    # Part 3: off-topic questions should get the redirect (or the injection block).
     redirects = []
     for q in OFF_TOPIC:
         body, ms = ask(client, q, "C-204")
@@ -121,6 +131,7 @@ def run() -> dict:
     return {"metrics": metrics, "rows": rows}
 
 
+# Save the raw per-query results as evidence, and update the Markdown report section for this mode.
 def write(result: dict) -> None:
     m = result["metrics"]
     evidence = ROOT / "docs" / "evidence" / f"rag_eval_{m['mode']}.json"

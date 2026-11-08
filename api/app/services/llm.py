@@ -1,3 +1,10 @@
+"""LLM adapters: one small interface, three providers, chosen by LLM_PROVIDER.
+
+- mock   (default) no key needed; echoes the top clauses with their citation tags
+- ollama a local model such as phi3
+- azure  our model deployed in Azure AI Foundry
+The rest of the app only calls get_llm().complete(system, user), so switching provider
+is a configuration change, not a code change."""
 import os
 import re
 from abc import ABC, abstractmethod
@@ -11,6 +18,7 @@ from dotenv import load_dotenv
 # so "LLM_PROVIDER=mock pytest" still overrides the .env value.
 load_dotenv(Path(__file__).resolve().parents[3] / ".env")
 
+# Matches one CONTEXT line of the prompt: "[TAG] (Product/Tier v1) clause text".
 CONTEXT_LINE = re.compile(r"^(\[[^\]]+\])\s*\([^)]*\)\s*(.+)$", re.MULTILINE)
 
 
@@ -26,6 +34,7 @@ class MockLLM(LLMAdapter):
     """No API key needed. Answers from the top 2 context clauses with their tags."""
 
     def complete(self, system: str, user: str) -> str:
+        # Pull every clause out of the prompt and "answer" with the first two, keeping their tags.
         matches = CONTEXT_LINE.findall(user)
         if not matches:
             return "I could not find this in the policy documents."
@@ -33,6 +42,7 @@ class MockLLM(LLMAdapter):
         return " ".join(parts)
 
 
+# Calls a local Ollama server over HTTP.
 class OllamaLLM(LLMAdapter):
     def __init__(self):
         self.url = os.getenv("OLLAMA_URL", "http://localhost:11434") + "/api/chat"
@@ -68,6 +78,7 @@ class AzureOpenAILLM(LLMAdapter):
         )
         self.deployment = os.environ["AZURE_OPENAI_DEPLOYMENT"].strip()
 
+    # temperature=0 = most predictable answer, which suits factual, cited answers.
     def complete(self, system: str, user: str) -> str:
         r = self.client.chat.completions.create(
             model=self.deployment,
@@ -80,6 +91,7 @@ class AzureOpenAILLM(LLMAdapter):
         return r.choices[0].message.content
 
 
+# lru_cache: create the adapter once and reuse it for every request.
 @lru_cache
 def get_llm() -> LLMAdapter:
     provider = os.getenv("LLM_PROVIDER", "mock").lower()
