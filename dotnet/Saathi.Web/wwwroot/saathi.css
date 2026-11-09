@@ -171,6 +171,21 @@ ol.steps::before { content: ""; position: absolute; left: 11px; top: 12px; botto
 .hit .txt { font-size: 13px; }
 .hit.used { background: var(--primary-soft); }
 .scorenote { font-size: 12px; margin-top: 6px; }
+details.more { margin-top: 8px; }
+details.more > summary { cursor: pointer; font-size: 13px; color: var(--primary); width: fit-content; list-style: none; }
+details.more > summary::-webkit-details-marker { display: none; }
+details.more > summary::before { content: "▸"; display: inline-block; width: 14px; transition: transform .15s; }
+details.more[open] > summary::before { transform: rotate(90deg); }
+details.more[open] > summary { margin-bottom: 8px; }
+details.more .sub { font-size: 12px; font-weight: 600; color: var(--text-3); margin: 10px 0 4px; }
+details.more .sub:first-of-type { margin-top: 0; }
+.terms { display: flex; flex-wrap: wrap; gap: 4px; }
+.term { font: 12px var(--mono); padding: 2px 6px; border-radius: 4px; background: var(--primary-soft); }
+.term b { font-weight: 600; }
+.term.neg { background: var(--subtle); color: var(--text-3); }
+.dkv { display: grid; grid-template-columns: 90px minmax(0, 1fr); gap: 4px 10px; font-size: 13px; margin-bottom: 8px; }
+.dkv .k { color: var(--text-3); font-size: 12px; }
+.dkv .m { font: 12px var(--mono); overflow-wrap: anywhere; }
 .tools { width: 100%; border-collapse: collapse; font-size: 12.5px; }
 .tools td, .tools th, table.events td, table.events th { text-align: left; padding: 5px 6px 5px 0; border-top: 1px solid var(--border); vertical-align: top; }
 .tools th, table.events th { font-weight: 600; color: var(--text-3); font-size: 12px; border-top: 0; }

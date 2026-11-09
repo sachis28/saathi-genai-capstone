@@ -2,7 +2,7 @@
 
 FastAPI uses these to validate requests, build responses and generate the /docs page."""
 from pydantic import BaseModel, StrictBool, Field
-from typing import Dict, List, Optional, Literal
+from typing import Any, Dict, List, Optional, Literal
 from datetime import date
 
 
@@ -61,7 +61,10 @@ class ChatResponse(BaseModel):
     intent_confidence: Optional[float] = None
     intent_model: Optional[str] = None
     intent_scores: Dict[str, float] = {}
+    intent_features: List[Dict[str, Any]] = []  # [{"term": "waiting period", "weight": 0.41}]
     retriever: Optional[str] = None
+    search_query: Optional[str] = None
+    search_filter: Dict[str, str] = {}
     retrieved: List[RetrievedClause] = []
 
 

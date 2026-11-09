@@ -473,6 +473,24 @@
         }
     </div>;
 
+    // Clause retrieval step: one summary line, with the query, filter and ranked hits behind "Show details".
+    private static RenderFragment SearchDetail(ChatResponse d, List<RetrievedClause> hits, string summary) => @<div>
+        <span>@summary <span class="muted">Top score @Num(hits[0].Score, hits[0].Score < 0.1 ? "0.0000" : "0.00")</span></span>
+        <details class="more">
+            <summary>Show details</summary>
+            <div class="dkv">
+                @if (d.SearchQuery is { } sq) { <span class="k">Query sent</span><span class="m">@sq</span> }
+                @if (d.SearchFilter is { Count: > 0 } sf)
+                {
+                    <span class="k">Filter</span><span class="m">@string.Join(" and ", sf.Select(kv => $"({kv.Key} = '{kv.Value}' or 'All')"))</span>
+                }
+                <span class="k">Mode</span><span>@(d.Retriever == "azure" ? "Hybrid: keyword + vector (text-embedding-3-small), then the semantic reranker" : "Hybrid: BM25 keyword + MiniLM vector, merged with reciprocal rank fusion")</span>
+            </div>
+            @HitRows(hits)
+            <div class="muted scorenote">@ScoreNote(d.Retriever) Highlighted rows were cited in the answer. Only these clauses are given to the LLM. Code: api/app/services/retriever.py.</div>
+        </details>
+    </div>;
+
     private static RenderFragment HitRows(List<RetrievedClause> hits) => @<div class="hits">
         @foreach (var h in hits)
         {
@@ -520,10 +538,36 @@
 
         var model = d.IntentModel ?? "tfidf_lr";
         steps.Add(new("Intent classification",
-            d.IntentScores is { Count: > 0 } s ? $"{model} model, probability for each of {s.Count} intent classes" : $"{model} model",
-            d.IntentScores is { Count: > 0 }
-                ? @<div>@IntentBars(d.IntentScores)<div class="muted scorenote">Uncalibrated model probabilities. They label the request for the trace and the audit log, and never decide access.</div></div>
-                : @<span>Predicted intent <span class="badge b">@d.Intent</span></span>, Tag: "ML", Node: 4));
+            d.IntentScores is { Count: > 0 } s ? $"{model} model, {s.Count} intent classes" : $"{model} model",
+            @<div>
+                <span>Predicted intent <span class="badge b">@d.Intent</span>
+                    @if (d.IntentConfidence is { } conf) { <span class="muted">with @Num(conf * 100, "0.#")% confidence</span> }</span>
+                @if (d.IntentScores is { Count: > 0 })
+                {
+                    <details class="more">
+                        <summary>Show details</summary>
+                        <div class="sub">Probability for each class</div>
+                        @IntentBars(d.IntentScores)
+                        @if (d.IntentFeatures is { Count: > 0 } feats)
+                        {
+                            <div class="sub">Words that drove the prediction</div>
+                            <div class="terms">
+                                @foreach (var f in feats)
+                                {
+                                    <span class="term @(f.Weight < 0 ? "neg" : "")" title="TF-IDF value x model weight">@f.Term <b>@(f.Weight >= 0 ? "+" : "")@Num(f.Weight, "0.00")</b></span>
+                                }
+                            </div>
+                        }
+                        <div class="muted scorenote">
+                            @if (model == "tfidf_lr")
+                            {
+                                <span>How it works: TF-IDF turns the question into word and word-pair weights, then logistic regression gives each class a probability. A plus number pushed towards <b>@d.Intent</b>, a minus number pushed away. </span>
+                            }
+                            The probabilities are uncalibrated. They label the request for the trace and the audit log, and never decide access. Code: api/app/services/ml_service.py · classify_intent().
+                        </div>
+                    </details>
+                }
+            </div>, Tag: "ML", Node: 4));
 
         var hits = d.Retrieved ?? new();
         var where = d.Retriever == "azure" ? "Azure AI Search" : "Local hybrid search";
@@ -536,7 +580,7 @@
         {
             steps.Add(new("Clause retrieval", $"{where}, top {Math.Max(hits.Count, 1)}, filtered to {customer?.Product}",
                 hits.Count > 0
-                    ? @<div>@HitRows(hits)<div class="muted scorenote">@ScoreNote(d.Retriever) @d.Citations.Count of @hits.Count clauses were cited in the answer (highlighted).</div></div>
+                    ? SearchDetail(d, hits, $"{d.Citations.Count} of {hits.Count} clauses cited in the answer.")
                     : @<span>@d.Citations.Count clause@(d.Citations.Count == 1 ? "" : "s") used for the answer.</span>, Tag: where, Node: 5));
             steps.Add(new("Grounded answer", "Azure OpenAI writes only from the retrieved clauses",
                 @<div class="stream">@d.Answer</div>, Tag: "Azure OpenAI", Node: 6));
@@ -544,7 +588,7 @@
         else if (hits.Count > 0)
         {
             steps.Add(new("Clause retrieval", $"{where}, top {hits.Count}, filtered to {customer?.Product}",
-                @<div>@HitRows(hits)<div class="muted scorenote">@ScoreNote(d.Retriever)</div></div>, Tag: where, Node: 5));
+                SearchDetail(d, hits, $"{hits.Count} clauses found, none cited."), Tag: where, Node: 5));
             steps.Add(new("Grounded answer", "Grounding shield",
                 @<span><span class="verdict warn">Not found</span>None of these clauses supported an answer, so Saathi said it could not find it instead of guessing.</span>, Tag: "Azure OpenAI", Node: 6));
         }
@@ -565,6 +609,16 @@
     }
 
     // Builds the trace for an /agent/chat answer: kernel, each MCP tool call, then the grounded answer.
+    // What each MCP tool does, shown under "Show details" on an agent tool call.
+    private static readonly Dictionary<string, (string What, string Rule)> ToolInfo = new()
+    {
+        ["lookup_customer"] = ("Reads the customer's CRM record: product, tier, consent, renewal date and policy status.", "customer_id is replaced with the selected customer, whatever the model asked for."),
+        ["worklist"] = ("Lists the agent's customers whose policy can still be renewed (ACTIVE or IN_GRACE).", "agent_id is replaced with the signed-in agent."),
+        ["search_knowledge_base"] = ("Searches the policy clauses in Azure AI Search, filtered by product and tier, and returns cited clauses.", "Only clauses returned here can be cited in the answer."),
+        ["save_draft"] = ("Creates a renewal message draft for the customer.", "Saved as PENDING_APPROVAL. A human must approve it."),
+        ["simulate_send"] = ("Pretends to send an approved draft. Nothing real is sent.", "Refused unless a human approved the draft and the customer gave consent."),
+    };
+
     private List<Step> AgentSteps(string q, string customerIdForRun, AgentChatResponse? d)
     {
         var steps = new List<Step>();
@@ -596,6 +650,17 @@
                         @if (scoped) { <span class="muted">customer_id is forced to @customerIdForRun in code</span> }
                         <span class="budget">@for (var b = 0; b < 3; b++) { <i class="@(b < n ? "used" : "")"></i> }</span>
                     </span>
+                    @if (ToolInfo.TryGetValue(call.Tool, out var info))
+                    {
+                        <details class="more">
+                            <summary>Show details</summary>
+                            <div class="dkv">
+                                <span class="k">What it does</span><span>@info.What</span>
+                                <span class="k">Rule in code</span><span>@info.Rule</span>
+                                <span class="k">Code</span><span class="m">api/app/agent/tools.py · @(call.Tool)()</span>
+                            </div>
+                        </details>
+                    }
                 </div>, call.Ok ? "done" : "stop", "MCP", call.Tool == "search_knowledge_base" ? 5 : 4));
         }
         if (d.Trace.Count == 0)

@@ -37,7 +37,10 @@ public class MockCopilotClient : ICopilotClient
             IntentConfidence: 0.93,
             IntentModel: "tfidf_lr",
             IntentScores: new() { ["policy_question"] = 0.93, ["compare_products"] = 0.04, ["out_of_scope"] = 0.03 },
+            IntentFeatures: new() { new("waiting period", 0.47), new("is", 0.36) },
             Retriever: "local",
+            SearchQuery: request.Question,
+            SearchFilter: new() { ["product"] = "Health" },
             Retrieved: new()
             {
                 new("MOCK-DOC", "CL-0", "v0", "Mock clause text.", 0.0328, true),

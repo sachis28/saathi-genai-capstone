@@ -27,8 +27,16 @@ public record ChatResponse(
     [property: JsonPropertyName("intent_confidence")] double? IntentConfidence = null,
     [property: JsonPropertyName("intent_model")] string? IntentModel = null,
     [property: JsonPropertyName("intent_scores")] Dictionary<string, double>? IntentScores = null,
+    [property: JsonPropertyName("intent_features")] List<TermWeight>? IntentFeatures = null,
     [property: JsonPropertyName("retriever")] string? Retriever = null,
+    [property: JsonPropertyName("search_query")] string? SearchQuery = null,
+    [property: JsonPropertyName("search_filter")] Dictionary<string, string>? SearchFilter = null,
     [property: JsonPropertyName("retrieved")] List<RetrievedClause>? Retrieved = null);
+
+// A word or phrase from the question and how much it pushed the TF-IDF model towards the predicted intent.
+public record TermWeight(
+    [property: JsonPropertyName("term")] string Term,
+    [property: JsonPropertyName("weight")] double Weight);
 
 // One ranked search hit behind a /chat answer. Used = the answer cites it.
 public record RetrievedClause(

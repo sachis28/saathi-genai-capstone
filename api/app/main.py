@@ -162,6 +162,7 @@ async def chat(req: ChatRequest):
     # Pick ONE of three ways to answer:
     comparison = None
     retrieved = []
+    search_query, search_filter = None, {}
     # (a) questions about the customer's own data (renewal date, consent...) come from the CRM record;
     from_record = record_answer(resolved, customer)
     if from_record:
@@ -175,8 +176,10 @@ async def chat(req: ChatRequest):
         # "this policy" becomes e.g. "Health Gold policy" so retrieval finds the right clauses.
         scoped = scope_question(resolved, customer)
         # Search only this customer's product, and their tier unless the question names another tier.
-        hits = get_retriever().search(rewrite_query(scoped), k=5, product=customer.product,
-                                      tier=tier_filter(req.question if tiers_named(req.question) else scoped, customer))
+        search_query = rewrite_query(scoped)
+        tier = tier_filter(req.question if tiers_named(req.question) else scoped, customer)
+        search_filter = {k: v for k, v in (("product", customer.product), ("tier", tier)) if v}
+        hits = get_retriever().search(search_query, k=5, product=customer.product, tier=tier)
         # generate_answer applies the safety checks: poisoned-clause filter, valid citations, grounding.
         answer, citations = generate_answer(scoped, hits)
         cited = {(c.source_id, c.clause_id) for c in citations}
@@ -203,7 +206,10 @@ async def chat(req: ChatRequest):
         intent_confidence=classification.get("confidence"),
         intent_model=classification.get("model"),
         intent_scores=classification.get("scores") or {},
+        intent_features=classification.get("features") or [],
         retriever=os.getenv("RETRIEVER", "local") if retrieved else None,
+        search_query=search_query,
+        search_filter=search_filter,
         retrieved=retrieved,
     )
 
