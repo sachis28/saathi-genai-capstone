@@ -232,7 +232,7 @@ async def compare(customer_id: str, tiers: str = "Silver,Gold"):
 # POST /agent/chat: the Semantic Kernel agent version of /chat (see app/agent/agent.py).
 @app.post("/agent/chat")
 async def agent_chat(req: ChatRequest):
-    """Agentic RAG: the model picks MCP tools (max 3, allowlisted); the answer stays grounded."""
+    """Agentic RAG: the model picks MCP tools (max 5, allowlisted); the answer stays grounded."""
     customer = get_customer_or_404(req.customer_id)
     # The agent gets the same injection check as /chat, but answers with a 400 error instead.
     if is_injection(req.question):

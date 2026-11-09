@@ -1,6 +1,6 @@
 """Agentic RAG orchestrated by Semantic Kernel.
 
-The five MCP tools (app/agent/tools.py) are registered as one Semantic Kernel plugin, "saathi".
+The six MCP tools (app/agent/tools.py) are registered as one Semantic Kernel plugin, "saathi".
 - LLM_PROVIDER=azure: SK's chat completion service talks to the Foundry deployment and uses
   automatic function calling (FunctionChoiceBehavior.Auto) to decide which tools to call.
 - LLM_PROVIDER=mock: a fixed plan is run through kernel.invoke(), so the same plugin, filters
@@ -9,13 +9,17 @@ The five MCP tools (app/agent/tools.py) are registered as one Semantic Kernel pl
 Rules enforced in code, not in the prompt:
 - only allowlisted tools run, at most MAX_TOOL_CALLS per request (an SK auto-function-invocation
   filter stops the loop, and every call is counted again in the plugin);
-- every customer_id argument is forced to the customer the agent selected;
-- the final answer is produced by the normal grounded pipeline (generate_answer), so it can
-  only cite clauses the search tool actually returned.
+- every customer_id argument is forced to the customer the agent selected, and every search is
+  limited to that customer's product (and their tier, unless the model names another one);
+- policy statements are produced by the normal grounded pipeline (generate_answer), one per
+  search, so they can only cite clauses the search tool actually returned;
+- facts from the other tools (the CRM record, the worklist, sentiment, the draft status) are
+  written into the answer by code from the tool results, never by the LLM.
 """
 import inspect
 import json
 import os
+import re
 from typing import Annotated, Any, Dict, List, Tuple
 
 from semantic_kernel import Kernel
@@ -28,21 +32,33 @@ from app.agent.tools import TOOLS, mcp
 from app.models.schemas import Citation, SearchHit
 from app.services import audit
 from app.services.answer import generate_answer, NOT_FOUND
+from app.services.customer_context import scope_question, tier_filter
+from app.services.customers import load_customers
 from app.services.safety import safe_log
 
-# Name of the Semantic Kernel plugin that holds our five tools.
+# Name of the Semantic Kernel plugin that holds our six tools.
 PLUGIN = "saathi"
 # Hard limit on tool calls per request, so the model can't loop forever.
-MAX_TOOL_CALLS = 3
+MAX_TOOL_CALLS = 5
 # Allowlist: the only tool names the agent may ever run.
-ALLOWED = {"lookup_customer", "worklist", "search_knowledge_base", "save_draft", "simulate_send"}
+ALLOWED = {"lookup_customer", "worklist", "search_knowledge_base", "customer_sentiment", "save_draft", "simulate_send"}
+
+# Shown when save_draft worked. Written by code, so it never needs grounding.
+DRAFT_NOTE = "Renewal draft created and waiting for your approval."
 
 # System prompt for the planning step. It only chooses tools; it does not write the final answer.
 PLANNER_PROMPT = (
-    "You are Saathi, an insurance agent's copilot. Decide which tools to call to answer the "
-    "agent's question about the selected customer. Use search_knowledge_base for any question "
-    "about policy terms. You may call at most 3 tools. Never invent policy facts. When you have "
-    "what you need, reply with a one-line note; the final cited answer is written by the system."
+    "You are Saathi, an insurance agent's copilot. Decide which tools to call for the agent's request "
+    "about the selected customer. A request can have several parts; cover every part.\n"
+    "- Call lookup_customer first whenever the request mentions the customer, their plan, renewal or consent.\n"
+    "- Call search_knowledge_base once per separate policy topic (e.g. one search for ambulance cover, "
+    "another for the grace period). Use a short, specific query for each topic, without the customer's name.\n"
+    "- Call customer_sentiment when the request asks how the customer feels, their mood, complaints or risk of leaving.\n"
+    "- Call worklist only when the request is about the agent's other customers or who to call.\n"
+    "- Call save_draft only when the request asks for a draft, reminder or renewal message.\n"
+    "- Never call simulate_send; a human must approve and send drafts.\n"
+    f"You may call at most {MAX_TOOL_CALLS} tools. Never invent policy facts. When you have what you need, "
+    "reply with a one-line note; the final cited answer is written by the system."
 )
 
 
@@ -62,11 +78,20 @@ async def run_tool(name: str, args: Dict[str, Any], customer_id: str, agent_id: 
         args["customer_id"] = customer_id          # the model cannot reach another customer
     if name == "worklist":
         args["agent_id"] = agent_id
+    if name == "search_knowledge_base":
+        # Same scoping as /chat: this customer's product, and their tier unless the model asked for
+        # another one; "this policy" in the query becomes e.g. "Health Gold policy".
+        customer = load_customers().get(customer_id)
+        if customer is not None:
+            query = str(args.get("query") or "")
+            args["query"] = scope_question(query, customer)
+            args["product"] = customer.product
+            args["tier"] = args.get("tier") or tier_filter(query, customer) or ""
     result = TOOLS[name](**args)
     return await result if inspect.isawaitable(result) else result
 
 
-# Wraps the five MCP tools as Semantic Kernel functions. One instance is created per request,
+# Wraps the six MCP tools as Semantic Kernel functions. One instance is created per request,
 # so customer_id, agent_id, the trace and the search hits never leak between requests.
 class SaathiPlugin:
     """The MCP tools as Semantic Kernel functions, bound to one request's customer and agent."""
@@ -78,16 +103,36 @@ class SaathiPlugin:
         self.trace: List[Dict[str, Any]] = []
         # Clauses returned by search_knowledge_base; the final answer can only cite these.
         self.hits: List[SearchHit] = []
+        # Each search as (query, the clauses it returned), so each policy topic gets its own answer.
+        self.searches: List[Tuple[str, List[SearchHit]]] = []
+        # Results of the non-search tools, used to write the fact lines of the answer.
+        self.record: Dict[str, Any] = {}
+        self.worklist_rows: List[Dict[str, Any]] = []
+        self.sentiment: Dict[str, Any] = {}
+        # Drafts that save_draft created (shown in the Workspace Renewal draft card).
+        self.drafts: List[Dict[str, Any]] = []
 
     # Shared path for every tool: enforce the call limit, run it, record it, log it.
     async def call(self, name: str, args: Dict[str, Any]) -> Any:
         if len(self.trace) >= MAX_TOOL_CALLS:
             return {"error": "Tool call limit reached"}
-        result = await run_tool(name, dict(args), self.customer_id, self.agent_id)
-        self.trace.append({"tool": name, "args": args, "ok": not (isinstance(result, dict) and "error" in result),
-                           "orchestrator": "semantic-kernel"})
+        # run_tool fills in the enforced values; the trace shows the arguments that really ran.
+        effective = dict(args)
+        result = await run_tool(name, effective, self.customer_id, self.agent_id)
+        ok = not (isinstance(result, dict) and "error" in result)
+        self.trace.append({"tool": name, "args": effective, "ok": ok, "orchestrator": "semantic-kernel"})
         if name == "search_knowledge_base" and isinstance(result, list):
-            self.hits.extend(SearchHit(**r) for r in result)
+            found = [SearchHit(**r) for r in result]
+            self.hits.extend(found)
+            self.searches.append((str(effective.get("query") or ""), found))
+        elif ok and isinstance(result, dict) and name == "lookup_customer":
+            self.record = result
+        elif ok and isinstance(result, dict) and name == "customer_sentiment":
+            self.sentiment = result
+        elif name == "worklist" and isinstance(result, list):
+            self.worklist_rows = result
+        elif ok and isinstance(result, dict) and name == "save_draft" and "draft_id" in result:
+            self.drafts.append(result)
         safe_log("agent_tool_call", tool=name, customer_id=self.customer_id)
         audit.log_event("agent_tool_call", tool=name, customer_id=self.customer_id)
         return result
@@ -113,6 +158,11 @@ class SaathiPlugin:
                                     product: Annotated[str, "Health or Motor, optional"] = "",
                                     tier: Annotated[str, "Silver, Gold or Platinum, optional"] = "") -> str:
         return await self._json("search_knowledge_base", query=query, product=product, tier=tier)
+
+    @kernel_function(name="customer_sentiment",
+                     description="How the customer's recent messages sounded: 90-day sentiment score (-1 to +1) and latest labelled interactions.")
+    async def customer_sentiment(self, customer_id: Annotated[str, "Customer ID"]) -> str:
+        return await self._json("customer_sentiment", customer_id=customer_id)
 
     @kernel_function(name="save_draft",
                      description="Create a renewal message draft. It is saved as PENDING_APPROVAL; a human must approve it.")
@@ -146,9 +196,22 @@ def build_kernel(plugin: SaathiPlugin) -> Kernel:
 def mock_plan(question: str, customer_id: str) -> List[Tuple[str, Dict[str, Any]]]:
     """Deterministic planner for LLM_PROVIDER=mock (offline demo and tests)."""
     q = question.lower()
-    if "draft" in q or "renewal message" in q:
+    wants_draft = "draft" in q or "renewal message" in q or "reminder" in q
+    # A plain "draft a renewal message" only needs the draft tool.
+    if wants_draft and not any(w in q for w in ("cover", "plan", "policy", "grace", "waiting", "feel", "sentiment")):
         return [("save_draft", {"customer_id": customer_id})]
-    return [("lookup_customer", {"customer_id": customer_id}), ("search_knowledge_base", {"query": question})]
+    plan: List[Tuple[str, Dict[str, Any]]] = [("lookup_customer", {"customer_id": customer_id})]
+    wants_sentiment = any(w in q for w in ("feel", "sentiment", "mood", "complain", "happy", "upset"))
+    if wants_sentiment:
+        plan.append(("customer_sentiment", {"customer_id": customer_id}))
+    # The policy part of the question is everything before "and draft ...", searched as asked.
+    policy = re.split(r",?\s*(?:and|then)\s+(?:also\s+)?(?:draft|write|create)\b", question, flags=re.IGNORECASE)[0]
+    policy_words = ("cover", "grace", "waiting", "exclu", "claim", "limit", "benefit", "premium")
+    if any(w in q for w in policy_words) or not (wants_draft or wants_sentiment):
+        plan.append(("search_knowledge_base", {"query": policy}))
+    if wants_draft:
+        plan.append(("save_draft", {"customer_id": customer_id}))
+    return plan
 
 
 # Creates the Semantic Kernel chat service that talks to our Azure AI Foundry model.
@@ -194,13 +257,80 @@ async def run_agent(question: str, customer_id: str, agent_id: str) -> Dict[str,
                 continue
             await kernel.invoke(function_name=name, plugin_name=PLUGIN, arguments=KernelArguments(**args))
 
-    # If search found clauses, write the answer with the SAME grounded pipeline as /chat.
-    if plugin.hits:
-        answer, citations = generate_answer(question, plugin.hits)
-    else:
-        # Otherwise the only useful outcome is a saved draft; if nothing worked, say "not found".
-        drafts = [t for t in plugin.trace if t["tool"] == "save_draft" and t["ok"]]
-        answer = "Draft created and waiting for your approval." if drafts else NOT_FOUND
-        citations: List[Citation] = []
+    answer, citations = compose_answer(question, plugin)
     return {"answer": answer, "citations": [c.model_dump() for c in citations], "trace": plugin.trace,
-            "orchestrator": "semantic-kernel"}
+            "orchestrator": "semantic-kernel", "draft": plugin.drafts[-1] if plugin.drafts else None}
+
+
+# The customer's record in one line, written by code from the lookup_customer result.
+def record_line(r: Dict[str, Any]) -> str:
+    if not r.get("customer_id"):
+        return ""
+    who = f"{r['customer_id']} ({r['name']})" if r.get("name") else r["customer_id"]
+    line = f"{who} is on {r.get('product', '')} {r.get('tier', '')}.".replace("  ", " ")
+    extra = []
+    if r.get("renewal_date"):
+        extra.append(f"renewal date {r['renewal_date']}")
+    if r.get("policy_status"):
+        extra.append(f"policy {r['policy_status']}")
+    extra.append("consent to contact given" if r.get("consent", True) else "no consent to contact")
+    details = ", ".join(extra)
+    return f"{line} {details[0].upper()}{details[1:]}."
+
+
+def worklist_line(rows: List[Dict[str, Any]]) -> str:
+    if not rows:
+        return "You have no renewable customers right now."
+    items = "; ".join(f"{r['customer_id']} {r.get('name', '')} ({r.get('product', '')} {r.get('tier', '')}, "
+                      f"{r.get('policy_status') or 'status unknown'})" for r in rows)
+    return f"Your renewable customers: {items}."
+
+
+def sentiment_line(s: Dict[str, Any]) -> str:
+    score = s.get("sentiment_score_90d")
+    if score is None:
+        return "No sentiment data on record for this customer."
+    word = "positive" if score > 0.2 else "negative" if score < -0.2 else "neutral"
+    latest = s.get("latest") or []
+    tail = ""
+    if latest:
+        last = latest[0]
+        tail = f" Latest message ({last.get('date')}, {last.get('channel')}) was {last.get('sentiment')}."
+    return f"Recent messages sound {word}: 90-day sentiment score {score:+.2f} over {s.get('interactions', 0)} interactions.{tail}"
+
+
+# Builds the final answer: code-written fact lines, then one grounded, cited answer per policy
+# topic searched, then the draft status. Any policy part that fails grounding says NOT_FOUND.
+def compose_answer(question: str, plugin: SaathiPlugin) -> Tuple[str, List[Citation]]:
+    facts = []
+    if plugin.record:
+        facts.append(record_line(plugin.record))
+    if plugin.sentiment:
+        facts.append(sentiment_line(plugin.sentiment))
+    if any(t["tool"] == "worklist" and t["ok"] for t in plugin.trace):
+        facts.append(worklist_line(plugin.worklist_rows))
+
+    policy, citations, seen = [], [], set()
+    # A single plain question keeps the full wording, exactly like before. A request with several
+    # parts (more searches, a draft, the worklist) is answered per search query, so a sentence such
+    # as "and draft a reminder" is never treated as an unsupported policy claim.
+    multi = len(plugin.searches) > 1 or bool(plugin.drafts) or bool(plugin.worklist_rows) or bool(plugin.sentiment)
+    attempts = [(question, plugin.hits)] if plugin.searches and not multi else []
+    for query, hits in attempts or plugin.searches:
+        text, cites = generate_answer(query, hits)
+        # One retry with the model's own (shorter) query if the full question failed grounding.
+        if text == NOT_FOUND and not multi and plugin.searches[-1][0] not in ("", query):
+            text, cites = generate_answer(plugin.searches[-1][0], hits)
+        if text != NOT_FOUND and text not in policy:
+            policy.append(text)
+            for c in cites:
+                if (c.source_id, c.clause_id) not in seen:
+                    seen.add((c.source_id, c.clause_id))
+                    citations.append(c)
+    if plugin.searches and not policy:
+        policy.append(NOT_FOUND)
+
+    parts = [p for p in (" ".join(f for f in facts if f), *policy) if p]
+    if plugin.drafts:
+        parts.append(DRAFT_NOTE)
+    return ("\n\n".join(parts) if parts else NOT_FOUND), citations

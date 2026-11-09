@@ -57,7 +57,9 @@ public record AgentChatResponse(
     [property: JsonPropertyName("answer")] string Answer,
     [property: JsonPropertyName("citations")] List<Citation> Citations,
     [property: JsonPropertyName("trace")] List<AgentToolCall> Trace,
-    [property: JsonPropertyName("orchestrator")] string Orchestrator);
+    [property: JsonPropertyName("orchestrator")] string Orchestrator,
+    // The draft the agent's save_draft tool created in this request, if any (still PENDING_APPROVAL).
+    [property: JsonPropertyName("draft")] Draft? Draft = null);
 
 // Comparison table: one row per aspect, one cell per tier (null cell = "Not stated").
 public record ComparisonCell(
