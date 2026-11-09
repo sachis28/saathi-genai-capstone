@@ -1,0 +1,255 @@
+@page "/radar"
+@rendermode InteractiveServer
+@using System.Globalization
+@using Saathi.Client
+@inject ICopilotClient Client
+@inject IConfiguration Config
+
+@* Renewal Radar: the signed-in agent's customers ranked by how likely they are NOT to renew. *@
+@* Data comes from GET /worklist?details=true (bearer token) and GET /customers/{id}/sentiment. *@
+<PageTitle>Saathi - Renewal Radar</PageTitle>
+
+<div class="ph">
+    <div>
+        <div class="crumb">Renewal Radar</div>
+        <h1>Who should I call first?</h1>
+        <p>Your customers whose policy can still be renewed, ranked by the Radar model's lapse risk. Open a row to see why it scored that way and how the customer's recent messages sounded.</p>
+    </div>
+    <span class="badge a">Synthetic data. Scores are hints, not decisions.</span>
+</div>
+
+@if (error is not null)
+{
+    <div class="banner err" role="alert">@error</div>
+}
+
+<section class="card" aria-label="Renewal Radar">
+    <div class="card-h">
+        <h2>Renewal worklist @if (items is not null) { <span class="sub">· @items.Count customers</span> }</h2>
+        <div class="load-row">
+            @if (!configuredToken)
+            {
+                <input type="password" @bind="token" placeholder="Agent token" aria-label="Agent token" style="width:180px" />
+            }
+            <button type="button" class="sec" @onclick="LoadAsync" disabled="@busy">@(items is null ? "Load worklist" : "Refresh")</button>
+        </div>
+    </div>
+
+    @if (items is null)
+    {
+        <p class="muted pad">@(configuredToken ? "Press Load worklist." : "Enter your agent token, then press Load worklist. The API only returns customers assigned to that agent.")</p>
+    }
+    else if (items.Count == 0)
+    {
+        <p class="muted pad">No renewable customers for this agent right now.</p>
+    }
+    else
+    {
+        <div class="tablewrap">
+            <table class="radar">
+                <thead>
+                    <tr><th>#</th><th>Customer</th><th>Plan</th><th>Renewal</th><th>Lapse risk</th><th>Main factor</th><th>Sentiment</th><th></th></tr>
+                </thead>
+                <tbody>
+                    @for (var i = 0; i < items.Count; i++)
+                    {
+                        var it = items[i];
+                        var c = it.Customer;
+                        var open = expanded.Contains(it.CustomerId);
+                        var sent = Feature(it, "sentiment_score");
+                        <tr class="@(open ? "open" : "")">
+                            <td class="m">@(i + 1)</td>
+                            <td><div class="nm">@(c?.Name ?? it.CustomerId)</div><div class="m">@it.CustomerId</div></td>
+                            <td>@(c is null ? "-" : $"{c.Product} · {c.Tier}")</td>
+                            <td>
+                                <div>@(c?.RenewalDate ?? "-")</div>
+                                @if (c?.PolicyStatus is { } ps) { <span class="badge @(ps is "ACTIVE" ? "g" : "a")">@ps</span> }
+                            </td>
+                            <td>
+                                <div class="risk"><span class="track"><span class="fillbar @RiskClass(it.RiskScore)" style="width:@Pct(it.RiskScore)%"></span></span><b>@Pct(it.RiskScore)%</b></div>
+                            </td>
+                            <td>@Label(it, it.MainRiskFactor)</td>
+                            <td>@if (sent is not null) { <span class="badge @SentClass(sent.Value)">@SentWord(sent.Value) @Signed(sent.Value)</span> } else { <text>-</text> }</td>
+                            <td class="acts">
+                                <button type="button" class="sec small" @onclick="() => ToggleAsync(it.CustomerId)">@(open ? "Hide details" : "Show details")</button>
+                                <a class="small-link" href="@($"/?customer={Uri.EscapeDataString(it.CustomerId)}")">Open</a>
+                            </td>
+                        </tr>
+                        @if (open)
+                        {
+                            <tr class="rdetail">
+                                <td colspan="8">
+                                    <div class="detailgrid">
+                                        <div>
+                                            <div class="sub">Why this score</div>
+                                            @if (it.Features is { Count: > 0 } feats)
+                                            {
+                                                var max = Math.Max(0.01, feats.Max(f => Math.Abs(f.Contribution ?? 0)));
+                                                <div class="contribs">
+                                                    @foreach (var f in feats.OrderByDescending(f => f.Contribution ?? 0))
+                                                    {
+                                                        var w = f.Contribution is { } cv ? Math.Abs(cv) / max * 50 : 0;
+                                                        <div class="contrib">
+                                                            <span class="lbl">@f.Label</span>
+                                                            <span class="val">@FormatValue(f)</span>
+                                                            <span class="axis">
+                                                                @if (f.Contribution is { } cv2)
+                                                                {
+                                                                    <span class="seg2 @(cv2 >= 0 ? "up" : "down")" style="@(cv2 >= 0 ? $"left:50%;width:{Inv(w)}%" : $"right:50%;width:{Inv(w)}%")"></span>
+                                                                }
+                                                            </span>
+                                                            <span class="v">@(f.Contribution is { } cv3 ? Signed(cv3) : "")</span>
+                                                        </div>
+                                                    }
+                                                </div>
+                                                <p class="muted scorenote">Bars to the right pushed the risk up, bars to the left pulled it down. Each bar is the feature's standardized value times its logistic regression weight. This shows what the model reacted to, not what caused it. Code: ml/radar.py, api/app/services/insights.py.</p>
+                                            }
+                                            else
+                                            {
+                                                <p class="muted">No feature details returned.</p>
+                                            }
+                                        </div>
+                                        <div>
+                                            <div class="sub">Recent interactions and their sentiment</div>
+                                            @if (sentiment.TryGetValue(it.CustomerId, out var rep))
+                                            {
+                                                @if (rep is null)
+                                                {
+                                                    <p class="muted">Could not load sentiment.</p>
+                                                }
+                                                else if (rep.Interactions.Count == 0)
+                                                {
+                                                    <p class="muted">No interactions on record.</p>
+                                                }
+                                                else
+                                                {
+                                                    <SentimentList Report="rep" />
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <p class="muted">Loading…</p>
+                                            }
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>
+
+<section class="card explain" aria-label="How the Radar works">
+    <div class="card-h"><h2>How the Radar and sentiment work</h2></div>
+    <div class="pad steps3">
+        <div>
+            <div class="sub">1 · Sentiment (offline)</div>
+            <p>Azure AI Language reads each customer message and labels it positive, neutral or negative with confidences (<span class="m">ml/sentiment.py</span>). The 90-day sentiment score is the average of positive minus negative (<span class="m">ml/sentiment_features.py</span>).</p>
+        </div>
+        <div>
+            <div class="sub">2 · Risk model</div>
+            <p>A logistic regression on four features: days to renewal, interactions in the last 90 days, the sentiment score and the annual premium (<span class="m">ml/radar.py</span>). It runs in the API or on the Azure ML endpoint (ML_PROVIDER).</p>
+        </div>
+        <div>
+            <div class="sub">3 · Access first</div>
+            <p><span class="m">GET /worklist</span> checks the agent's bearer token, then keeps only that agent's customers in allowed products that are ACTIVE or IN_GRACE, before anything is scored (<span class="m">api/app/services/worklist_access.py</span>).</p>
+        </div>
+    </div>
+</section>
+
+@code {
+    private List<RadarItem>? items;
+    private readonly HashSet<string> expanded = new();
+    private readonly Dictionary<string, SentimentReport?> sentiment = new();
+    private string token = "";
+    private bool configuredToken;
+    private bool busy;
+    private string? error;
+
+    // A token set on the server (Saathi:AgentToken) is used automatically and never shown on the page.
+    protected override void OnInitialized()
+    {
+        var t = Config["Saathi:AgentToken"];
+        configuredToken = !string.IsNullOrWhiteSpace(t);
+        if (configuredToken) token = t!;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && configuredToken)
+        {
+            await LoadAsync();
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadAsync()
+    {
+        busy = true;
+        error = null;
+        try
+        {
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                error = "Enter an agent token first.";
+                return;
+            }
+            var r = await Client.GetWorklistAsync(token.Trim(), 10);
+            if (r.Success)
+            {
+                items = r.Data!.Items;
+                expanded.Clear();
+                sentiment.Clear();
+            }
+            else
+            {
+                items = null;
+                error = Explain(r.Error);
+            }
+        }
+        finally { busy = false; }
+    }
+
+    private async Task ToggleAsync(string id)
+    {
+        if (!expanded.Remove(id))
+        {
+            expanded.Add(id);
+            if (!sentiment.ContainsKey(id))
+            {
+                var r = await Client.GetSentimentAsync(id);
+                sentiment[id] = r.Success ? r.Data : null;
+            }
+        }
+    }
+
+    // Turn the API's error codes into what the person should do next.
+    private static string Explain(string? e) => e switch
+    {
+        { } s when s.StartsWith("401") => "The API did not accept this agent token.",
+        { } s when s.StartsWith("503") && s.Contains("authentication") => "The API has no agent credentials configured (SAATHI_AGENT_CREDENTIALS on saathi-api).",
+        { } s when s.StartsWith("503") => $"The Radar is not available: {s[5..]}. Check SAATHI_AS_OF_DATE=2026-10-28 on saathi-api.",
+        _ => e ?? "Unknown error",
+    };
+
+    private static double? Feature(RadarItem it, string name) => it.Features?.FirstOrDefault(f => f.Feature == name)?.Value;
+    private static string Label(RadarItem it, string? feature) =>
+        it.Features?.FirstOrDefault(f => f.Feature == feature)?.Label ?? feature?.Replace('_', ' ') ?? "-";
+    private static string Inv(double v) => v.ToString("0.#", CultureInfo.InvariantCulture);
+    private static string Pct(double p) => Math.Round(p * 100).ToString(CultureInfo.InvariantCulture);
+    private static string Signed(double v) => (v >= 0 ? "+" : "") + v.ToString("0.00", CultureInfo.InvariantCulture);
+    private static string RiskClass(double p) => p >= 0.6 ? "hi" : p >= 0.35 ? "mid" : "lo";
+    private static string SentWord(double s) => s > 0.2 ? "Positive" : s < -0.2 ? "Negative" : "Neutral";
+    private static string SentClass(double s) => s > 0.2 ? "g" : s < -0.2 ? "r" : "";
+    private static string FormatValue(RadarFeature f) => f.Feature switch
+    {
+        "annual_premium_inr" => "₹" + f.Value.ToString("N0", CultureInfo.GetCultureInfo("en-IN")),
+        "sentiment_score" => Signed(f.Value),
+        "days_to_renewal" when f.Value < 0 => $"{-f.Value:0} days overdue",
+        "days_to_renewal" => $"{f.Value:0} days",
+        _ => f.Value.ToString("0", CultureInfo.InvariantCulture),
+    };
+}

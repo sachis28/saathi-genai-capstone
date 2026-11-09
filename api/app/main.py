@@ -35,6 +35,7 @@ from app.services.compare import tiers_named, is_comparison, comparison_tiers, b
 from app.services.topic_guard import is_on_topic, OFF_TOPIC_MSG
 from app.services.answer import generate_answer, NOT_FOUND
 from app.services.customers import load_customers
+from app.services.insights import radar_details, customer_sentiment
 from app.services import memory
 from app.services import audit
 from app.services import telemetry
@@ -314,11 +315,20 @@ async def verify_audit():
     return {"valid": valid, "broken_at_seq": broken_at, "total_events": total}
 
 
+# GET /customers/{id}/sentiment: each interaction's Azure AI Language sentiment and the
+# 90-day score the Renewal Radar uses. Labels were computed offline by ml/sentiment.py.
+@app.get("/customers/{customer_id}/sentiment")
+async def sentiment(customer_id: str):
+    get_customer_or_404(customer_id)
+    return customer_sentiment(customer_id)
+
+
 # GET /worklist: Renewal Radar. The caller must send a bearer token (authenticate_agent),
 # and only that agent's eligible customers are scored by the ML model.
 @app.get("/worklist")
 async def worklist(
     limit: int = Query(default=10, ge=1, le=100),
+    details: bool = Query(default=False, description="Add customer info, feature values and contributions for the UI"),
     principal: AgentPrincipal = Depends(authenticate_agent),
 ):
     """CRM-linked synthetic Radar scores, filtered before model inference."""
@@ -329,7 +339,19 @@ async def worklist(
             return {"items": [], "synthetic": True}
         # Score the rows with the local model or the Azure ML endpoint (ML_PROVIDER), highest risk first.
         rows = await renewal_worklist(frame)
-        return {"items": rows[:limit], "synthetic": True}
+        items = rows[:limit]
+        if details:
+            # Only rows that already passed the access gate get explained.
+            explained = radar_details(frame)
+            customers = load_customers()
+            for row in items:
+                c = customers.get(row["customer_id"])
+                row["features"] = explained.get(row["customer_id"], [])
+                if c is not None:
+                    row["customer"] = {"name": c.name, "product": c.product, "tier": c.tier,
+                                       "renewal_date": str(c.renewal_date) if c.renewal_date else None,
+                                       "policy_status": c.policy_status, "consent": c.consent}
+        return {"items": items, "synthetic": True}
     # Missing files or a broken model/endpoint become a clear 503 instead of a crash.
     except FileNotFoundError:
         raise HTTPException(status_code=503, detail="Configure CRM-linked Radar input and train Renewal Radar first")

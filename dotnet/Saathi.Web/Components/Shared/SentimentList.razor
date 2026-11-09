@@ -1,0 +1,31 @@
+@using System.Globalization
+@using Saathi.Client
+@* One row per customer interaction: date, channel, the message, and Azure AI Language's label with its confidences. *@
+<div class="sentlist">
+    @foreach (var i in Report.Interactions)
+    {
+        var label = i.Sentiment ?? "unknown";
+        <div class="sentrow">
+            <div class="meta1"><span class="m">@i.Date</span> · @i.Channel <span class="badge @(label == "positive" ? "g" : label == "negative" ? "r" : label == "mixed" ? "a" : "")">@label</span></div>
+            <div class="txt">@i.Text</div>
+            @if (i.Confidence is { Count: > 0 } conf)
+            {
+                <div class="conf">
+                    @foreach (var k in new[] { "positive", "neutral", "negative" })
+                    {
+                        var v = conf.TryGetValue(k, out var x) ? x : 0;
+                        <span class="c @k"><span class="dot"></span>@k @Math.Round(v * 100).ToString(CultureInfo.InvariantCulture)%</span>
+                    }
+                </div>
+            }
+        </div>
+    }
+    @if (Report.Score90d is { } s)
+    {
+        <p class="muted scorenote">90-day sentiment score @((s >= 0 ? "+" : "") + s.ToString("0.00", CultureInfo.InvariantCulture)) (average of positive minus negative, as of @Report.AsOfDate). This number is the Radar's sentiment feature. Labels come from Azure AI Language, run offline by ml/sentiment.py.</p>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public SentimentReport Report { get; set; } = default!;
+}

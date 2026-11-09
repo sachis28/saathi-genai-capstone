@@ -110,4 +110,21 @@ public class MockCopilotClient : ICopilotClient
 
     public Task<ApiResult<AuditStatus>> VerifyAuditAsync() =>
         Task.FromResult(ApiResult<AuditStatus>.Ok(new AuditStatus(true, null, 0)));
+
+    public Task<ApiResult<SentimentReport>> GetSentimentAsync(string customerId) =>
+        Task.FromResult(ApiResult<SentimentReport>.Ok(new SentimentReport(customerId, 0.05, "2026-10-28", new()
+        {
+            new("I-0001", "2026-10-07", "chat", "Please explain the coverage under my policy.", "neutral",
+                new() { ["positive"] = 0.0, ["neutral"] = 1.0, ["negative"] = 0.0 }),
+        })));
+
+    public Task<ApiResult<Worklist>> GetWorklistAsync(string agentToken, int limit = 10)
+    {
+        if (string.IsNullOrWhiteSpace(agentToken))
+            return Task.FromResult(ApiResult<Worklist>.Fail("401: Agent authentication required"));
+        var items = _customers.Take(limit).Select((c, i) => new RadarItem(c.CustomerId, 0.7 - i * 0.1, "days_to_renewal",
+            Features: new() { new("days_to_renewal", "Days to renewal", 10 + i, 1.2), new("sentiment_score", "Sentiment (90-day average)", 0.05, 0.1) },
+            Customer: new(c.Name, c.Product, c.Tier, c.RenewalDate, c.PolicyStatus, c.Consent))).ToList();
+        return Task.FromResult(ApiResult<Worklist>.Ok(new Worklist(items, true)));
+    }
 }

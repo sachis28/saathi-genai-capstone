@@ -85,6 +85,48 @@ public record Customer(
     [property: JsonPropertyName("renewal_date")] string? RenewalDate = null,
     [property: JsonPropertyName("policy_status")] string? PolicyStatus = null);
 
+// GET /customers/{id}/sentiment: Azure AI Language label per interaction, plus the 90-day score.
+public record SentimentReport(
+    [property: JsonPropertyName("customer_id")] string CustomerId,
+    [property: JsonPropertyName("sentiment_score_90d")] double? Score90d,
+    [property: JsonPropertyName("as_of_date")] string? AsOfDate,
+    [property: JsonPropertyName("interactions")] List<InteractionSentiment> Interactions);
+
+public record InteractionSentiment(
+    [property: JsonPropertyName("interaction_id")] string InteractionId,
+    [property: JsonPropertyName("date")] string? Date,
+    [property: JsonPropertyName("channel")] string? Channel,
+    [property: JsonPropertyName("text")] string? Text,
+    [property: JsonPropertyName("sentiment")] string? Sentiment,
+    [property: JsonPropertyName("confidence_scores")] Dictionary<string, double>? Confidence);
+
+// GET /worklist?details=true: the Renewal Radar, highest lapse risk first.
+public record Worklist(
+    [property: JsonPropertyName("items")] List<RadarItem> Items,
+    [property: JsonPropertyName("synthetic")] bool Synthetic);
+
+public record RadarItem(
+    [property: JsonPropertyName("customer_id")] string CustomerId,
+    [property: JsonPropertyName("risk_score")] double RiskScore,
+    [property: JsonPropertyName("main_risk_factor")] string? MainRiskFactor,
+    [property: JsonPropertyName("explanation_type")] string? ExplanationType = null,
+    [property: JsonPropertyName("features")] List<RadarFeature>? Features = null,
+    [property: JsonPropertyName("customer")] RadarCustomer? Customer = null);
+
+public record RadarFeature(
+    [property: JsonPropertyName("feature")] string Feature,
+    [property: JsonPropertyName("label")] string Label,
+    [property: JsonPropertyName("value")] double Value,
+    [property: JsonPropertyName("contribution")] double? Contribution);
+
+public record RadarCustomer(
+    [property: JsonPropertyName("name")] string Name,
+    [property: JsonPropertyName("product")] string Product,
+    [property: JsonPropertyName("tier")] string Tier,
+    [property: JsonPropertyName("renewal_date")] string? RenewalDate,
+    [property: JsonPropertyName("policy_status")] string? PolicyStatus,
+    [property: JsonPropertyName("consent")] bool? Consent);
+
 // A renewal message draft. Status: PENDING_APPROVAL -> APPROVED -> SIMULATED_SENT.
 public record Draft(
     [property: JsonPropertyName("draft_id")] string DraftId,

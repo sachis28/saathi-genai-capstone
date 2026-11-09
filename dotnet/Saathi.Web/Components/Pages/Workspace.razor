@@ -43,11 +43,22 @@
     <div class="kv"><div class="k">Consent</div><div class="v">
         @if (customer?.Consent is { } consent) { <span class="badge @(consent ? "g" : "r")">@(consent ? "Given" : "Declined")</span> } else { <text>-</text> }
     </div></div>
+    <div class="kv"><div class="k">Sentiment (90 days)</div><div class="v">
+        @if (sentimentReport?.Score90d is { } ss) { <span class="badge @(ss > 0.2 ? "g" : ss < -0.2 ? "r" : "")">@(ss > 0.2 ? "Positive" : ss < -0.2 ? "Negative" : "Neutral") @((ss >= 0 ? "+" : "") + ss.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture))</span> } else { <text>-</text> }
+    </div></div>
     <div class="load-row">
         @* @bind keeps the input box and the customerId field in sync. *@
         <input type="text" id="customer-id" @bind="customerId" placeholder="e.g. C-204" aria-label="Customer ID" />
         <button type="button" class="sec" @onclick="LoadCustomerAsync" disabled="@busy">Load</button>
     </div>
+    @* Sentiment details: each past interaction with its Azure AI Language label (GET /customers/{id}/sentiment). *@
+    @if (sentimentReport is { Interactions.Count: > 0 } rep)
+    {
+        <details class="more custmore">
+            <summary>Show sentiment details (@rep.Interactions.Count interactions)</summary>
+            <SentimentList Report="rep" />
+        </details>
+    }
 </section>
 
 @* Two columns: the chat on the left, the answer trace on the right. *@
@@ -310,6 +321,10 @@
     private string? info;
     private bool busy;
     private bool? apiOk;
+    private SentimentReport? sentimentReport;
+
+    // /?customer=C-450 (the Radar's "Open" link) loads that customer straight away.
+    [SupplyParameterFromQuery(Name = "customer")] public string? CustomerFromUrl { get; set; }
 
     // After the first render, check the API's /health once.
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -317,6 +332,11 @@
         if (firstRender)
         {
             apiOk = await Client.HealthAsync();
+            if (!string.IsNullOrWhiteSpace(CustomerFromUrl))
+            {
+                customerId = CustomerFromUrl.Trim();
+                await LoadCustomerAsync();
+            }
             StateHasChanged();
         }
     }
@@ -335,9 +355,13 @@
     private async Task LoadCustomerAsync() => await Run(async () =>
     {
         var r = await Client.GetCustomerAsync(customerId.Trim());
+        sentimentReport = null;
         if (r.Success)
         {
             customer = r.Data;
+            // Sentiment is extra context: if it fails, the workspace still works.
+            var s = await Client.GetSentimentAsync(customer!.CustomerId);
+            sentimentReport = s.Success ? s.Data : null;
             draft = null;
             turns.Clear();
             selected = -1;

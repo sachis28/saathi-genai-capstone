@@ -61,6 +61,18 @@ public class CopilotHttpClient : ICopilotClient
     public Task<ApiResult<AuditStatus>> VerifyAuditAsync() =>
         CallAsync<AuditStatus>(() => _http.GetAsync("/audit/verify"));
 
+    public Task<ApiResult<SentimentReport>> GetSentimentAsync(string customerId) =>
+        CallAsync<SentimentReport>(() => _http.GetAsync($"/customers/{Uri.EscapeDataString(customerId)}/sentiment"));
+
+    // GET /worklist?details=true with "Authorization: Bearer <token>". The token never goes in the URL.
+    public Task<ApiResult<Worklist>> GetWorklistAsync(string agentToken, int limit = 10) =>
+        CallAsync<Worklist>(() =>
+        {
+            var req = new HttpRequestMessage(HttpMethod.Get, $"/worklist?details=true&limit={limit}");
+            req.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", agentToken);
+            return _http.SendAsync(req);
+        });
+
     // One place for calling the API, reading errors and wrapping the result.
     private static async Task<ApiResult<T>> CallAsync<T>(Func<Task<HttpResponseMessage>> call)
     {

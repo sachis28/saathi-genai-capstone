@@ -134,3 +134,23 @@ def test_load_crm_input_not_training_rows(tmp_path, monkeypatch, frame, customer
     assert 'policy_status' not in result and 'agent_id' not in result
     crm.write_text('[{"customer_id":"one","customer_id":"two"}]')
     with pytest.raises(ValueError,match='Duplicate JSON'): load_authorized_radar_frame(principal)
+
+
+def test_inline_credential_store_authenticates(monkeypatch):
+    monkeypatch.delenv('SAATHI_AGENT_CREDENTIALS_FILE', raising=False)
+    store = [{'agent_id':'A-001','allowed_products':['Health'],
+              'token_sha256':hashlib.sha256(TEST_TOKEN.encode()).hexdigest()}]
+    monkeypatch.setenv('SAATHI_AGENT_CREDENTIALS', json.dumps(store))
+    agent = authenticate_agent(HTTPAuthorizationCredentials(scheme='Bearer', credentials=TEST_TOKEN))
+    assert agent.agent_id == 'A-001'
+    with pytest.raises(HTTPException) as denied:
+        authenticate_agent(HTTPAuthorizationCredentials(scheme='Bearer', credentials='wrong'))
+    assert denied.value.status_code == 401
+
+
+def test_no_credential_store_fails_closed(monkeypatch):
+    monkeypatch.delenv('SAATHI_AGENT_CREDENTIALS_FILE', raising=False)
+    monkeypatch.delenv('SAATHI_AGENT_CREDENTIALS', raising=False)
+    with pytest.raises(HTTPException) as e:
+        authenticate_agent(HTTPAuthorizationCredentials(scheme='Bearer', credentials=TEST_TOKEN))
+    assert e.value.status_code == 503
