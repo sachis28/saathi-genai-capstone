@@ -16,4 +16,10 @@ public interface ICopilotClient
     Task<ApiResult<Draft>> SendDraftAsync(string draftId);
 
     Task<ApiResult<AuditStatus>> VerifyAuditAsync();
+
+    // Sentiment of the customer's past interactions (no login needed, like GET /customers/{id}).
+    Task<ApiResult<SentimentReport>> GetSentimentAsync(string customerId);
+
+    // Renewal Radar. agentToken is the agent's bearer token; the API decides which customers it sees.
+    Task<ApiResult<Worklist>> GetWorklistAsync(string agentToken, int limit = 10);
 }

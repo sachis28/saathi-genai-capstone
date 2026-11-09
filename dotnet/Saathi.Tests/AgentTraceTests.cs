@@ -66,4 +66,39 @@ public class AgentTraceTests
         Assert.Null(r.IntentScores);
         Assert.Null(r.Retrieved);
     }
+
+    [Fact]
+    public void Worklist_reads_details_from_the_api_json()
+    {
+        const string json = """
+        {"items":[{"customer_id":"C-450","risk_score":0.72,"main_risk_factor":"days_to_renewal","synthetic":true,
+          "features":[{"feature":"sentiment_score","label":"Sentiment (90-day average)","value":-0.29,"contribution":0.24}],
+          "customer":{"name":"Synthetic Customer 04","product":"Health","tier":"Gold","renewal_date":"2026-10-23","policy_status":"IN_GRACE","consent":true}}],
+         "synthetic":true}
+        """;
+        var w = JsonSerializer.Deserialize<Worklist>(json)!;
+        Assert.Equal("C-450", w.Items[0].CustomerId);
+        Assert.Equal(-0.29, w.Items[0].Features![0].Value);
+        Assert.Equal("IN_GRACE", w.Items[0].Customer!.PolicyStatus);
+    }
+
+    [Fact]
+    public void Sentiment_report_reads_interactions()
+    {
+        const string json = """
+        {"customer_id":"C-450","sentiment_score_90d":-0.29,"as_of_date":"2026-10-28",
+         "interactions":[{"interaction_id":"I-1","date":"2026-10-21","channel":"phone","text":"I missed my renewal date.","sentiment":"negative","confidence_scores":{"positive":0.0,"neutral":0.07,"negative":0.93}}]}
+        """;
+        var r = JsonSerializer.Deserialize<SentimentReport>(json)!;
+        Assert.Equal(-0.29, r.Score90d);
+        Assert.Equal(0.93, r.Interactions[0].Confidence!["negative"]);
+    }
+
+    [Fact]
+    public async Task Mock_worklist_needs_a_token()
+    {
+        ICopilotClient c = new MockCopilotClient();
+        Assert.False((await c.GetWorklistAsync("")).Success);
+        Assert.True((await c.GetWorklistAsync("t")).Success);
+    }
 }

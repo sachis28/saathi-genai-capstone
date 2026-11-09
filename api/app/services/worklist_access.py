@@ -53,6 +53,10 @@ bearer = HTTPBearer(auto_error=False)
 
 
 def _read_json(path: Path):
+    return _read_json_text(path.read_text(encoding='utf-8'))
+
+
+def _read_json_text(text: str):
     # Reject duplicate JSON keys instead of silently trusting the final value.
     def unique_keys(pairs):
         result = {}
@@ -61,7 +65,7 @@ def _read_json(path: Path):
                 raise ValueError('Duplicate JSON field')
             result[key] = value
         return result
-    return json.loads(path.read_text(encoding='utf-8'), object_pairs_hook=unique_keys)
+    return json.loads(text, object_pairs_hook=unique_keys)
 
 
 # FastAPI dependency: turns a bearer token into an AgentPrincipal, or rejects the request.
@@ -71,12 +75,17 @@ def authenticate_agent(
     if credentials is None or credentials.scheme.lower() != 'bearer':
         raise HTTPException(status_code=401, detail='Agent authentication required',
                             headers={'WWW-Authenticate': 'Bearer'})
-    # The credentials file path comes from configuration. No file = fail closed with 503.
+    # The credential store comes from configuration: a file path, or the same JSON inline
+    # (SAATHI_AGENT_CREDENTIALS, handy as a Container Apps secret). Neither = fail closed with 503.
     configured = os.getenv('SAATHI_AGENT_CREDENTIALS_FILE')
+    inline = os.getenv('SAATHI_AGENT_CREDENTIALS')
     try:
-        if not configured:
+        if configured:
+            records = _read_json(Path(configured))
+        elif inline:
+            records = _read_json_text(inline)
+        else:
             raise ValueError('No credential store configured')
-        records = _read_json(Path(configured))
         if not isinstance(records, list) or not records:
             raise ValueError('Invalid credential store')
         agents = [AgentCredential.model_validate(row) for row in records]
