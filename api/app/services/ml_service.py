@@ -42,6 +42,8 @@ def classify_intent(text):
         index = int(probabilities.argmax())
         confidence = float(probabilities[index])
         label = str(loaded.classes_[index])
+        scores = {str(c): float(v) for c, v in zip(loaded.classes_, probabilities)}
+        features = top_features(loaded, text, index)
     else:
         import torch
         tokenizer,model = loaded
@@ -51,8 +53,21 @@ def classify_intent(text):
         index = int(probabilities.argmax())
         confidence = float(probabilities[index])
         label = model.config.id2label[index]
+        scores = {model.config.id2label[i]: float(v) for i, v in enumerate(probabilities.tolist())}
+        features = []  # a transformer has no per-word weights to show
     # This score is uncalibrated and not an authorization or grounding decision.
-    return {"intent":label,"confidence":confidence,"model":provider}
+    return {"intent":label,"confidence":confidence,"model":provider,"scores":scores,"features":features}
+
+
+# For the trace: which words in the question pushed the TF-IDF model towards the predicted intent.
+# contribution = TF-IDF value of the word in this question x the classifier's weight for that word.
+def top_features(pipeline, text, class_index, n=6):
+    vectorizer, classifier = pipeline.named_steps["tfidf"], pipeline.named_steps["classifier"]
+    row = vectorizer.transform([text]).tocoo()
+    terms = vectorizer.get_feature_names_out()
+    coef = classifier.coef_[class_index if classifier.coef_.shape[0] > 1 else 0]
+    pairs = [(str(terms[j]), float(v * coef[j])) for j, v in zip(row.col, row.data)]
+    return [{"term": t, "weight": round(w, 4)} for t, w in sorted(pairs, key=lambda x: -abs(x[1]))[:n]]
 
 
 # Renewal Radar: score each customer's lapse risk. frame = rows already filtered for this agent.

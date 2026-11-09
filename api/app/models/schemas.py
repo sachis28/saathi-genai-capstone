@@ -2,7 +2,7 @@
 
 FastAPI uses these to validate requests, build responses and generate the /docs page."""
 from pydantic import BaseModel, StrictBool, Field
-from typing import Dict, List, Optional, Literal
+from typing import Any, Dict, List, Optional, Literal
 from datetime import date
 
 
@@ -39,6 +39,16 @@ class Comparison(BaseModel):
     rows: List[ComparisonRow]
 
 
+class RetrievedClause(BaseModel):
+    """One search hit as the retriever ranked it; used=True if the answer cites it."""
+    source_id: str
+    clause_id: str
+    version: str
+    text: str
+    score: float
+    used: bool = False
+
+
 # What /chat returns.
 class ChatResponse(BaseModel):
     answer: str
@@ -47,6 +57,15 @@ class ChatResponse(BaseModel):
     session_id: str
     resolved_question: Optional[str] = None
     comparison: Optional[Comparison] = None
+    # Trace details for the UI. Uncalibrated scores, shown for explanation only.
+    intent_confidence: Optional[float] = None
+    intent_model: Optional[str] = None
+    intent_scores: Dict[str, float] = {}
+    intent_features: List[Dict[str, Any]] = []  # [{"term": "waiting period", "weight": 0.41}]
+    retriever: Optional[str] = None
+    search_query: Optional[str] = None
+    search_filter: Dict[str, str] = {}
+    retrieved: List[RetrievedClause] = []
 
 
 # One customer's CRM record. Status fields are filled in by services/customers.py.

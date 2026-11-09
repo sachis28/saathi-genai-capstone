@@ -238,3 +238,42 @@ def test_worklist_missing_crm_export_returns_503_not_training_fallback(gated_wor
     monkeypatch.setattr(main,'renewal_worklist',score)
     assert client.get('/worklist',headers=headers).status_code == 503
     score.assert_not_called()
+
+
+def test_chat_returns_intent_scores_and_ranked_hits_for_the_trace(setup):
+    main, client, classify, search = setup
+    classify.return_value = {'intent':'coverage_question', 'confidence':0.81, 'model':'tfidf_lr',
+                             'scores':{'coverage_question':0.81, 'compare_products':0.12, 'out_of_scope':0.07},
+                             'features':[{'term':'waiting period', 'weight':0.47}]}
+    from app.models.schemas import SearchHit
+    search.return_value = [
+        SearchHit(source_id='POL-TEST-POLICY', clause_id='WAIT-01', version='v1', product='Health',
+                  tier='All', text='The waiting period is 30 days.', score=2.9),
+        SearchHit(source_id='POL-TEST-POLICY', clause_id='COV-02', version='v1', product='Health',
+                  tier='All', text='Hospitalisation is covered.', score=1.1),
+    ]
+    body = client.post('/chat', json={'customer_id':'C-204', 'question':'What is the waiting period?',
+                                      'session_id':'trace-scores'}).json()
+    assert body['intent_confidence'] == 0.81 and body['intent_model'] == 'tfidf_lr'
+    assert body['intent_scores']['compare_products'] == 0.12
+    assert [(h['clause_id'], h['score']) for h in body['retrieved']] == [('WAIT-01', 2.9), ('COV-02', 1.1)]
+    cited = {c['clause_id'] for c in body['citations']}
+    assert all(h['used'] == (h['clause_id'] in cited) for h in body['retrieved'])
+    assert body['retrieved'][0]['used']
+    assert body['intent_features'] == [{'term':'waiting period', 'weight':0.47}]
+    assert body['search_query'] == search.call_args.args[0]
+    assert body['search_filter']['product'] == 'Health'
+    main.memory.clear('trace-scores')
+
+
+def test_tfidf_top_features_explain_the_predicted_class():
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.pipeline import Pipeline
+    from app.services.ml_service import top_features
+    pipe = Pipeline([('tfidf', TfidfVectorizer()), ('classifier', LogisticRegression())])
+    pipe.fit(['waiting period please', 'compare plans', 'waiting time', 'compare silver gold'],
+             ['coverage', 'compare', 'coverage', 'compare'])
+    index = list(pipe.classes_).index('coverage')
+    feats = top_features(pipe, 'what is the waiting period', index)
+    assert feats[0]['term'] in ('waiting', 'period') and feats[0]['weight'] > 0
