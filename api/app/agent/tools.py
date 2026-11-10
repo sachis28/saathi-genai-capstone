@@ -1,4 +1,4 @@
-"""Saathi's five agent tools, exposed as an MCP server.
+"""Saathi's six agent tools, exposed as an MCP server.
 
 Run as a standalone MCP server (stdio), e.g. for MCP Inspector or Claude Desktop:
     PYTHONPATH=.:api python -m app.agent.tools
@@ -13,6 +13,7 @@ from fastapi import HTTPException
 from mcp.server.fastmcp import FastMCP
 
 from app.services.customers import load_customers, renewal_candidates
+from app.services.insights import customer_sentiment as sentiment_report
 from app.services.retriever import get_retriever
 
 # FastMCP turns each decorated function below into an MCP tool. The docstring becomes the
@@ -44,6 +45,15 @@ def search_knowledge_base(query: str, product: str = "", tier: str = "") -> List
 
 
 @mcp.tool()
+def customer_sentiment(customer_id: str) -> Dict[str, Any]:
+    """How the customer's recent messages sounded: the 90-day sentiment score (-1 to +1) and the latest labelled interactions."""
+    report = sentiment_report(customer_id)
+    latest = [{k: i.get(k) for k in ("date", "channel", "sentiment")} for i in report["interactions"][:3]]
+    return {"customer_id": customer_id, "sentiment_score_90d": report["sentiment_score_90d"],
+            "as_of_date": report["as_of_date"], "interactions": len(report["interactions"]), "latest": latest}
+
+
+@mcp.tool()
 async def save_draft(customer_id: str) -> Dict[str, Any]:
     """Create a renewal message draft. It is saved as PENDING_APPROVAL; a human must approve it."""
     # Imported inside the function to avoid a circular import (main.py imports the agent).
@@ -68,7 +78,8 @@ async def simulate_send(draft_id: str) -> Dict[str, Any]:
 
 
 # Name -> function lookup used by the in-process agent (app/agent/agent.py).
-TOOLS = {f.__name__: f for f in (lookup_customer, worklist, search_knowledge_base, save_draft, simulate_send)}
+TOOLS = {f.__name__: f for f in (lookup_customer, worklist, search_knowledge_base, customer_sentiment,
+                                  save_draft, simulate_send)}
 
 
 # Running this file directly starts it as a standalone MCP server over stdio.

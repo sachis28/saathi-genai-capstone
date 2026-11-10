@@ -33,6 +33,21 @@ public class AgentTraceTests
     }
 
     [Fact]
+    public void Agent_response_reads_the_draft_it_created()
+    {
+        const string json = """
+        {"answer":"A.\n\nRenewal draft created and waiting for your approval.","citations":[],
+         "trace":[{"tool":"save_draft","args":{"customer_id":"C-311"},"ok":true,"orchestrator":"semantic-kernel"}],
+         "orchestrator":"semantic-kernel",
+         "draft":{"draft_id":"d-1","customer_id":"C-311","message":"Dear customer","status":"PENDING_APPROVAL","citations":[{"source_id":"POL-GEN-RENEWAL","clause_id":"CL-REN-01","version":"v1"}]}}
+        """;
+        var r = JsonSerializer.Deserialize<AgentChatResponse>(json)!;
+        Assert.Equal("d-1", r.Draft!.DraftId);
+        Assert.Equal("PENDING_APPROVAL", r.Draft.Status);
+        Assert.Null(JsonSerializer.Deserialize<AgentChatResponse>("""{"answer":"a","citations":[],"trace":[],"orchestrator":"semantic-kernel"}""")!.Draft);
+    }
+
+    [Fact]
     public void Chat_response_reads_resolved_question()
     {
         const string json = """{"answer":"a","intent":"compare_products","citations":[],"session_id":"s","resolved_question":"full question"}""";

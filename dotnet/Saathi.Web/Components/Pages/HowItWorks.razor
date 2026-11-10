@@ -203,8 +203,8 @@
 
     private static RenderFragment Code(string text) => @<pre class="code">@text</pre>;
 
-    private static RenderFragment Budget(int used, bool over = false) => @<span class="budget" title="@used of 3 tool calls">
-        @for (var b = 0; b < 3; b++) { <i class="@(b < used ? "used" : "")"></i> }
+    private static RenderFragment Budget(int used, bool over = false) => @<span class="budget" title="@used of 5 tool calls">
+        @for (var b = 0; b < 5; b++) { <i class="@(b < used ? "used" : "")"></i> }
         @if (over) { <i class="over"></i> }
     </span>;
 
@@ -240,7 +240,8 @@
         <tr><th>Tool</th><th>Parameters (from the MCP schema)</th><th>Rule in code</th></tr>
         <tr><td class="m">lookup_customer</td><td class="m">customer_id: string</td><td>customer_id forced to the selected customer</td></tr>
         <tr><td class="m">worklist</td><td class="m">agent_id: string</td><td>agent_id forced to the signed-in agent</td></tr>
-        <tr><td class="m">search_knowledge_base</td><td class="m">query: string, product?: string, tier?: string</td><td>returns cited clauses only</td></tr>
+        <tr><td class="m">search_knowledge_base</td><td class="m">query: string, product?: string, tier?: string</td><td>scoped to the customer's plan; returns cited clauses only</td></tr>
+        <tr><td class="m">customer_sentiment</td><td class="m">customer_id: string</td><td>customer_id forced to the selected customer</td></tr>
         <tr><td class="m">save_draft</td><td class="m">customer_id: string</td><td>saved as PENDING_APPROVAL</td></tr>
         <tr><td class="m">simulate_send</td><td class="m">draft_id: string</td><td>blocked unless approved and consent given</td></tr>
     </table>;
@@ -315,29 +316,29 @@
                 "The same injection check as /chat. A blocked request returns 400 and the kernel is never built.",
                 "api/app/services/safety.py · is_injection()", Tag: "safety", Ms: "3 ms"),
             new(3, "Build the kernel", "Kernel() + plugin \"saathi\" + auto-function-invocation filter",
-                Code("kernel = Kernel()\nkernel.add_plugin(SaathiPlugin(\"C-311\", \"A-002\"), plugin_name=\"saathi\")\nkernel.add_filter(AUTO_FUNCTION_INVOCATION, limit_tool_calls)  # max 3, allowlist"),
+                Code("kernel = Kernel()\nkernel.add_plugin(SaathiPlugin(\"C-311\", \"A-002\"), plugin_name=\"saathi\")\nkernel.add_filter(AUTO_FUNCTION_INVOCATION, limit_tool_calls)  # max 5, allowlist"),
                 "A fresh kernel is built for each request. The plugin is bound to this customer and this agent, so every tool call is scoped to them.",
                 "api/app/agent/agent.py · build_kernel(), SaathiPlugin", "Each request gets its own tool budget and customer binding.", Tag: "Semantic Kernel", Ms: "6 ms"),
             new(4, "Discover the MCP tools", "mcp.list_tools() on the FastMCP server \"saathi\"",
                 ToolTable,
-                "The five tools are defined once on an MCP server. Semantic Kernel registers each one as a kernel function and builds its JSON schema from the signature. The same server also runs standalone over stdio for MCP Inspector or Claude Desktop.",
+                "The six tools are defined once on an MCP server. Semantic Kernel registers each one as a kernel function and builds its JSON schema from the signature. The same server also runs standalone over stdio for MCP Inspector or Claude Desktop.",
                 "api/app/agent/tools.py · FastMCP(\"saathi\"), agent.py · tool_schemas()", "One tool definition serves the in-app agent and any external MCP client.", Tag: "MCP", Ms: "4 ms"),
             new(5, "Planner chooses a tool", "Azure OpenAI with FunctionChoiceBehavior.Auto, temperature 0",
                 Code("tool_calls: [{ \"name\": \"saathi-lookup_customer\", \"arguments\": { \"customer_id\": \"C-311\" } }]"),
                 "The model sees the question and the five tool schemas. It asks to look up the customer first.",
                 "api/app/agent/agent.py · plan_with_llm()", Tag: "Azure OpenAI", Ms: "640 ms"),
-            new(4, "Tool call 1 of 3: lookup_customer", "Filter checks the allowlist and the budget, then runs the MCP tool",
+            new(4, "Tool call 1 of 5: lookup_customer", "Filter checks the allowlist and the budget, then runs the MCP tool",
                 @<div>
                     <div><span class="verdict pass">allowed</span>@Budget(1)</div>
                     <pre class="code">{ "customer_id": "C-311", "product": "Health", "tier": "Gold", "policy_status": "ACTIVE", "consent": true }</pre>
                 </div>,
-                "limit_tool_calls lets the call through because lookup_customer is allowlisted and 0 of 3 calls are used. The plugin overwrites customer_id with C-311 before the tool runs.",
+                "limit_tool_calls lets the call through because lookup_customer is allowlisted and 0 of 5 calls are used. The plugin overwrites customer_id with C-311 before the tool runs.",
                 "api/app/agent/agent.py · limit_tool_calls(), run_tool()", Tag: "MCP", Ms: "3 ms"),
             new(5, "Planner chooses the next tool", "The tool result goes back into the chat history",
                 Code("tool_calls: [{ \"name\": \"saathi-search_knowledge_base\",\n  \"arguments\": { \"query\": \"air ambulance cover\", \"product\": \"Health\", \"tier\": \"Gold\" } }]"),
                 "Now the model knows the plan is Health Gold, so it searches the policy clauses with that filter.",
                 "semantic_kernel · FunctionChoiceBehavior.Auto(maximum_auto_invoke_attempts=3)", Tag: "Azure OpenAI", Ms: "590 ms"),
-            new(6, "Tool call 2 of 3: search_knowledge_base", "Runs Azure AI Search through the MCP tool",
+            new(6, "Tool call 2 of 5: search_knowledge_base", "Runs Azure AI Search through the MCP tool",
                 @<div>
                     <div><span class="verdict pass">allowed</span>@Budget(2)</div>
                     @Hits(new[]
@@ -350,7 +351,7 @@
                 "The top hit came from a scanned endorsement. Its text only exists because the OCR pipeline read it out of an image (see the OCR tab).",
                 "api/app/agent/tools.py · search_knowledge_base()", "Proves OCR output is searchable and citable like typed clauses.", Tag: "Azure AI Search", Ms: "182 ms"),
             new(5, "Planner stops", "The model has what it needs and replies with a short note",
-                @<span><span class="verdict pass">done</span>2 of 3 tool calls used @Budget(2)</span>,
+                @<span><span class="verdict pass">done</span>2 of 5 tool calls used @Budget(2)</span>,
                 "The model does not write the final answer itself. Its note is discarded, and the grounded pipeline writes the answer from the search hits.",
                 "api/app/agent/agent.py · PLANNER_PROMPT", Tag: "Azure OpenAI", Ms: "410 ms"),
             new(7, "Grounded answer", "generate_answer() on the hits the search tool returned",
@@ -370,9 +371,9 @@
                 "api/app/main.py · agent_chat()", Ms: "1 ms"),
         },
         "In agent mode, Semantic Kernel lets the model pick tools. The rules that matter stay in code.",
-        new() { ("Orchestrator", "Semantic Kernel, plugin \"saathi\""), ("Tools", "5 MCP tools from FastMCP(\"saathi\")"), ("Budget", "At most 3 tool calls per request"), ("Scoping", "customer_id and agent_id forced in code") });
+        new() { ("Orchestrator", "Semantic Kernel, plugin \"saathi\""), ("Tools", "6 MCP tools from FastMCP(\"saathi\")"), ("Budget", "At most 5 tool calls per request"), ("Scoping", "customer_id and agent_id forced in code") });
 
-    // ---------- 3. Agent rules: scoping and the 3-call limit ----------
+    // ---------- 3. Agent rules: scoping and the 5-call limit ----------
 
     private Scenario Rules() => new(
         "Agent rules", "What stops the agent from overreaching", "POST /agent/chat · customer C-204 · a planner that asks for too much",
@@ -386,7 +387,7 @@
             new(5, "Planner asks for another customer", "lookup_customer(customer_id: \"C-450\")",
                 Code("tool_calls: [{ \"name\": \"saathi-lookup_customer\", \"arguments\": { \"customer_id\": \"C-450\" } }]"),
                 "The model follows the question and asks for C-450.", Tag: "Azure OpenAI"),
-            new(4, "Tool call 1 of 3: customer_id rewritten", "run_tool() forces customer_id to C-204",
+            new(4, "Tool call 1 of 5: customer_id rewritten", "run_tool() forces customer_id to C-204",
                 @<div>
                     <pre class="code">args before: { "customer_id": "C-450" }
 args after:  { "customer_id": "C-204" }</pre>
@@ -394,17 +395,17 @@ args after:  { "customer_id": "C-204" }</pre>
                 </div>,
                 "The model cannot reach another customer's record. The argument is replaced in code before the MCP tool runs.",
                 "api/app/agent/agent.py · run_tool()", "Prevents one customer's data leaking into another's conversation.", Tag: "MCP"),
-            new(4, "Tool call 2 of 3: save_draft", "Creates a renewal draft for C-204",
+            new(4, "Tool call 2 of 5: save_draft", "Creates a renewal draft for C-204",
                 @<div><pre class="code">{ "status": "PENDING_APPROVAL", "customer_id": "C-204" }</pre><span><span class="verdict pass">allowed</span>@Budget(2)</span></div>,
                 "Drafts are always saved as PENDING_APPROVAL. A human agent has to approve them in the workspace.",
                 "api/app/agent/tools.py · save_draft()", Tag: "MCP"),
-            new(4, "Tool call 3 of 3: simulate_send", "Tries to send the draft straight away",
+            new(4, "Tool call 3 of 5: simulate_send", "Tries to send the draft straight away",
                 @<div><pre class="code">{ "error": "409: BLOCKED: draft must be approved by the agent before sending" }</pre><span><span class="verdict fail">refused by the API</span>@Budget(3)</span></div>,
                 "The tool calls the same send endpoint as the Send button. It refuses because no human approved the draft.",
                 "api/app/main.py · send_draft()", "The model can never send a message by itself.", "stop", "MCP"),
-            new(3, "Call 4 is cut off", "limit_tool_calls sets context.terminate = True",
-                @<span><span class="verdict fail">terminated</span>@Budget(3, over: true) no fourth call runs</span>,
-                "The model tries one more call. The SK filter stops the loop because the 3-call budget is used up. The plugin also counts calls as a second check.",
+            new(3, "Any call past 5 is cut off", "limit_tool_calls sets context.terminate = True",
+                @<span><span class="verdict fail">capped</span>@Budget(5, over: true) no sixth call can run</span>,
+                "If the model kept retrying, the SK filter would stop the loop once the 5-call budget is used up. The plugin also counts calls as a second check.",
                 "api/app/agent/agent.py · limit_tool_calls(), SaathiPlugin.call()", "Bounds cost and stops runaway tool loops.", "stop", "Semantic Kernel"),
             new(8, "Safe response", "Draft is waiting for approval, nothing was sent",
                 @<div class="stream">Draft created and waiting for your approval.</div>,
@@ -412,7 +413,7 @@ args after:  { "customer_id": "C-204" }</pre>
                 "api/app/agent/agent.py · run_agent()"),
         },
         "This scenario shows the rules that hold even when the model asks for too much.",
-        new() { ("Allowlist", "lookup_customer, worklist, search_knowledge_base, save_draft, simulate_send"), ("Budget", "3 tool calls"), ("Send rule", "Only after human approval and with consent") });
+        new() { ("Allowlist", "lookup_customer, worklist, search_knowledge_base, customer_sentiment, save_draft, simulate_send"), ("Budget", "5 tool calls"), ("Send rule", "Only after human approval and with consent") });
 
     // ---------- 4. OCR ingestion ----------
 

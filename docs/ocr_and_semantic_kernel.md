@@ -36,16 +36,16 @@ The free tier covers 20 OCR images per indexer per day. Beyond that, set `AZURE_
 
 `api/app/agent/agent.py` runs the agent on **Semantic Kernel**:
 
-- The five MCP tools are registered as the SK plugin `saathi` (`SaathiPlugin`), one `@kernel_function` per tool. SK generates each tool's JSON schema from the function signature.
+- The six MCP tools are registered as the SK plugin `saathi` (`SaathiPlugin`), one `@kernel_function` per tool. SK generates each tool's JSON schema from the function signature.
 - With `LLM_PROVIDER=azure`, SK's `OpenAIChatCompletion` service calls the Foundry deployment with `FunctionChoiceBehavior.Auto`, and SK runs the tool-calling loop.
 - With `LLM_PROVIDER=mock`, a fixed plan runs through `kernel.invoke()`, so offline runs and tests use the same plugin and the same rules.
 - **Rules stay in code:**
-  - An SK auto-function-invocation filter stops the loop after 3 tool calls or on any tool not in the allowlist.
+  - An SK auto-function-invocation filter stops the loop after 5 tool calls or on any tool not in the allowlist.
   - The plugin forces every `customer_id` to the selected customer.
   - The final answer still goes through `generate_answer`, which applies the grounding shield and citations.
 - `POST /agent/chat` returns `"orchestrator": "semantic-kernel"` and a per-tool trace, which is the trace to show in demo act 8.
 
 ## Seeing it in the UI
 
-- **Workspace → Answer trace.** Every answer gets a step-by-step trace built from the live response. *Ask (RAG)* shows guardrails, the follow-up rewrite, the intent, retrieval, the grounded answer and the citations from `POST /chat`. *Agent (Semantic Kernel)* calls `POST /agent/chat` and draws one step per MCP tool call from its `trace`, with the 3-call budget. Citations whose source starts with `SCAN-` are marked as read by OCR.
-- **How it works.** A guided, animated walkthrough with sample data: the RAG pipeline, the Semantic Kernel agent discovering and calling the MCP tools, the agent rules (customer scoping, approval before send, the 3-call limit), and the OCR ingestion path for `SCAN-HEALTH-GOLD-END-17`. Each step says where it lives in the code.
+- **Workspace → Answer trace.** Every answer gets a step-by-step trace built from the live response. *Ask (RAG)* shows guardrails, the follow-up rewrite, the intent, retrieval, the grounded answer and the citations from `POST /chat`. *Agent (Semantic Kernel)* calls `POST /agent/chat` and draws one step per MCP tool call from its `trace`, with the 5-call budget. Citations whose source starts with `SCAN-` are marked as read by OCR.
+- **How it works.** A guided, animated walkthrough with sample data: the RAG pipeline, the Semantic Kernel agent discovering and calling the MCP tools, the agent rules (customer scoping, approval before send, the 5-call limit), and the OCR ingestion path for `SCAN-HEALTH-GOLD-END-17`. Each step says where it lives in the code.

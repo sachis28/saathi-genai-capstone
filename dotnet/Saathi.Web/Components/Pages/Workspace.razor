@@ -403,6 +403,8 @@
                     turn.Answer = r.Data!.Answer;
                     turn.Citations = r.Data.Citations;
                     turn.Steps = AgentSteps(q, customer.CustomerId, r.Data);
+                    // A draft made by the agent goes into the Renewal draft card, where a human approves and sends it.
+                    if (r.Data.Draft is { } made) draft = made;
                 }
                 // The agent endpoint answers a prompt injection with a 400 "BLOCKED" error.
                 else if (r.Error?.Contains("BLOCKED") == true)
@@ -638,8 +640,9 @@
     {
         ["lookup_customer"] = ("Reads the customer's CRM record: product, tier, consent, renewal date and policy status.", "customer_id is replaced with the selected customer, whatever the model asked for."),
         ["worklist"] = ("Lists the agent's customers whose policy can still be renewed (ACTIVE or IN_GRACE).", "agent_id is replaced with the signed-in agent."),
-        ["search_knowledge_base"] = ("Searches the policy clauses in Azure AI Search, filtered by product and tier, and returns cited clauses.", "Only clauses returned here can be cited in the answer."),
-        ["save_draft"] = ("Creates a renewal message draft for the customer.", "Saved as PENDING_APPROVAL. A human must approve it."),
+        ["search_knowledge_base"] = ("Searches the policy clauses in Azure AI Search, filtered by product and tier, and returns cited clauses.", "Product (and tier, unless the model names another) is forced to the customer's plan. Only clauses returned here can be cited."),
+        ["customer_sentiment"] = ("Reads how the customer's recent messages sounded: the 90-day sentiment score and the latest labelled interactions.", "customer_id is replaced with the selected customer. Labels come from Azure AI Language, computed offline."),
+        ["save_draft"] = ("Creates a renewal message draft for the customer. It appears in the Renewal draft card.", "Saved as PENDING_APPROVAL. A human must approve it."),
         ["simulate_send"] = ("Pretends to send an approved draft. Nothing real is sent.", "Refused unless a human approved the draft and the customer gave consent."),
     };
 
@@ -655,7 +658,7 @@
 
         steps.Add(new("Guardrails", "Prompt-injection check", @<span><span class="verdict pass">Passed</span></span>, Node: 2));
         steps.Add(new("Semantic Kernel", "Kernel with the saathi plugin and a tool-limit filter",
-            @<span>Orchestrator <span class="badge v">@d.Orchestrator</span>. The five MCP tools are registered as one plugin. The model may call at most 3.</span>, Tag: "SK", Node: 3));
+            @<span>Orchestrator <span class="badge v">@d.Orchestrator</span>. The six MCP tools are registered as one plugin. The model may call at most 5.</span>, Tag: "SK", Node: 3));
 
         for (var i = 0; i < d.Trace.Count; i++)
         {
@@ -666,13 +669,13 @@
                 .Where(a => !(a.Value.ValueKind == JsonValueKind.String && a.Value.GetString() == ""))
                 .Select(a => $"{a.Key}: {a.Value.GetRawText()}"));
             var scoped = call.Args.ContainsKey("customer_id");
-            steps.Add(new($"Tool call {n} of 3: {call.Tool}", "MCP tool invoked through the SK plugin",
+            steps.Add(new($"Tool call {n} of 5: {call.Tool}", "MCP tool invoked through the SK plugin",
                 @<div>
                     <pre class="code">@($"{call.Tool}({args})")</pre>
                     <span>
                         @if (call.Ok) { <span class="verdict pass">ok</span> } else { <span class="verdict fail">refused</span> }
                         @if (scoped) { <span class="muted">customer_id is forced to @customerIdForRun in code</span> }
-                        <span class="budget">@for (var b = 0; b < 3; b++) { <i class="@(b < n ? "used" : "")"></i> }</span>
+                        <span class="budget">@for (var b = 0; b < 5; b++) { <i class="@(b < n ? "used" : "")"></i> }</span>
                     </span>
                     @if (ToolInfo.TryGetValue(call.Tool, out var info))
                     {
